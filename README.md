@@ -35,6 +35,21 @@ cp .env.example .env        # VITE_API_URL points to the backend
 npm run dev                 # app on http://localhost:5173
 ```
 
+## Run with Docker (self-hosted)
+
+The quickest way to run the whole stack (MongoDB + backend + frontend):
+
+```bash
+cp backend/.env.example backend/.env   # fill in the values (JWT secrets, OAuth, etc.)
+docker compose up --build
+```
+
+- Frontend: http://localhost:8080
+- Backend API + Swagger: http://localhost:3000 (`/docs`)
+- Mongo data persists in a Docker volume
+
+Set `VITE_API_URL` (public URL of the API) and `FRONTEND_URL` via environment variables for the browser to reach the API on a deployed host.
+
 ## Repository layout
 
 ```
@@ -47,7 +62,9 @@ Each application has its own `README.md`, `.env.example`, and conventions. See [
 
 ## Contributing
 
-Contributions are welcome. Open an issue, join a discussion, or submit a pull request in this repository.
+Contributions are welcome! Read [`CONTRIBUTING.md`](CONTRIBUTING.md) to get started, and please follow our [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md).
+
+Found a security issue? Do **not** open a public issue — report it via the [Security Advisories](https://github.com/ignaciobecher/orkpad/security/advisories) page. See [`SECURITY.md`](SECURITY.md).
 
 ## License
 

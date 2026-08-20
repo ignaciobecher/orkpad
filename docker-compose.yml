@@ -1,0 +1,48 @@
+name: orkpad
+
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - orkpad
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    env_file:
+      - ./backend/.env
+    environment:
+      # Override values that must point to the container network.
+      MONGODB_URI: mongodb://mongo:27017/orkpad
+      NODE_ENV: production
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:8080}
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongo
+    networks:
+      - orkpad
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        # Public URL the browser uses to reach the API. Keep the default for
+        # local usage, or set it to your public URL when deploying.
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:3000}
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+    networks:
+      - orkpad
+
+volumes:
+  mongo_data:
+
+networks:
+  orkpad:
