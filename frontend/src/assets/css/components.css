@@ -1,0 +1,83 @@
+/* Global component overrides */
+
+/* All inputs */
+input, select, textarea {
+  background-color: var(--color-bg-base);
+  border: 1px solid var(--color-border);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--color-text-base);
+  padding: 8px 12px;
+  border-radius: var(--radius);
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--color-primary);
+}
+
+/* All labels */
+label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-caps);
+  color: var(--color-text-muted);
+  display: block;
+  margin-bottom: var(--space-xs);
+}
+
+/* Custom Table Styles (matching design rules) */
+.w-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.w-table thead th {
+  background-color: var(--color-bg-base);
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-caps);
+  text-align: left;
+  padding: var(--space-md);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.w-table tbody tr {
+  background-color: var(--color-bg-base);
+  transition: background-color 0.2s ease;
+}
+
+.w-table tbody tr:nth-child(even) {
+  background-color: var(--color-bg-surface);
+}
+
+.w-table tbody tr:hover {
+  background-color: var(--color-bg-surface-highest) !important;
+}
+
+.w-table tbody td {
+  padding: var(--space-md);
+  border-bottom: 1px solid var(--color-border-subtle);
+  font-size: 13px;
+}
+
+/* KPI numbers */
+.kpi-number {
+  font-family: var(--font-mono);
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--color-text-base);
+}
+
+/* Delta badges */
+.delta-badge {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border: 1px solid currentColor;
+}

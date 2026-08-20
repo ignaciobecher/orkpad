@@ -1,0 +1,85 @@
+@import './tokens.css';
+@import './typography.css';
+@import './spacing.css';
+@import './layout.css';
+@import './components.css';
+@import './vuetify.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+body {
+  overflow-x: hidden;
+  background-color: var(--color-bg-base);
+  color: var(--color-text-base);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg-base);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-bg-surface-highest);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary);
+}
+
+/* ── Quill rich text rendered outside the editor (v-html) ── */
+.ql-content ol,
+.ql-content ul {
+  padding-left: 1.5em;
+  margin: 0.25em 0;
+}
+.ql-content li { margin: 2px 0; }
+
+/* Ordered list counters for each indent level */
+.ql-content ol > li { list-style-type: decimal; }
+.ql-content li.ql-indent-1 { padding-left: 3em; }
+.ql-content li.ql-indent-2 { padding-left: 6em; }
+.ql-content li.ql-indent-3 { padding-left: 9em; }
+.ql-content li.ql-indent-4 { padding-left: 12em; }
+
+/* Quill stores lists as <ol> with data-list attribute on <li> */
+.ql-content ol li[data-list="ordered"] { list-style-type: decimal; }
+.ql-content ol li[data-list="bullet"]  { list-style-type: disc; }
+.ql-content ol li[data-list="ordered"].ql-indent-1 { list-style-type: lower-alpha; }
+.ql-content ol li[data-list="ordered"].ql-indent-2 { list-style-type: lower-roman; }
+.ql-content ol li[data-list="ordered"].ql-indent-3 { list-style-type: decimal; }
+.ql-content ol li[data-list="bullet"].ql-indent-1  { list-style-type: circle; }
+.ql-content ol li[data-list="bullet"].ql-indent-2  { list-style-type: square; }
+
+/* Indents for data-list items */
+.ql-content li[data-list].ql-indent-1 { padding-left: 3em; }
+.ql-content li[data-list].ql-indent-2 { padding-left: 6em; }
+.ql-content li[data-list].ql-indent-3 { padding-left: 9em; }
+.ql-content li[data-list].ql-indent-4 { padding-left: 12em; }
+
+/* Block formats */
+.ql-content p  { margin: 0 0 0.25em; }
+.ql-content h1 { font-size: 2em; font-weight: 700; margin: 0.5em 0 0.25em; }
+.ql-content h2 { font-size: 1.5em; font-weight: 700; margin: 0.5em 0 0.25em; }
+.ql-content h3 { font-size: 1.17em; font-weight: 700; margin: 0.5em 0 0.25em; }
+.ql-content blockquote {
+  border-left: 4px solid var(--color-border);
+  padding-left: 1em;
+  color: var(--color-text-muted);
+  margin: 0.5em 0;
+}
+.ql-content pre {
+  background: var(--color-bg-base);
+  padding: 0.5em 1em;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  overflow-x: auto;
+}
+.ql-content a { color: var(--color-primary); text-decoration: underline; }

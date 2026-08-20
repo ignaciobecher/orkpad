@@ -1,0 +1,189 @@
+import { createRouter, createWebHistory } from 'vue-router'
+import { authGuard } from './guards'
+
+// Layouts
+const AppLayout = () => import('@/components/layout/AppLayout.vue')
+
+// Pages
+const LandingPage = () => import('@/pages/LandingPage.vue')
+const LoginPage = () => import('@/pages/auth/LoginPage.vue')
+const RegisterPage = () => import('@/pages/auth/RegisterPage.vue')
+const GitHubCallbackPage = () => import('@/pages/auth/GitHubCallbackPage.vue')
+const GoogleCallbackPage = () => import('@/pages/auth/GoogleCallbackPage.vue')
+const EmailVerificationPendingPage = () => import('@/pages/auth/EmailVerificationPendingPage.vue')
+const EmailVerifiedPage = () => import('@/pages/auth/EmailVerifiedPage.vue')
+const ForgotPasswordPage = () => import('@/pages/auth/ForgotPasswordPage.vue')
+const ResetPasswordPage = () => import('@/pages/auth/ResetPasswordPage.vue')
+const DashboardPage = () => import('@/pages/app/DashboardPage.vue')
+const ClientsPage = () => import('@/pages/app/ClientsPage.vue')
+const ProjectsPage = () => import('@/pages/app/ProjectsPage.vue')
+const TasksPage = () => import('@/pages/app/TasksPage.vue')
+const FinancePage = () => import('@/pages/app/FinancePage.vue')
+const InfrastructurePage = () => import('@/pages/app/InfrastructurePage.vue')
+const SubscriptionsPage = () => import('@/pages/app/SubscriptionsPage.vue')
+const TimeTrackingPage = () => import('@/pages/app/TimeTrackingPage.vue')
+const PipelinePage = () => import('@/pages/app/PipelinePage.vue')
+const ProductsPage = () => import('@/pages/app/ProductsPage.vue')
+const DocsPage = () => import('@/pages/app/DocsPage.vue')
+const AgendaPage = () => import('@/pages/app/AgendaPage.vue')
+const SettingsPage = () => import('@/pages/app/SettingsPage.vue')
+const NotificationsPage = () => import('@/pages/NotificationsPage.vue')
+const PublicProjectPage = () => import('@/pages/PublicProjectPage.vue')
+const AdminUsersPage = () => import('@/pages/app/AdminUsersPage.vue')
+const QuotesPage = () => import('@/pages/app/QuotesPage.vue')
+const NotesPage = () => import('@/pages/app/NotesPage.vue')
+const MessagingPage = () => import('@/pages/app/MessagingPage.vue')
+const ConnectionsPage = () => import('@/pages/app/ConnectionsPage.vue')
+const RailwayPage = () => import('@/pages/app/RailwayPage.vue')
+const SupabasePage = () => import('@/pages/app/SupabasePage.vue')
+const LeadsPage = () => import('@/pages/app/leads/LeadsPage.vue')
+const LeadDetailPage = () => import('@/pages/app/leads/LeadDetailPage.vue')
+const LeadSearchesPage = () => import('@/pages/app/leads/LeadSearchesPage.vue')
+const LeadCampaignsPage = () => import('@/pages/app/leads/LeadCampaignsPage.vue')
+
+const PortfolioPage = () => import('@/pages/app/PortfolioPage.vue')
+const PublicPortfolioPage = () => import('@/pages/PublicPortfolioPage.vue')
+
+const HelpPage = () => import('@/pages/HelpPage.vue')
+const PrivacyPolicyPage = () => import('@/pages/PrivacyPolicyPage.vue')
+const ResourcesPage = () => import('@/pages/app/ResourcesPage.vue')
+const ResourceDetailPage = () => import('@/pages/app/ResourceDetailPage.vue')
+
+const router = createRouter({
+  history: createWebHistory(),
+  routes: [
+    {
+      path: '/help',
+      name: 'help',
+      component: HelpPage
+    },
+    {
+      path: '/privacy',
+      name: 'privacy',
+      component: PrivacyPolicyPage
+    },
+    {
+      path: '/',
+      name: 'landing',
+      component: LandingPage,
+      meta: { guestOnly: true }
+    },
+    {
+      path: '/login',
+      name: 'login',
+      component: LoginPage,
+      meta: { guestOnly: true }
+    },
+    {
+      path: '/register',
+      name: 'register',
+      component: RegisterPage,
+      meta: { guestOnly: true }
+    },
+    {
+      path: '/auth/github/callback',
+      name: 'github-callback',
+      component: GitHubCallbackPage,
+    },
+    {
+      path: '/auth/google/callback',
+      name: 'google-callback',
+      component: GoogleCallbackPage,
+    },
+    {
+      path: '/auth/email-pending',
+      name: 'email-pending',
+      component: EmailVerificationPendingPage,
+    },
+    {
+      path: '/auth/email-verified',
+      name: 'email-verified',
+      component: EmailVerifiedPage,
+    },
+    {
+      path: '/forgot-password',
+      name: 'forgot-password',
+      component: ForgotPasswordPage,
+      meta: { guestOnly: true },
+    },
+    {
+      path: '/reset-password',
+      name: 'reset-password',
+      component: ResetPasswordPage,
+      meta: { guestOnly: true },
+    },
+    {
+      path: '/app',
+      component: AppLayout,
+      meta: { requiresAuth: true },
+      children: [
+        { path: 'dashboard',      name: 'dashboard',      component: DashboardPage },
+        { path: 'clients',        name: 'clients',        component: ClientsPage },
+        { path: 'projects',       name: 'projects',       component: ProjectsPage },
+        { path: 'projects/:id',   name: 'project-detail', component: () => import('@/pages/app/ProjectDetailPage.vue') },
+        { path: 'projects/:id/github', name: 'project-github', component: () => import('@/pages/app/ProjectGithubPage.vue') },
+        { path: 'tasks',          name: 'tasks',          component: TasksPage },
+        { path: 'finance',        name: 'finance',        component: FinancePage },
+        { path: 'infrastructure', name: 'infrastructure', component: InfrastructurePage },
+        { path: 'subscriptions',  name: 'subscriptions',  component: SubscriptionsPage },
+        { path: 'subscriptions/:id', name: 'subscription-detail', component: () => import('@/pages/app/SubscriptionDetailPage.vue') },
+        { path: 'time-tracking',  name: 'time-tracking',  component: TimeTrackingPage },
+        { path: 'pipeline',       name: 'pipeline',       component: PipelinePage },
+        { path: 'products',       name: 'products',       component: ProductsPage },
+        { path: 'docs',           name: 'docs',           component: DocsPage },
+        { path: 'agenda',         name: 'agenda',         component: AgendaPage },
+        { path: 'settings',       name: 'settings',       component: SettingsPage },
+        { path: 'notifications',  name: 'notifications',  component: NotificationsPage },
+        { path: 'admin-users',    name: 'admin-users',    component: AdminUsersPage },
+        { path: 'quotes',         name: 'quotes',         component: QuotesPage },
+        { path: 'notes',          name: 'notes',          component: NotesPage },
+        { path: 'messaging',      name: 'messaging',      component: MessagingPage },
+        { path: 'integrations',   name: 'integrations',   component: ConnectionsPage },
+        { path: 'railway',        name: 'railway',        component: RailwayPage },
+        { path: 'monitoring',          name: 'monitoring-overview',  component: () => import('@/pages/app/MonitoringOverviewPage.vue') },
+        { path: 'monitoring/projects', name: 'monitoring-projects',  component: RailwayPage },
+        { path: 'projects/:id/railway', name: 'project-railway', component: () => import('@/pages/app/ProjectRailwayPage.vue') },
+        { path: 'netlify',        name: 'netlify',        component: () => import('@/pages/app/NetlifyPage.vue') },
+        { path: 'supabase',       name: 'supabase',       component: SupabasePage },
+        { path: 'projects/:id/netlify', name: 'project-netlify', component: () => import('@/pages/app/ProjectNetlifyPage.vue') },
+        { path: 'leads',          name: 'leads',          component: LeadsPage },
+        { path: 'leads/searches', name: 'lead-searches',  component: LeadSearchesPage },
+        { path: 'leads/campaigns',name: 'lead-campaigns', component: LeadCampaignsPage },
+        { path: 'leads/:id',      name: 'lead-detail',    component: LeadDetailPage },
+        { path: 'portfolio',          name: 'portfolio',          component: PortfolioPage },
+        { path: 'portfolio/builder', name: 'portfolio-builder',  component: () => import('@/pages/app/PortfolioBuilderPage.vue') },
+        { path: 'portfolio/preview', name: 'portfolio-preview',  component: () => import('@/pages/app/PortfolioPreviewPage.vue') },
+        { path: 'resources',      name: 'resources',      component: ResourcesPage },
+        { path: 'resources/:slug', name: 'resource-detail', component: ResourceDetailPage },
+        { path: 'planner',        name: 'planner',        component: () => import('@/pages/app/PlannerPage.vue') },
+        { path: 'growth',         name: 'growth',         component: () => import('@/pages/app/GrowthPage.vue') },
+        { path: 'marketing',          name: 'marketing-dashboard', component: () => import('@/pages/app/marketing/MarketingDashboardPage.vue') },
+        { path: 'marketing/calendar', name: 'marketing-calendar',  component: () => import('@/pages/app/marketing/MarketingCalendarPage.vue') },
+        { path: 'marketing/ideas',    name: 'marketing-ideas',     component: () => import('@/pages/app/marketing/MarketingIdeasPage.vue') },
+        { path: 'marketing/prompts',  name: 'marketing-prompts',   component: () => import('@/pages/app/marketing/MarketingPromptsPage.vue') },
+        { path: 'marketing/posts',    name: 'marketing-posts',     component: () => import('@/pages/app/marketing/MarketingPostsPage.vue') },
+        { path: 'social-identity',     name: 'social-identity',        component: () => import('@/pages/app/social-identity/SocialIdentityPage.vue') },
+        { path: 'social-identity/:id', name: 'social-identity-detail', component: () => import('@/pages/app/social-identity/SocialIdentityDetailPage.vue') },
+        { path: '',               redirect: { name: 'dashboard' } }
+      ]
+    },
+    {
+      path: '/p/:token',
+      name: 'public-project',
+      component: PublicProjectPage,
+    },
+    {
+      path: '/portfolio/:slug',
+      name: 'public-portfolio',
+      component: PublicPortfolioPage,
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      redirect: '/'
+    }
+  ],
+})
+
+router.beforeEach(authGuard)
+
+export default router

@@ -1,0 +1,72 @@
+/* Vuetify component overrides */
+
+.v-application {
+  font-family: var(--font-body) !important;
+}
+
+.v-btn {
+  border-radius: var(--radius) !important;
+  text-transform: uppercase !important;
+  font-family: var(--font-mono) !important;
+  font-size: 11px !important;
+  letter-spacing: var(--letter-spacing-caps) !important;
+  font-weight: 500 !important;
+  box-shadow: none !important;
+}
+
+.v-card {
+  border-radius: var(--radius) !important;
+  box-shadow: none !important;
+  border: 1px solid var(--color-border) !important;
+  background-color: var(--color-bg-surface) !important;
+}
+
+.v-text-field .v-field {
+  border-radius: var(--radius) !important;
+  background-color: var(--color-bg-base) !important;
+  font-family: var(--font-mono) !important;
+}
+
+.v-select .v-field {
+  border-radius: var(--radius) !important;
+  background-color: var(--color-bg-base) !important;
+  font-family: var(--font-mono) !important;
+}
+
+.v-dialog .v-overlay__content {
+  border-radius: var(--radius) !important;
+  border: 1px solid var(--color-border) !important;
+  background-color: var(--color-bg-surface) !important;
+}
+
+.v-chip {
+  border-radius: var(--radius) !important;
+  font-family: var(--font-mono) !important;
+  text-transform: uppercase !important;
+  font-size: 10px !important;
+}
+
+.v-table {
+  background-color: transparent !important;
+  color: var(--color-text-base) !important;
+}
+
+.v-table .v-table__wrapper > table > thead > tr > th {
+  background-color: var(--color-bg-base) !important;
+  color: var(--color-text-muted) !important;
+  font-family: var(--font-mono) !important;
+  text-transform: uppercase !important;
+  font-size: 11px !important;
+  letter-spacing: var(--letter-spacing-caps) !important;
+}
+
+.v-list {
+  background-color: var(--color-bg-surface) !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: var(--radius) !important;
+}
+
+.v-divider {
+  border-color: var(--color-border) !important;
+  opacity: 1 !important;
+}

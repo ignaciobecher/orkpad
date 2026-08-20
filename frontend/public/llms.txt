@@ -1,0 +1,29 @@
+# Orkpad
+
+> Orkpad is the open-source app for freelancers and small agencies. It replaces the broken Excel, the outdated Notion, and the WhatsApp reminders. Centralize clients, projects, time tracking, and billing in one self-hostable place.
+
+## Product
+
+Orkpad covers the full lifecycle of a freelance business: lead capture, sales pipeline (CRM), project and task management (Kanban), time tracking, agenda, invoicing, financial reports, and a client portal. Each workspace is isolated, and all data can be exported in JSON/CSV at any time.
+
+## Open Source
+
+- License: Apache-2.0
+- Repository: https://github.com/ignaciobecher/orkpad
+- Self-hostable: run it on your own infrastructure.
+- Community-driven: issues, discussions, and contributions are welcome.
+
+## Get Started
+
+1. Clone the repository: `git clone https://github.com/ignaciobecher/orkpad.git`
+2. Read the docs in the `/docs` folder.
+3. Configure your environment and run the app locally.
+4. Open an issue or submit a pull request.
+
+## Links
+
+- Site: https://orkpad.com/
+- Repository: https://github.com/ignaciobecher/orkpad
+- Issues: https://github.com/ignaciobecher/orkpad/issues
+- Discussions: https://github.com/ignaciobecher/orkpad/discussions
+- Privacy: https://orkpad.com/privacy

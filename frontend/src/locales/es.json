@@ -1,0 +1,911 @@
+{
+  "nav": {
+    "modules": "MÓDULOS",
+    "workflow": "CÓMO FUNCIONA",
+    "github": "GITHUB",
+    "docs": "DOCS",
+    "community": "COMUNIDAD"
+  },
+  "hero": {
+    "chaosFiles": [
+      "clientes.xlsx",
+      "facturas_v3_FINAL.xlsx",
+      "proyectos_2024.notion",
+      "seguimiento_WA.png",
+      "presupuesto_roque.gdoc"
+    ],
+    "title": "La app open source",
+    "titleAccent": "para freelancers.",
+    "subtitle": "Orkpad reemplaza el Excel roto, el Notion desactualizado y los recordatorios por WhatsApp. Clientes, proyectos, tiempo y facturación en un solo lugar, bajo tu control.",
+    "ctaGitHub": "Star en GitHub",
+    "ctaDocs": "Leer la Docs",
+    "ctaContribute": "Contribuir",
+    "trust": {
+      "openSource": "100% open source",
+      "selfHosted": "Self-hostable",
+      "noVendor": "Sin vendor lock-in"
+    },
+    "stats": {
+      "license": {
+        "value": "Apache-2.0",
+        "label": "Licencia"
+      },
+      "community": {
+        "value": "∞",
+        "label": "Colaboradores bienvenidos"
+      },
+      "setup": {
+        "value": "5 min",
+        "label": "Para correr localmente"
+      }
+    },
+    "mockup": {
+      "revenue": "INGRESOS DEL MES",
+      "clients": "CLIENTES",
+      "tasks": "TAREAS ACTIVAS",
+      "recentActivity": "ACTIVIDAD RECIENTE",
+      "task1": "Diseño pantalla login",
+      "task2": "Reunión cliente Acme",
+      "task3": "Propuesta proyecto web",
+      "inProgress": "EN CURSO",
+      "done": "LISTO",
+      "pending": "PENDIENTE",
+      "paid": "PAGADA"
+    }
+  },
+  "workflow": {
+    "badge": "EL CICLO COMPLETO",
+    "title": "De lead a cobro, bajo tu control",
+    "description": "Cada etapa de tu negocio conectada. Sin saltar entre herramientas ni perder contexto.",
+    "steps": {
+      "capture": {
+        "title": "Capturás el lead",
+        "desc": "Agregás el contacto al Pipeline. Seguís la conversación sin post-its ni grupos de WhatsApp."
+      },
+      "contract": {
+        "title": "Planificás",
+        "desc": "Creás el proyecto, cargás las tareas y definís plazos. Todo visible desde el tablero Kanban."
+      },
+      "execute": {
+        "title": "Ejecutás y medís",
+        "desc": "El time tracking registra cuánto dedicás a cada proyecto. Sabés exactamente qué cobrar."
+      },
+      "liquidate": {
+        "title": "Cobrás y cerrás",
+        "desc": "La factura se genera con los datos del proyecto. El cliente recibe su reporte. Cerrás el mes."
+      }
+    }
+  },
+  "modules": {
+    "badge": "QUÉ INCLUYE",
+    "title": "Todo lo que necesitás. Nada de lo que no.",
+    "description": "Cada módulo hace una cosa bien. Juntos, cubren todo tu flujo de trabajo freelance y de agencias chicas.",
+    "hub": {
+      "title": "Dashboard central",
+      "badge": "VISTA TOTAL",
+      "desc": "Tareas urgentes, clientes activos y facturación pendiente de un vistazo. Sin abrir nada más."
+    },
+    "finance": {
+      "title": "Facturación sin Excel",
+      "desc": "Ingresos, gastos y deudas en tiempo real. Generá facturas en segundos y mandáselas al cliente.",
+      "revenue": "INGRESOS",
+      "expenses": "GASTOS"
+    },
+    "sales": {
+      "title": "Pipeline de ventas",
+      "desc": "Seguí cada prospecto desde el primer contacto hasta que firma. Sin que nada se caiga entre las grietas."
+    },
+    "wiki": {
+      "title": "Docs y base de conocimiento",
+      "desc": "Accesos, contratos, guías. Todo en un lugar que tu equipo y tus clientes pueden consultar."
+    }
+  },
+  "security": {
+    "badge": "TUS DATOS",
+    "title": "Tus datos son tuyos.",
+    "titleAccent": "En tu servidor.",
+    "description": "Self-hosteá Orkpad y mantené el control total de tu información. Sin analytics de terceros, sin lock-in, sin sorpresas.",
+    "list": {
+      "isolation": {
+        "title": "Aislamiento de workspace:",
+        "desc": "Cada consulta a la base de datos valida tu identidad antes de devolver un solo dato."
+      },
+      "export": {
+        "title": "Formatos abiertos:",
+        "desc": "Exportá todo en JSON o CSV cuando quieras. Sin restricciones, sin depender de nadie."
+      },
+      "backups": {
+        "title": "Backups bajo tu control:",
+        "desc": "Vos decidís dónde y cómo se guardan tus backups. Tu historial, tus reglas."
+      }
+    },
+    "visual": {
+      "isolation": "PROPIEDAD DE LOS DATOS",
+      "items": [
+        "HTTPS / TLS en tránsito",
+        "AES-256 en reposo",
+        "Almacenamiento self-hosted",
+        "Sin acceso de terceros"
+      ]
+    }
+  },
+  "advanced": {
+    "title": "Hecho para flujos de trabajo reales.",
+    "description": "Funcionalidades que mantienen tu negocio freelance en movimiento sin acumular herramientas.",
+    "features": {
+      "alerts": {
+        "title": "Alertas proactivas",
+        "desc": "Orkpad te avisa antes de que una factura venza o un proyecto entre en zona de riesgo."
+      },
+      "catalog": {
+        "title": "Portal de clientes",
+        "desc": "Tus clientes ven el estado de su proyecto sin enviarte WhatsApps. Menos interrupciones."
+      },
+      "agenda": {
+        "title": "Agenda integrada",
+        "desc": "Reuniones, hitos y vencimientos en un calendario. Conectados a tus proyectos y clientes."
+      },
+      "api": {
+        "title": "API REST",
+        "desc": "Conectá Orkpad a tus herramientas y automatizá lo que todavía hacés a mano."
+      },
+      "cli": {
+        "title": "Multi-moneda",
+        "desc": "Facturá en dólares, euros o pesos. El tipo de cambio no complica tu operación."
+      },
+      "subscriptions": {
+        "title": "Reportes automáticos",
+        "desc": "Tus clientes reciben un resumen al cerrar cada etapa. Sin que tengas que acordarte."
+      }
+    }
+  },
+  "openSource": {
+    "badge": "OPEN SOURCE",
+    "title": "Construido en abierto.",
+    "description": "Orkpad se publica bajo la licencia Apache-2.0. Podés leer el código, self-hostearlo, personalizarlo y contribuir.",
+    "items": {
+      "transparent": {
+        "title": "Transparente",
+        "desc": "Todo el código es público. Sin cajas negras, ni comportamientos ocultos."
+      },
+      "selfHosted": {
+        "title": "Self-hostable",
+        "desc": "Correlo en tu propio servidor. Tus datos quedan bajo tu control."
+      },
+      "community": {
+        "title": "Comunitario",
+        "desc": "Las funcionalidades y la dirección del proyecto las define la gente que lo usa."
+      },
+      "extensible": {
+        "title": "Extensible",
+        "desc": "API REST y arquitectura modular para integraciones propias."
+      }
+    }
+  },
+  "getStarted": {
+    "badge": "EMPEZAR",
+    "title": "Corré Orkpad en minutos.",
+    "description": "Cloná el repo, seguí la documentación y empezá a usar tu propia app freelance.",
+    "steps": {
+      "clone": {
+        "title": "Cloná el repo",
+        "desc": "git clone https://github.com/ignaciobecher/orkpad.git"
+      },
+      "docs": {
+        "title": "Leé la documentación",
+        "desc": "Seguí la guía de instalación para configurar tu entorno."
+      },
+      "contribute": {
+        "title": "Contribuí",
+        "desc": "Abrí un issue, iniciá una discusión o enviá un pull request."
+      }
+    },
+    "button": "Ver en GitHub"
+  },
+  "community": {
+    "badge": "COMUNIDAD",
+    "title": "Unite a la conversación.",
+    "description": "Hacé preguntas, compartí ideas y ayudá a definir el futuro de Orkpad.",
+    "links": {
+      "issues": "Abrir un issue",
+      "discussions": "GitHub Discussions",
+      "roadmap": "Roadmap"
+    }
+  },
+  "faq": {
+    "title": "Preguntas frecuentes",
+    "questions": [
+      {
+        "q": "¿Orkpad es realmente gratis?",
+        "a": "Sí. Orkpad es 100% gratuito y open source bajo la licencia Apache-2.0."
+      },
+      {
+        "q": "¿Puedo self-hostear Orkpad?",
+        "a": "Sí. Podés correrlo en tu propia infraestructura. El self-hosting es uno de los objetivos principales del proyecto."
+      },
+      {
+        "q": "¿Cómo puedo contribuir?",
+        "a": "Abrí un issue, unite a una discusión en GitHub o enviá un pull request. Toda contribución es bienvenida."
+      },
+      {
+        "q": "¿Mis datos están seguros?",
+        "a": "Sí. Cada workspace está aislado. Al self-hostear, tus datos se quedan en tu servidor."
+      },
+      {
+        "q": "¿Hay una versión hosteada?",
+        "a": "Por el momento no. Orkpad está enfocado en el self-hosting y en la comunidad open source."
+      }
+    ]
+  },
+  "midCta": {
+    "badge": "¿LISTO?",
+    "text": "Dejá de saltar entre planillas y WhatsApp. Controlá tu flujo de trabajo.",
+    "button": "Star en GitHub"
+  },
+  "finalCta": {
+    "badge": "CONSTRUYAMOS JUNTOS",
+    "title": "Menos caos, más trabajo real.",
+    "subtitle": "Unite al proyecto open source. Self-hosteá Orkpad, personalizalo y contribuí al futuro de las herramientas freelance.",
+    "button": "Star en GitHub",
+    "footnote": "LICENCIA APACHE-2.0 · SELF-HOSTABLE · COMUNIDAD"
+  },
+  "footer": {
+    "tagline": "La app open source para freelancers.",
+    "product": "PRODUCTO",
+    "community": "COMUNIDAD",
+    "legal": "LEGAL",
+    "copyright": "© 2025 Orkpad",
+    "links": {
+      "features": "Módulos",
+      "docs": "Docs",
+      "github": "GitHub",
+      "issues": "Issues",
+      "discussions": "Discussions",
+      "license": "Licencia",
+      "privacy": "Privacidad"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Iniciar Sesión",
+      "email": "Correo Electrónico",
+      "password": "Contraseña",
+      "submit": "Iniciar Sesión",
+      "createAccount": "Crear cuenta",
+      "forgotPassword": "¿Olvidaste tu contraseña?"
+    },
+    "register": {
+      "title": "Crear cuenta",
+      "name": "Nombre Completo",
+      "email": "Correo Electrónico",
+      "password": "Contraseña",
+      "confirmPassword": "Confirmar Contraseña",
+      "submit": "Crear Cuenta",
+      "alreadyHaveAccount": "¿Ya tenés cuenta?",
+      "termsAccepted": "Acepto los términos y condiciones",
+      "readTerms": "Leer Contrato",
+      "terms": {
+        "title": "POLÍTICA DE PRIVACIDAD Y SEGURIDAD DE DATOS",
+        "intro": "Bienvenido a Orkpad. Este documento detalla nuestro compromiso con la seguridad de tu información y la privacidad de tus datos.",
+        "sections": [
+          {
+            "title": "1. Propiedad de los Datos",
+            "content": "En Orkpad, el usuario es el único propietario de la información cargada. Actuamos únicamente como procesadores de datos. Bajo ninguna circunstancia venderemos ni usaremos tu información para fines ajenos al servicio."
+          },
+          {
+            "title": "2. Información que recolectamos",
+            "content": "Para el funcionamiento del servicio, recolectamos: datos de registro (nombre, email, contraseña), datos operativos (proyectos, tareas, clientes) y datos de diagnóstico anónimos para mejorar el producto."
+          },
+          {
+            "title": "3. Seguridad técnica",
+            "content": "Implementamos cifrado en tránsito (HTTPS/TLS), cifrado en reposo (AES-256), aislamiento de workspace por arquitectura multi-tenant y backups automáticos cifrados."
+          },
+          {
+            "title": "4. Inteligencia Artificial",
+            "content": "Tus datos no se usan para entrenar modelos de IA de terceros ni modelos globales de nuestra plataforma."
+          },
+          {
+            "title": "5. Integraciones externas",
+            "content": "Al conectar herramientas externas, solicitamos solo los permisos estrictamente necesarios. Podés revocar estos accesos en cualquier momento."
+          },
+          {
+            "title": "6. Portabilidad y eliminación",
+            "content": "Podés exportar toda tu información en JSON o CSV cuando quieras. Al dar de baja tu cuenta, eliminamos tus datos en un máximo de 30 días."
+          },
+          {
+            "title": "7. Pagos",
+            "content": "Los pagos se procesan mediante plataformas certificadas PCI-DSS. No almacenamos datos de tarjetas en nuestros sistemas."
+          },
+          {
+            "title": "8. Confidencialidad",
+            "content": "Los archivos y datos de tus clientes están protegidos con los mismos estándares de seguridad que tu propia información."
+          }
+        ],
+        "summary": {
+          "title": "En resumen",
+          "items": [
+            "Tus datos son tuyos: los guardamos para que puedas trabajar.",
+            "Seguridad bancaria: cifrado AES-256 en todos tus datos.",
+            "Portabilidad total: si te vas, te llevás todo y nosotros lo borramos."
+          ]
+        }
+      }
+    },
+    "social": {
+      "orContinueWith": "O CONTINUAR CON"
+    },
+    "back": "Volver"
+  },
+  "sidebar": {
+    "sections": {
+      "work": "TRABAJO",
+      "clients": "CLIENTES",
+      "sales": "VENTAS",
+      "prospection": "PROSPECCIÓN",
+      "planning": "PLANIFICACIÓN",
+      "finance": "FINANZAS",
+      "operations": "OPERACIONES",
+      "knowledge": "CONOCIMIENTO",
+      "monitoring": "MONITOREO INFRA"
+    },
+    "items": {
+      "dashboard": "Dashboard",
+      "clients": "Clientes",
+      "projects": "Proyectos",
+      "tasks": "Tareas",
+      "pipeline": "Pipeline",
+      "leads": "Leads",
+      "leadSearches": "Búsquedas",
+      "leadCampaigns": "Campañas",
+      "finance": "Finanzas",
+      "timeTracking": "Time Tracking",
+      "myProducts": "Mis Productos",
+      "subscriptions": "Suscripciones",
+      "infrastructure": "Infraestructura",
+      "monitoringOverview": "Resumen",
+      "monitoringProjects": "Proyectos",
+      "integrations": "Integraciones",
+      "docs": "Documentación",
+      "agenda": "Agenda",
+      "growth": "Crecimiento",
+      "settings": "Configuración",
+      "logout": "Cerrar sesión"
+    },
+    "logout_confirm": {
+      "title": "Confirmar Cierre de Sesión",
+      "message": "¿Estás seguro que deseas cerrar tu sesión?"
+    }
+  },
+  "topbar": {
+    "search": "BUSCAR..."
+  },
+  "dashboard": {
+    "greeting": "Buenos días",
+    "kpis": {
+      "revenue": "Ingresos del mes",
+      "tasks": "Tareas activas",
+      "clients": "Clientes activos",
+      "mrr": "MRR",
+      "projects": "Proyectos activos"
+    },
+    "recentTasks": {
+      "title": "Tareas Recientes",
+      "viewAll": "Ver todas",
+      "headers": {
+        "task": "TAREA",
+        "project": "PROYECTO (ID)",
+        "status": "ESTADO",
+        "priority": "PRIORIDAD",
+        "due": "VENCIMIENTO"
+      }
+    },
+    "saas": {
+      "title": "MIS SAAS"
+    },
+    "logs": {
+      "title": "LOGS EN TIEMPO REAL"
+    }
+  },
+  "common": {
+    "save": "Guardar",
+    "saving": "Guardando...",
+    "cancel": "Cancelar",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "add": "Agregar",
+    "actions": "Acciones",
+    "noResults": "No se encontraron resultados",
+    "select": "- Seleccionar -",
+    "loading": "Cargando...",
+    "requiredField": "{field} es obligatorio",
+    "validationError": "Completa los campos obligatorios antes de guardar",
+    "createRecord": "Nuevo Registro",
+    "editRecord": "Editar Registro",
+    "today": "Hoy",
+    "month": "Mes",
+    "week": "Semana",
+    "day": "Día",
+    "noEvents": "No hay eventos",
+    "moreEvents": "+{count} más"
+  },
+  "clients": {
+    "title": "Clientes",
+    "searchPlaceholder": "BUSCAR CLIENTE...",
+    "allStatus": "TODOS LOS ESTADOS",
+    "active": "ACTIVOS",
+    "archived": "ARCHIVADOS",
+    "newClient": "NUEVO CLIENTE",
+    "noClients": "No se encontraron clientes registrados.",
+    "editProfile": "Editar Perfil",
+    "close": "Cerrar",
+    "deleteConfirm": "¿Estás seguro de eliminar a {name}?",
+    "fields": {
+      "name": "Nombre",
+      "email": "Email",
+      "phone": "Teléfono",
+      "address": "Dirección",
+      "notes": "Notas",
+      "status": "Estado"
+    }
+  },
+  "projects": {
+    "title": "Proyectos",
+    "searchPlaceholder": "BUSCAR PROYECTO...",
+    "newProject": "NUEVO PROYECTO",
+    "noProjects": "No se encontraron proyectos",
+    "deleteConfirm": "¿Estás seguro de que deseas eliminar este proyecto?",
+    "viewDetail": "Ver detalle",
+    "share": "Compartir seguimiento con cliente",
+    "linkCopied": "¡Enlace copiado al portapapeles!",
+    "linkGenerated": "¡Enlace generado y copiado!",
+    "detail": {
+      "back": "Proyectos",
+      "publicLink": "ENLACE PÚBLICO",
+      "linkActive": "ACTIVO",
+      "copyLink": "Copiar enlace",
+      "revokeLink": "Revocar enlace",
+      "generateLink": "GENERAR ENLACE",
+      "revokeConfirm": "¿Revocar el enlace público de este proyecto?",
+      "linkCopied": "¡Enlace copiado!",
+      "taskTotal": "TOTAL TAREAS",
+      "taskDone": "COMPLETADAS",
+      "taskInProgress": "EN PROGRESO",
+      "taskOverdue": "VENCIDAS",
+      "invoicePaid": "FACTURADO COBRADO",
+      "invoicePending": "FACTURADO PENDIENTE",
+      "pendingTasks": "TAREAS PENDIENTES",
+      "recentTasks": "TAREAS RECIENTES",
+      "noTasks": "Sin tareas",
+      "invoices": "FACTURAS",
+      "noInvoices": "Sin facturas",
+      "documents": "DOCUMENTOS",
+      "noDocuments": "Sin documentos"
+    },
+    "fields": {
+      "name": "Nombre",
+      "client": "Cliente",
+      "clientPlaceholder": "Selecciona un cliente",
+      "clientSearch": "Buscar cliente por nombre o email...",
+      "description": "Descripción",
+      "start": "Inicio",
+      "end": "Fin",
+      "budget": "Presupuesto",
+      "currency": "Moneda",
+      "status": "Estado"
+    },
+    "status": {
+      "all": "TODOS LOS ESTADOS",
+      "active": "ACTIVOS",
+      "completed": "COMPLETADOS",
+      "onHold": "EN PAUSA",
+      "archived": "ARCHIVADOS"
+    }
+  },
+  "tasks": {
+    "title": "Tareas",
+    "projectSelector": "— Seleccionar proyecto —",
+    "newColumn": "NUEVA COLUMNA",
+    "addColumn": "Agregar tarea",
+    "createColumn": "CREAR COLUMNA",
+    "newColumnAction": "Nueva columna",
+    "emptyBoard": "Sin columnas",
+    "emptyBoardDesc": "Creá la primera columna para este tablero",
+    "selectProject": "Seleccioná un proyecto",
+    "selectProjectDesc": "Cada proyecto tiene su propio tablero con columnas y tarjetas",
+    "loadingBoard": "Cargando tablero...",
+    "editColumn": "Editar columna",
+    "deleteColumn": "Eliminar columna",
+    "deleteColumnConfirm": "¿Eliminar \"{name}\"? Las {count} tarea(s) quedarán sin columna.",
+    "deleteColumnConfirmEmpty": "¿Eliminar la columna \"{name}\"?",
+    "newTask": "Nueva tarea",
+    "editTask": "Editar tarea",
+    "deleteTaskConfirm": "¿Eliminar \"{name}\"?",
+    "fields": {
+      "title": "Título",
+      "titlePlaceholder": "Ej: Diseñar pantalla de login",
+      "description": "Descripción",
+      "descriptionPlaceholder": "Descripción opcional...",
+      "priority": "Prioridad",
+      "due": "Vencimiento",
+      "assignee": "Asignado a (ID)",
+      "columnName": "Nombre",
+      "columnNamePlaceholder": "Ej: En Revisión",
+      "color": "Color"
+    },
+    "priorities": {
+      "low": "Baja",
+      "medium": "Media",
+      "high": "Alta",
+      "urgent": "Urgente"
+    },
+    "toasts": {
+      "created": "Tarea creada",
+      "updated": "Tarea actualizada",
+      "deleted": "Tarea eliminada",
+      "error": "Error al guardar tarea",
+      "deleteError": "Error al eliminar la tarea"
+    }
+  },
+  "finance": {
+    "title": "Finanzas",
+    "searchPlaceholder": "BUSCAR FACTURA...",
+    "newInvoice": "NUEVA FACTURA",
+    "noInvoices": "No se encontraron facturas.",
+    "deleteConfirm": "¿Estás seguro de eliminar esta factura?",
+    "fields": {
+      "number": "Número de Factura",
+      "client": "Cliente",
+      "issueDate": "Fecha de Emisión",
+      "dueDate": "Vencimiento",
+      "project": "Proyecto",
+      "projectPlaceholder": "Buscar proyecto del cliente...",
+      "taxRate": "Tasa de impuesto (%)",
+      "currency": "Moneda",
+      "notes": "Notas",
+      "status": "Estado",
+      "total": "TOTAL",
+      "type": "Tipo",
+      "emision": "EMISIÓN"
+    },
+    "balance": "Balance",
+    "type": {
+      "all": "TODOS",
+      "income": "INGRESO",
+      "expense": "EGRESO"
+    },
+    "status": {
+      "all": "TODOS LOS ESTADOS",
+      "draft": "BORRADOR",
+      "pending": "PENDIENTE",
+      "sent": "ENVIADA",
+      "paid": "PAGADA",
+      "collected": "COBRADA",
+      "overdue": "VENCIDA",
+      "cancelled": "CANCELADA"
+    },
+    "dependsOnClient": "Selecciona primero un cliente"
+  },
+  "pipeline": {
+    "title": "Pipeline",
+    "searchPlaceholder": "BUSCAR...",
+    "new": "NUEVO",
+    "noRecords": "No se encontraron registros.",
+    "deleteConfirm": "¿Estás seguro de eliminar este registro?",
+    "fields": {
+      "title": "Título",
+      "client": "Cliente",
+      "value": "Valor",
+      "currency": "Moneda",
+      "stage": "Etapa",
+      "expectedClose": "Cierre estimado"
+    },
+    "stages": {
+      "lead": "Lead",
+      "contacted": "Contactado",
+      "proposal": "Propuesta",
+      "won": "Ganado",
+      "lost": "Perdido"
+    }
+  },
+  "products": {
+    "title": "Productos",
+    "searchPlaceholder": "BUSCAR...",
+    "new": "NUEVO",
+    "noRecords": "No se encontraron registros.",
+    "deleteConfirm": "¿Estás seguro de eliminar este registro?",
+    "fields": {
+      "name": "Nombre",
+      "description": "Descripción",
+      "price": "Precio",
+      "currency": "Moneda",
+      "type": "Tipo",
+      "status": "Estado"
+    },
+    "types": {
+      "service": "Servicio",
+      "digital": "Digital",
+      "physical": "Físico"
+    }
+  },
+  "settings": {
+    "title": "Configuración",
+    "profile": "PERFIL",
+    "security": "SEGURIDAD",
+    "myData": "MIS DATOS",
+    "dangerZone": "ZONA DE PELIGRO",
+    "saveChanges": "GUARDAR CAMBIOS",
+    "fields": {
+      "name": "Nombre",
+      "email": "Email (no editable)",
+      "phone": "Teléfono"
+    },
+    "changePassword": {
+      "title": "CAMBIAR CONTRASEÑA",
+      "current": "Contraseña actual",
+      "new": "Nueva contraseña (mín. 8 caracteres)",
+      "totp": "Código 2FA (requerido)",
+      "totpHint": "Tenés el 2FA activo. Ingresá el código de tu app de autenticación para confirmar el cambio.",
+      "btn": "Cambiar contraseña",
+      "success": "Contraseña cambiada correctamente."
+    },
+    "twoFactor": {
+      "label": "Autenticación de dos factores (2FA)",
+      "description": "Añadí una capa extra de seguridad con una app como Google Authenticator.",
+      "active": "ACTIVO",
+      "inactive": "INACTIVO",
+      "setup": "Configurar",
+      "disable": "Deshabilitar",
+      "setupTitle": "CONFIGURAR 2FA",
+      "step1": "1. Escaneá este código con Google Authenticator, Authy o similar.",
+      "step2": "2. Ingresá el código de 6 dígitos que muestra la app.",
+      "codeLabel": "Código de verificación",
+      "verifyBtn": "Verificar y habilitar",
+      "disableConfirm": "¿Estás seguro de que querés deshabilitar la autenticación de dos factores?"
+    },
+    "export": {
+      "label": "Exportar mis datos",
+      "description": "Descargá una copia de todos tus datos en formato JSON.",
+      "btn": "Exportar datos"
+    },
+    "deleteAccount": {
+      "label": "Eliminar cuenta",
+      "description": "Esta acción es permanente e irreversible. Se eliminarán todos tus datos.",
+      "btn": "Eliminar cuenta",
+      "drawerTitle": "ELIMINAR CUENTA",
+      "warning": "Esta acción eliminará permanentemente tu cuenta y todos tus datos. Esta operación no puede deshacerse.",
+      "confirmLabel": "Escribí ELIMINAR para confirmar",
+      "confirmPlaceholder": "ELIMINAR",
+      "confirmWord": "ELIMINAR",
+      "confirmBtn": "Confirmar eliminación"
+    }
+  },
+  "agenda": {
+    "title": "Agenda",
+    "searchPlaceholder": "BUSCAR...",
+    "new": "NUEVO EVENTO",
+    "noRecords": "No se encontraron eventos.",
+    "deleteConfirm": "¿Estás seguro de eliminar este evento?",
+    "fields": {
+      "title": "Título",
+      "start": "Inicio",
+      "end": "Fin",
+      "description": "Descripción",
+      "type": "Tipo",
+      "color": "Color",
+      "links": "Vínculos"
+    },
+    "types": {
+      "meeting": "Reunión",
+      "reminder": "Recordatorio",
+      "task": "Tarea",
+      "appointment": "Cita/Turno",
+      "shift": "Turno de Trabajo"
+    },
+    "link": {
+      "add": "Vincular Item",
+      "entityType": "Tipo",
+      "entityId": "ID / Item",
+      "placeholder": "Seleccionar para vincular...",
+      "task": "Tarea",
+      "project": "Proyecto",
+      "client": "Cliente"
+    }
+  },
+  "infrastructure": {
+    "title": "Infraestructura",
+    "searchPlaceholder": "BUSCAR...",
+    "new": "NUEVO",
+    "noRecords": "No se encontraron registros.",
+    "deleteConfirm": "¿Estás seguro de eliminar este registro?",
+    "fields": {
+      "name": "Nombre",
+      "provider": "Proveedor",
+      "type": "Tipo",
+      "status": "Estado",
+      "cost": "Costo",
+      "currency": "Moneda"
+    }
+  },
+  "docs": {
+    "title": "Documentación",
+    "searchPlaceholder": "BUSCAR...",
+    "new": "NUEVA",
+    "noRecords": "No se encontraron registros.",
+    "deleteConfirm": "¿Estás seguro de eliminar este registro?",
+    "fields": {
+      "title": "Título",
+      "category": "Categoría",
+      "content": "Contenido",
+      "tags": "Etiquetas"
+    }
+  },
+  "subscriptions": {
+    "title": "Suscripciones",
+    "searchPlaceholder": "BUSCAR...",
+    "new": "NUEVA",
+    "noRecords": "No se encontraron registros.",
+    "deleteConfirm": "¿Estás seguro de eliminar este registro?",
+    "fields": {
+      "name": "Nombre",
+      "price": "Precio",
+      "interval": "Intervalo",
+      "status": "Estado"
+    }
+  },
+  "timeTracking": {
+    "title": "Seguimiento",
+    "searchPlaceholder": "BUSCAR...",
+    "new": "NUEVO",
+    "noRecords": "No se encontraron registros.",
+    "deleteConfirm": "¿Estás seguro de eliminar este registro?",
+    "fields": {
+      "description": "Descripción",
+      "duration": "Duración",
+      "project": "Proyecto",
+      "date": "Fecha"
+    }
+  },
+  "onboarding": {
+    "skip": "Saltar",
+    "next": "Siguiente",
+    "back": "Anterior",
+    "start": "Comenzar"
+  },
+  "githubAuth": {
+    "connecting": "Conectando con GitHub...",
+    "loggingIn": "Iniciando sesión con GitHub...",
+    "registering": "Creando tu cuenta con GitHub...",
+    "success": "¡Bienvenido! Redirigiendo al dashboard...",
+    "error": "Error al autenticar con GitHub"
+  },
+  "privacy": {
+    "back": "Volver a Orkpad",
+    "title": "Política de Privacidad",
+    "lastUpdated": "Última actualización: 27 de mayo de 2025",
+    "intro": "Esta Política de Privacidad explica cómo Orkpad (\"nosotros\"), operado por la comunidad de Orkpad, recopila, utiliza y protege tu información personal cuando usás nuestra plataforma en orkpad.com. Al usar Orkpad, aceptás las prácticas descritas en esta política.",
+    "toc": "CONTENIDO",
+    "tocItems": {
+      "dataWeCollect": "Datos que recopilamos",
+      "howWeUse": "Cómo usamos tus datos",
+      "thirdParties": "Servicios de terceros",
+      "cookies": "Cookies y almacenamiento local",
+      "pushNotifications": "Notificaciones push",
+      "security": "Seguridad de los datos",
+      "yourRights": "Tus derechos",
+      "retention": "Retención de datos",
+      "children": "Privacidad de menores",
+      "changes": "Cambios en esta política",
+      "contact": "Contacto"
+    },
+    "s1": {
+      "title": "1. Datos que recopilamos",
+      "intro": "Recopilamos las siguientes categorías de información:",
+      "accountTitle": "Información de cuenta",
+      "accountText": "Al registrarte, recopilamos tu nombre, dirección de correo electrónico y una contraseña cifrada de forma segura (nunca almacenamos tu contraseña en texto plano). Si iniciás sesión con Google o GitHub, recibimos tu información de perfil público (nombre, correo y avatar) de esos proveedores.",
+      "workspaceTitle": "Datos del workspace y del negocio",
+      "workspaceText": "Todo el contenido que creás en Orkpad — clientes, proyectos, tareas, facturas, presupuestos, registros de tiempo, notas, documentos y cualquier otro registro — se almacena y asocia a tu workspace. Esos datos te pertenecen.",
+      "usageTitle": "Datos de uso y técnicos",
+      "usageText": "Podemos recopilar información técnica como direcciones IP, tipo de navegador, información del dispositivo y patrones generales de uso (vistas de página, interacciones con funciones) para operar, mejorar y proteger el servicio.",
+      "integrationsTitle": "Datos de integraciones",
+      "integrationsText": "Si conectás Orkpad con Google (Calendario, Gmail) o GitHub, recibimos y almacenamos tokens de acceso OAuth y los datos que autorizás expresamente a esas integraciones (por ejemplo, eventos del calendario, información de repositorios). Podés revocar estas integraciones en cualquier momento desde tu configuración."
+    },
+    "s2": {
+      "title": "2. Cómo usamos tus datos",
+      "service": "Prestación del servicio:",
+      "serviceText": "Para operar tu workspace, mostrar tus datos y habilitar todas las funciones de Orkpad.",
+      "auth": "Autenticación y seguridad:",
+      "authText": "Para verificar tu identidad, proteger tu cuenta y detectar actividad fraudulenta.",
+      "emails": "Correos transaccionales:",
+      "emailsText": "Para enviarte correos de verificación, enlaces de restablecimiento de contraseña y notificaciones importantes del sistema (por ejemplo, recordatorios de tareas y alertas de seguimiento).",
+      "sync": "Sincronización de integraciones:",
+      "syncText": "Para sincronizar datos con Google Calendar, Gmail y GitHub según lo que autorizaste.",
+      "improvement": "Mejora del servicio:",
+      "improvementText": "Para entender cómo los usuarios interactúan con la plataforma y solucionar problemas.",
+      "noSell": "No vendemos tus datos personales a terceros. No usamos tus datos con fines publicitarios."
+    },
+    "s3": {
+      "title": "3. Servicios de terceros",
+      "intro": "Orkpad depende de los siguientes proveedores externos para funcionar. Cada proveedor procesa los datos según sus propias políticas de privacidad:",
+      "googleDesc": "Usado para autenticación OAuth (iniciar sesión con Google), sincronización con Google Calendar e integración con Gmail. Al conectar tu cuenta de Google, Google comparte tu información de perfil y, si lo autorizás, permisos de calendario y envío de correos.",
+      "googleLink": "Política de Privacidad de Google",
+      "githubDesc": "Usado para autenticación OAuth (iniciar sesión con GitHub) e integraciones de repositorios (listado de repos, visualización de commits y pull requests en proyectos de Orkpad). Solo accedemos a los repositorios que autorizás.",
+      "githubLink": "Declaración de Privacidad de GitHub",
+      "railwayDesc": "La infraestructura backend de Orkpad está alojada en Railway. Tus datos se almacenan en los servidores de Railway. Railway puede recopilar logs y métricas a nivel de infraestructura.",
+      "railwayLink": "Política de Privacidad de Railway",
+      "resendDesc": "Usamos Resend para enviar correos transaccionales (verificación de cuenta, restablecimiento de contraseña, notificaciones). Resend procesa tu dirección de correo y el contenido de esos mensajes.",
+      "resendLink": "Política de Privacidad de Resend",
+      "mongoDesc": "Todos los datos del workspace de Orkpad se almacenan en MongoDB Atlas, un servicio de base de datos en la nube. Los datos están cifrados en reposo y en tránsito.",
+      "mongoLink": "Política de Privacidad de MongoDB"
+    },
+    "s4": {
+      "title": "4. Cookies y almacenamiento local",
+      "intro": "Orkpad usa el almacenamiento del navegador para los siguientes fines:",
+      "session": "Gestión de sesión:",
+      "sessionText": "Almacenamos JSON Web Tokens (JWT) en el almacenamiento local para mantenerte autenticado entre sesiones. Estos tokens expiran automáticamente (los tokens de acceso en un período corto; los tokens de refresco a los 7 días).",
+      "prefs": "Preferencias de interfaz:",
+      "prefsText": "Guardamos tu tema elegido (oscuro/claro) y tu idioma (español/inglés) localmente para que tus preferencias persistan entre visitas.",
+      "noTracking": "Sin cookies de seguimiento:",
+      "noTrackingText": "No usamos cookies publicitarias, cookies de rastreo entre sitios ni cookies de analítica de terceros.",
+      "clear": "Podés limpiar el almacenamiento local de tu navegador en cualquier momento para eliminar todos los datos de sesión. Esto cerrará tu sesión en Orkpad."
+    },
+    "s5": {
+      "title": "5. Notificaciones push",
+      "p1": "Orkpad ofrece notificaciones push opcionales en el navegador para recordatorios de tareas y alertas importantes. Esta función usa el protocolo Web Push (estándar VAPID) y requiere tu opt-in explícito a través del diálogo de permisos del navegador.",
+      "p2": "Si habilitás las notificaciones push, tu navegador genera un endpoint de suscripción que se almacena en nuestros servidores para enviarte notificaciones. Podés revocar este permiso en cualquier momento desde la configuración de tu navegador o desde tus preferencias de notificaciones en Orkpad, y eliminaremos tu suscripción de nuestros servidores.",
+      "p3": "No se comparte información de identificación personal con los proveedores de navegadores a través de las notificaciones push más allá de lo que el propio navegador ya maneja para operar esta función."
+    },
+    "s6": {
+      "title": "6. Seguridad de los datos",
+      "intro": "Implementamos las siguientes medidas de seguridad para proteger tus datos:",
+      "isolation": "Aislamiento por workspace:",
+      "isolationText": "Orkpad es una plataforma multi-tenant. Cada consulta a la base de datos está estrictamente acotada a tu workspace — tus datos nunca son accesibles desde otros workspaces.",
+      "transit": "Tránsito cifrado:",
+      "transitText": "Toda la comunicación entre tu navegador y los servidores de Orkpad usa cifrado HTTPS/TLS.",
+      "hashing": "Hash de contraseñas:",
+      "hashingText": "Las contraseñas se hashean con bcrypt antes de almacenarse. Nunca guardamos ni registramos contraseñas en texto plano.",
+      "tokens": "Seguridad de tokens:",
+      "tokensText": "La autenticación usa tokens JWT de acceso de corta duración combinados con tokens de refresco de mayor duración, reduciendo el riesgo de robo de tokens.",
+      "dbEncryption": "Cifrado de base de datos:",
+      "dbEncryptionText": "Los datos están cifrados en reposo en MongoDB Atlas.",
+      "disclaimer": "A pesar de estas medidas, ningún sistema es completamente inmune a incidentes de seguridad. En caso de una brecha de datos que afecte tu información personal, te notificaremos según lo exija la legislación aplicable."
+    },
+    "s7": {
+      "title": "7. Tus derechos",
+      "intro": "Según tu jurisdicción, podés tener los siguientes derechos sobre tus datos personales:",
+      "access": "Acceso:",
+      "accessText": "Solicitá una copia de los datos personales que tenemos sobre vos.",
+      "correction": "Corrección:",
+      "correctionText": "Solicitá la corrección de datos inexactos o incompletos.",
+      "deletion": "Eliminación:",
+      "deletionText": "Solicitá la eliminación de tu cuenta y los datos personales asociados. Los datos del negocio en tu workspace (clientes, proyectos, facturas, etc.) también serán eliminados al borrar la cuenta.",
+      "export": "Exportación:",
+      "exportText": "Solicitá una exportación de tus datos en un formato portable.",
+      "objection": "Oposición:",
+      "objectionText": "Oponete a ciertos tipos de procesamiento.",
+      "revoke": "Revocar integraciones:",
+      "revokeText": "Desconectá las integraciones con Google o GitHub en cualquier momento desde la configuración de tu cuenta, revocando nuestro acceso a esos servicios.",
+      "contact": "Para ejercer cualquiera de estos derechos, contactanos en {email}. Responderemos dentro de los 30 días."
+    },
+    "s8": {
+      "title": "8. Retención de datos",
+      "p1": "Conservamos tus datos personales mientras tu cuenta esté activa o mientras sea necesario para prestarte el servicio. Si eliminás tu cuenta, borraremos o anonimizaremos tu información personal dentro de los 30 días, salvo que debamos conservarla por obligaciones legales, fiscales o regulatorias.",
+      "p2": "Los datos del negocio de tu workspace (como facturas y registros financieros) pueden conservarse hasta 7 años después de la eliminación de la cuenta exclusivamente para cumplir con las regulaciones contables e impositivas aplicables, tras lo cual serán eliminados de forma permanente."
+    },
+    "s9": {
+      "title": "9. Privacidad de menores",
+      "text": "Orkpad no está dirigido a menores de 13 años. No recopilamos conscientemente información personal de menores de 13 años. Si considerás que un menor de 13 años nos ha proporcionado datos personales, contactanos en {email} y eliminaremos esa información de inmediato."
+    },
+    "s10": {
+      "title": "10. Cambios en esta política",
+      "p1": "Podemos actualizar esta Política de Privacidad periódicamente para reflejar cambios en nuestras prácticas, tecnología o requisitos legales. Cuando realicemos cambios significativos, actualizaremos la fecha de \"Última actualización\" al inicio de esta página y, si los cambios son relevantes, te notificaremos por correo electrónico o mediante un aviso dentro de la plataforma Orkpad.",
+      "p2": "El uso continuado de Orkpad después de la fecha de vigencia de cualquier cambio implica la aceptación de la política revisada."
+    },
+    "s11": {
+      "title": "11. Contacto",
+      "text": "Si tenés preguntas, inquietudes o solicitudes relacionadas con esta Política de Privacidad o tus datos personales, contactanos:",
+      "company": "EMPRESA",
+      "product": "PRODUCTO",
+      "email": "EMAIL"
+    }
+  }
+}

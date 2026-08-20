@@ -1,0 +1,168 @@
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { ClientsService } from '../clients/clients.service';
+import { ProjectsService } from '../projects/projects.service';
+import { InvoicesService } from '../invoices/invoices.service';
+import { QuotesRepository } from './quotes.repository';
+import { QuotesPdfService } from './quotes-pdf.service';
+import { CreateQuoteDto } from './dto/create-quote.dto';
+import { UpdateQuoteDto } from './dto/update-quote.dto';
+import { QueryQuoteDto } from './dto/query-quote.dto';
+
+@Injectable()
+export class QuotesService {
+  constructor(
+    private readonly quotesRepository: QuotesRepository,
+    private readonly quotesPdfService: QuotesPdfService,
+    private readonly clientsService: ClientsService,
+    private readonly projectsService: ProjectsService,
+    private readonly invoicesService: InvoicesService,
+  ) {}
+
+  findAll(workspaceId: string, query: QueryQuoteDto) {
+    const { page, limit, search, status, clientId, projectId } = query;
+    const filters: Record<string, any> = {};
+    if (status) filters.status = status;
+    if (clientId) filters.clientId = clientId;
+    if (projectId) filters.projectId = projectId;
+    if (search) {
+      filters.$or = [
+        { title: { $regex: search, $options: 'i' } },
+        { number: { $regex: search, $options: 'i' } },
+        { clientName: { $regex: search, $options: 'i' } },
+      ];
+    }
+    return this.quotesRepository.findAll(workspaceId, filters, { page, limit });
+  }
+
+  async findOne(workspaceId: string, id: string) {
+    const quote = await this.quotesRepository.findOne(workspaceId, id);
+    if (!quote) throw new NotFoundException(`Quote ${id} not found`);
+    return quote;
+  }
+
+  async create(workspaceId: string, dto: CreateQuoteDto) {
+    await this.validateRelations(workspaceId, dto.clientId, dto.projectId);
+    const computed = this.computeTotals(dto);
+    return this.quotesRepository.create(workspaceId, { ...dto, ...computed });
+  }
+
+  async update(workspaceId: string, id: string, dto: UpdateQuoteDto) {
+    await this.validateRelations(workspaceId, dto.clientId, dto.projectId);
+    const current = await this.findOne(workspaceId, id);
+    const merged = { ...current.toObject(), ...dto };
+    const computed = this.computeTotals(merged);
+    const quote = await this.quotesRepository.update(workspaceId, id, {
+      ...dto,
+      ...computed,
+    });
+    if (!quote) throw new NotFoundException(`Quote ${id} not found`);
+    return quote;
+  }
+
+  async remove(workspaceId: string, id: string) {
+    const quote = await this.quotesRepository.softDelete(workspaceId, id);
+    if (!quote) throw new NotFoundException(`Quote ${id} not found`);
+    return quote;
+  }
+
+  async generatePdf(workspaceId: string, id: string): Promise<Buffer> {
+    const quote = await this.findOne(workspaceId, id);
+    return this.quotesPdfService.generate(quote);
+  }
+
+  async convertToInvoice(workspaceId: string, id: string) {
+    const quote = await this.findOne(workspaceId, id);
+    if (quote.status !== 'accepted') {
+      throw new BadRequestException(
+        'Solo las cotizaciones aceptadas pueden convertirse en factura',
+      );
+    }
+
+    const items = quote.sections?.length
+      ? quote.sections.flatMap((s) =>
+          (s.items || []).map((item) => ({
+            description: item.description,
+            quantity: item.quantity,
+            unitPrice: item.unitPrice,
+            amount: item.amount,
+          })),
+        )
+      : (quote.items || []).map((item) => ({
+          description: item.description,
+          quantity: item.quantity,
+          unitPrice: item.unitPrice,
+          amount: item.amount,
+        }));
+
+    return this.invoicesService.create(workspaceId, {
+      type: 'income',
+      status: 'draft',
+      clientId: quote.clientId,
+      projectId: quote.projectId,
+      currency: quote.currency,
+      taxRate: quote.taxRate,
+      notes: quote.notes,
+      issueDate: new Date().toISOString(),
+      items,
+    });
+  }
+
+  private async validateRelations(
+    workspaceId: string,
+    clientId?: string,
+    projectId?: string,
+  ) {
+    if (!clientId) return;
+
+    const client = await this.clientsService
+      .findOne(workspaceId, clientId)
+      .catch(() => null);
+    if (!client) {
+      throw new BadRequestException(
+        'clientId must reference an existing client in the workspace',
+      );
+    }
+
+    if (!projectId) return;
+
+    const project = await this.projectsService
+      .findOne(workspaceId, projectId)
+      .catch(() => null);
+    if (!project) {
+      throw new BadRequestException(
+        'projectId must reference an existing project in the workspace',
+      );
+    }
+  }
+
+  private computeTotals(dto: any): {
+    subtotal: number;
+    taxAmount: number;
+    discountAmount: number;
+    total: number;
+  } {
+    let subtotal = 0;
+
+    if (dto.sections?.length) {
+      subtotal = dto.sections
+        .flatMap((s: any) => s.items || [])
+        .reduce((sum: number, item: any) => sum + (item.amount ?? 0), 0);
+    } else if (dto.items?.length) {
+      subtotal = dto.items.reduce(
+        (sum: number, item: any) => sum + (item.amount ?? 0),
+        0,
+      );
+    }
+
+    const discountAmount = subtotal * ((dto.discountPercent ?? 0) / 100);
+    const taxableAmount = subtotal - discountAmount;
+    const taxAmount = Math.round(taxableAmount * ((dto.taxRate ?? 0) / 100));
+    const total = taxableAmount + taxAmount;
+
+    return { subtotal, taxAmount, discountAmount, total };
+  }
+}

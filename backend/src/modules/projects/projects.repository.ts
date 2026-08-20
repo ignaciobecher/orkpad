@@ -1,0 +1,21 @@
+import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { BaseRepository } from '../../common/base/base.repository';
+import { Project, ProjectDocument } from './projects.schema';
+
+@Injectable()
+export class ProjectsRepository extends BaseRepository<ProjectDocument> {
+  constructor(
+    @InjectModel(Project.name)
+    private readonly projectModel: Model<ProjectDocument>,
+  ) {
+    super(projectModel);
+  }
+
+  async findAllActive(workspaceId: string): Promise<ProjectDocument[]> {
+    return this.projectModel
+      .find({ workspaceId, isDeleted: false, status: 'active' })
+      .exec();
+  }
+}

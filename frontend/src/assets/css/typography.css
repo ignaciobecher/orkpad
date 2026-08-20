@@ -1,0 +1,104 @@
+
+/* Local Fonts: Inter */
+@font-face {
+  font-family: 'Inter';
+  src: url('../fonts/inter/Inter-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('../fonts/inter/Inter-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('../fonts/inter/Inter-SemiBold.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('../fonts/inter/Inter-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('../fonts/inter/Inter-ExtraBold.woff2') format('woff2');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Local Fonts: JetBrains Mono */
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: url('../fonts/jetbrains-mono/JetBrainsMono-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: url('../fonts/jetbrains-mono/JetBrainsMono-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: url('../fonts/jetbrains-mono/JetBrainsMono-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --font-body: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --text-h1: 600 20px/28px var(--font-body);
+  --text-body: 400 13px/20px var(--font-body);
+  --text-label-caps: 500 11px/16px var(--font-mono);
+  --text-data-mono: 400 12px/18px var(--font-mono);
+  --text-code-sm: 400 11px/16px var(--font-mono);
+
+  --letter-spacing-caps: 0.08em;
+}
+
+body {
+  font: var(--text-body);
+  background-color: var(--color-bg-base);
+  color: var(--color-text-base);
+  -webkit-font-smoothing: antialiased;
+  margin: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+.text-h1 { font: var(--text-h1); }
+.text-label-caps { 
+  font: var(--text-label-caps); 
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-caps);
+}
+.text-data-mono { font: var(--text-data-mono); }
+.text-code-sm { font: var(--text-code-sm); }
