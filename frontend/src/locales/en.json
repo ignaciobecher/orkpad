@@ -10,7 +10,7 @@
     "chaosFiles": ["clients.xlsx", "invoices_v3_FINAL.xlsx", "projects_2024.notion", "wa_tracking.png", "proposal_bob.gdoc"],
     "title": "The open-source app",
     "titleAccent": "for freelancers.",
-    "subtitle": "Orkpad replaces the broken Excel, the outdated Notion, and the WhatsApp reminders. Clients, projects, time, and billing — in one place, under your control.",
+    "subtitle": "CRM, projects, time tracking and invoicing. Everything together, everything yours. No subscriptions, no lock-in, no BS.",
     "ctaGitHub": "Star on GitHub",
     "ctaDocs": "Read the Docs",
     "ctaContribute": "Contribute",
@@ -22,7 +22,7 @@
     "stats": {
       "license": { "value": "Apache-2.0", "label": "License" },
       "community": { "value": "∞", "label": "Contributors welcome" },
-      "setup": { "value": "5 min", "label": "To run locally" }
+      "setup": { "value": "5 min", "label": "docker compose up" }
     },
     "mockup": {
       "revenue": "MONTHLY REVENUE",
@@ -39,133 +39,133 @@
     }
   },
   "workflow": {
-    "badge": "THE LIFECYCLE",
-    "title": "From lead to payment, under your control",
-    "description": "From the first contact to the final invoice — without jumping between tools or losing context.",
+    "badge": "THE CYCLE",
+    "title": "From lead to payment.",
+    "description": "Four steps. No app-switching, no lost context.",
     "steps": {
       "capture": {
         "title": "Capture",
-        "desc": "Add leads from any channel. The Pipeline converts them into concrete opportunities before they go cold."
+        "desc": "Add leads from any channel. The Pipeline turns them into real opportunities before they go cold."
       },
       "contract": {
         "title": "Plan",
-        "desc": "Set up the project, assign tasks, and define responsibles in less than two minutes. Chaos has an expiration date."
+        "desc": "Set up the project, add tasks, set deadlines. Everything visible on the Kanban board."
       },
       "execute": {
         "title": "Execute",
-        "desc": "Integrated time tracking to know exactly what's performing, what's delaying, and what you can bill with confidence."
+        "desc": "The timer tracks how much time you spend on each project. You know exactly what to bill."
       },
       "liquidate": {
         "title": "Close",
-        "desc": "The invoice is generated from the project data. The client receives their report. You close the month and open the next project."
+        "desc": "The invoice generates itself. The client gets their report. You close the month."
       }
     }
   },
   "modules": {
-    "badge": "CORE MODULES",
+    "badge": "WHAT'S INCLUDED",
     "title": "Everything you need. Nothing you don't.",
-    "description": "Activate only what you use. Each module does one thing and does it well. Built for freelancers and small agencies.",
+    "description": "Each module does one thing well. Together they cover your entire freelance workflow.",
     "hub": {
       "title": "Command Center",
       "badge": "TOTAL VIEW",
-      "desc": "Your whole business at a glance: urgent tasks, client health, and key KPIs. Without opening anything else."
+      "desc": "Urgent tasks, active clients and pending invoices at a glance."
     },
     "finance": {
       "title": "Finance without Excel",
-      "desc": "Income, expenses, debts, and cashflow in real-time. The broken Excel is over.",
+      "desc": "Revenue, expenses and debts in real-time. Generate invoices in seconds.",
       "revenue": "REVENUE",
       "expenses": "EXPENSES"
     },
     "sales": {
       "title": "Pipeline CRM",
-      "desc": "Follow every prospect from the first contact until they sign. Automatic, without post-its."
+      "desc": "Follow every prospect from first contact to signature."
     },
     "wiki": {
-      "title": "Docs & Wiki",
-      "desc": "Guides, access, and manuals in one place. Your clients and your team always on the same page."
+      "title": "Docs & knowledge base",
+      "desc": "Access, contracts, guides. Everything in one place."
     }
   },
   "security": {
     "badge": "YOUR DATA",
     "title": "Your data is yours.",
     "titleAccent": "On your server.",
-    "description": "Self-host Orkpad and keep full control over your information. No third-party analytics, no lock-in, no surprises.",
+    "description": "Self-host and keep full control. No third-party analytics, no lock-in, no surprises.",
     "list": {
       "isolation": {
         "title": "Workspace isolation:",
-        "desc": "Every database query validates your identity before returning a single record."
+        "desc": "Every DB query validates your identity before returning a single record."
       },
       "export": {
         "title": "Open formats:",
-        "desc": "Export everything in JSON or CSV whenever you want. No restrictions, no lock-in."
+        "desc": "Export everything as JSON or CSV whenever you want. No restrictions."
       },
       "backups": {
-        "title": "Self-hostable backups:",
-        "desc": "You decide where and how your backups are stored. Your history, your rules."
+        "title": "Backups under your control:",
+        "desc": "You decide where and how your backups are stored."
       }
     },
     "visual": {
       "isolation": "DATA OWNERSHIP",
-      "items": ["HTTPS / TLS in transit", "AES-256 at rest", "Self-hosted storage", "No third-party access"]
+      "items": ["HTTPS / TLS in transit", "AES-256 at rest", "Self-hosted storage", "Zero third-party access"]
     }
   },
   "advanced": {
     "title": "Built for real workflows.",
-    "description": "Features that keep your freelance business moving without piling up tools.",
+    "description": "Features that keep your business moving.",
     "features": {
-      "subscriptions": {
-        "title": "Automated reports",
-        "desc": "Your clients receive a summary every time you close tasks. Without you having to remember."
+      "alerts": {
+        "title": "Proactive alerts",
+        "desc": "Warns you before an invoice expires or a project gets complicated."
       },
       "catalog": {
         "title": "Client portal",
-        "desc": "They see their status, upload errors, and follow up — without sending you WhatsApps."
+        "desc": "Your clients see their project status without texting you."
       },
       "agenda": {
-        "title": "Smart agenda",
-        "desc": "Milestones, meetings, and deadlines in a single calendar. Unpleasant surprises, out."
+        "title": "Integrated agenda",
+        "desc": "Meetings, milestones and deadlines connected to your projects."
       },
       "api": {
         "title": "REST API",
-        "desc": "Connect Orkpad to your favorite tools and automate what you still do by hand."
+        "desc": "Connect Orkpad to your tools and automate what you still do by hand."
       },
       "cli": {
         "title": "Multi-currency",
-        "desc": "Bill in dollars, euros, or pesos. The exchange rate doesn't complicate your operation."
+        "desc": "Bill in dollars, euros or pesos. Exchange rates don't slow you down."
       },
-      "alerts": {
-        "title": "Proactive alerts",
-        "desc": "Orkpad warns you before an invoice expires or a project enters a risk zone."
+      "subscriptions": {
+        "title": "Automated reports",
+        "desc": "Your clients get a summary every time you close a stage."
       }
     }
   },
   "openSource": {
     "badge": "OPEN SOURCE",
     "title": "Built in the open.",
-    "description": "Orkpad is released under the Apache-2.0 license. You can read the code, self-host it, customize it, and contribute back.",
+    "description": "Apache-2.0. Read the code, self-host it, send a PR.",
     "items": {
       "transparent": {
         "title": "Transparent",
-        "desc": "All code is public. No black boxes, no hidden behavior."
+        "desc": "All code is public. No black boxes."
       },
       "selfHosted": {
         "title": "Self-hostable",
-        "desc": "Run it on your own server. Your data stays under your control."
+        "desc": "Run it on your server. Your data stays with you."
       },
       "community": {
         "title": "Community-driven",
-        "desc": "Features and direction are shaped by the people who use it."
+        "desc": "The project direction is shaped by the people who use it."
       },
       "extensible": {
         "title": "Extensible",
-        "desc": "REST API and modular architecture for custom integrations."
+        "desc": "REST API + modular architecture for custom integrations."
       }
     }
   },
   "getStarted": {
     "badge": "GET STARTED",
     "title": "Run Orkpad in minutes.",
-    "description": "Clone the repo, follow the docs, and start using your own freelance OS.",
+    "description": "One command. Your freelance stack running.",
     "steps": {
       "clone": {
         "title": "Clone the repo",
@@ -177,7 +177,7 @@
       },
       "contribute": {
         "title": "Contribute",
-        "desc": "Open an issue, start a discussion, or submit a pull request."
+        "desc": "Open an issue, start a discussion, or send a PR."
       }
     },
     "button": "View on GitHub"
@@ -185,7 +185,7 @@
   "community": {
     "badge": "COMMUNITY",
     "title": "Join the conversation.",
-    "description": "Ask questions, share ideas, and help shape the future of Orkpad.",
+    "description": "Ask, propose, help shape where Orkpad is headed.",
     "links": {
       "issues": "Open an issue",
       "discussions": "GitHub Discussions",
@@ -196,45 +196,45 @@
     "title": "Frequently asked questions",
     "questions": [
       {
-        "q": "Is Orkpad really free?",
-        "a": "Yes. Orkpad is 100% free and open source under the Apache-2.0 license."
+        "q": "Is it really free?",
+        "a": "Yes. Apache-2.0, no catch."
       },
       {
-        "q": "Can I self-host Orkpad?",
-        "a": "Yes. You can run it on your own infrastructure. Self-hosting is one of the main goals of the project."
+        "q": "Can I self-host?",
+        "a": "Yes. Docker compose up and you're running. Your data stays on your server."
       },
       {
-        "q": "How can I contribute?",
-        "a": "Open an issue, join a GitHub Discussion, or submit a pull request. All contributions are welcome."
+        "q": "How do I contribute?",
+        "a": "Open an issue, send a PR, or start a discussion on GitHub."
       },
       {
         "q": "Is my data safe?",
-        "a": "Yes. Each workspace is isolated. When you self-host, your data stays on your server."
+        "a": "Every workspace is isolated. When you self-host, everything stays with you."
       },
       {
         "q": "Is there a hosted version?",
-        "a": "Not at the moment. Orkpad is focused on self-hosting and the open-source community."
+        "a": "Not yet. The focus is self-hosting and community."
       }
     ]
   },
   "midCta": {
     "badge": "READY?",
-    "text": "Stop juggling spreadsheets and WhatsApp. Own your workflow.",
+    "text": "Stop juggling spreadsheets. Control everything from one place.",
     "button": "Star on GitHub"
   },
   "finalCta": {
     "badge": "BUILD WITH US",
     "title": "Less chaos, more real work.",
-    "subtitle": "Join the open-source project. Self-host Orkpad, customize it, and contribute to the future of freelance tooling.",
+    "subtitle": "Join the open-source project. Self-host it, customize it, send a PR.",
     "button": "Star on GitHub",
-    "footnote": "APACHE-2.0 LICENSE · SELF-HOSTABLE · COMMUNITY-DRIVEN"
+    "footnote": "APACHE-2.0 · SELF-HOSTABLE · COMMUNITY-DRIVEN"
   },
   "footer": {
     "tagline": "The open-source app for freelancers.",
     "product": "PRODUCT",
     "community": "COMMUNITY",
     "legal": "LEGAL",
-    "copyright": "© 2025 Orkpad",
+    "copyright": "© 2026 Orkpad",
     "links": {
       "features": "Modules",
       "docs": "Docs",
@@ -380,7 +380,7 @@
       }
     },
     "saas": {
-      "title": "MY SAAS"
+      "title": "MY TOOLS"
     },
     "logs": {
       "title": "REALTIME LOGS"

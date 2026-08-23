@@ -1069,63 +1069,10 @@
               </li>
             </ul>
           </section>
-
-          <!-- Plans -->
-          <section id="plans" class="article-section">
-            <h2>PLANES Y SUSCRIPCIONES AL SISTEMA</h2>
-            <p>ORKPAD SE ADAPTA A TU CRECIMIENTO. ELIGE EL PLAN QUE MEJOR TE REPRESENTE.</p>
-
-            <div class="pricing-table">
-              <div class="price-card">
-                <div class="price-header">
-                  <span class="plan-name">FREE</span>
-                  <span class="plan-price">$0</span>
-                </div>
-                <div class="price-body">
-                  <ul>
-                    <li>HASTA 5 CLIENTES</li>
-                    <li>3 PROYECTOS ACTIVOS</li>
-                    <li>1GB ALMACENAMIENTO</li>
-                    <li>SOPORTE BÁSICO</li>
-                  </ul>
-                </div>
-              </div>
-              <div class="price-card featured">
-                <div class="price-header">
-                  <span class="plan-name">PRO</span>
-                  <span class="plan-price">$29<span>/MES</span></span>
-                </div>
-                <div class="price-body">
-                  <ul>
-                    <li>CLIENTES ILIMITADOS</li>
-                    <li>PROYECTOS ILIMITADOS</li>
-                    <li>FINANZAS AVANZADAS</li>
-                    <li>100GB ALMACENAMIENTO</li>
-                    <li>SOPORTE PRIORITARIO</li>
-                  </ul>
-                </div>
-              </div>
-              <div class="price-card">
-                <div class="price-header">
-                  <span class="plan-name">ENTERPRISE</span>
-                  <span class="plan-price">CUSTOM</span>
-                </div>
-                <div class="price-body">
-                  <ul>
-                    <li>MULTI-WORKSPACE</li>
-                    <li>API ACCESO TOTAL</li>
-                    <li>ALMACENAMIENTO ILIMITADO</li>
-                    <li>ACCOUNT MANAGER</li>
-                    <li>SSO & SEGURIDAD</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </section>
         </article>
 
         <footer class="help-footer">
-          <p>© 2026 ORKPAD OPERATING SYSTEM. TODOS LOS DERECHOS RESERVADOS.</p>
+          <p>© 2026 ORKPAD · APACHE-2.0 · OPEN SOURCE</p>
         </footer>
       </main>
     </div>
@@ -1150,7 +1097,6 @@ export default defineComponent({
         items: [
           { id: 'intro', label: 'BIENVENIDO', icon: 'auto_awesome' },
           { id: 'dashboard', label: 'DASHBOARD', icon: 'dashboard' },
-          { id: 'plans', label: 'PLANES', icon: 'payments' },
         ],
       },
       {
