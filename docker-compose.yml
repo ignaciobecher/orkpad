@@ -19,6 +19,8 @@ services:
       MONGODB_URI: mongodb://mongo:27017/orkpad
       NODE_ENV: production
       FRONTEND_URL: ${FRONTEND_URL:-http://localhost:8080}
+      JWT_SECRET: ${JWT_SECRET:-change-me-access-token-secret}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-change-me-refresh-token-secret}
     ports:
       - "3000:3000"
     depends_on:

@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ScheduleModule } from '@nestjs/schedule';
+import * as Joi from 'joi';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './modules/auth/auth.module';
@@ -53,7 +54,46 @@ import { GrowthHubModule } from './modules/growth-hub/growth-hub.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      validationSchema: Joi.object({
+        PORT: Joi.number().default(3000),
+        NODE_ENV: Joi.string()
+          .valid('development', 'test', 'production')
+          .default('development'),
+        MONGODB_URI: Joi.string().required(),
+        FRONTEND_URL: Joi.string().uri().required(),
+        JWT_SECRET: Joi.string().min(16).required(),
+        JWT_REFRESH_SECRET: Joi.string().min(16).required(),
+        JWT_EXPIRES_IN: Joi.string().default('15m'),
+        JWT_REFRESH_EXPIRES_IN: Joi.string().default('7d'),
+        PROJECT_LINK_JWT_EXPIRES_IN: Joi.string().default('4h'),
+        GITHUB_CLIENT_ID: Joi.string().optional(),
+        GITHUB_CLIENT_SECRET: Joi.string().optional(),
+        GITHUB_CALLBACK_URL: Joi.string().optional(),
+        GITHUB_WEBHOOK_SECRET: Joi.string().optional(),
+        GOOGLE_CLIENT_ID: Joi.string().optional(),
+        GOOGLE_CLIENT_SECRET: Joi.string().optional(),
+        GOOGLE_CALLBACK_URL: Joi.string().optional(),
+        GOOGLE_PLACES_API_KEY: Joi.string().optional(),
+        RESEND_API_KEY: Joi.string().optional(),
+        FROM_EMAIL: Joi.string().email().default('no-reply@orkpad.com'),
+        API_URL: Joi.string().uri().default('http://localhost:3000'),
+        VAPID_PUBLIC_KEY: Joi.string().optional(),
+        VAPID_PRIVATE_KEY: Joi.string().optional(),
+        VAPID_SUBJECT: Joi.string().optional(),
+        ADMIN_USER_ID: Joi.string().optional(),
+        ADMIN_EMAIL: Joi.string().email().optional(),
+        ENCRYPTION_KEY: Joi.string().optional(),
+        OPENAI_API_KEY: Joi.string().optional(),
+        OPENAI_MODEL: Joi.string().optional(),
+        ADMIN_TOKEN: Joi.string().optional(),
+      }),
+      validationOptions: {
+        allowUnknown: true,
+        abortEarly: false,
+      },
+    }),
     ScheduleModule.forRoot(),
     MongooseModule.forRootAsync({
       useFactory: (configService: ConfigService) => ({

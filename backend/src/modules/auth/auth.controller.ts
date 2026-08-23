@@ -13,6 +13,7 @@ import {
   Res,
   Query,
   UnauthorizedException,
+  NotImplementedException,
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
@@ -43,6 +44,22 @@ export class AuthController {
     private readonly authService: AuthService,
     private readonly configService: ConfigService,
   ) {}
+
+  private requireGithub() {
+    if (!this.configService.get<string>('GITHUB_CLIENT_ID')) {
+      throw new NotImplementedException(
+        'GitHub OAuth is not configured. Set GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET, and GITHUB_CALLBACK_URL to enable it.',
+      );
+    }
+  }
+
+  private requireGoogle() {
+    if (!this.configService.get<string>('GOOGLE_CLIENT_ID')) {
+      throw new NotImplementedException(
+        'Google OAuth is not configured. Set GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, and GOOGLE_CALLBACK_URL to enable it.',
+      );
+    }
+  }
 
   @Post('register')
   @ApiOperation({
@@ -260,7 +277,9 @@ export class AuthController {
   @Get('github')
   @UseGuards(GithubAuthGuard)
   @ApiOperation({ summary: 'Initiate GitHub OAuth flow' })
-  githubLogin() {}
+  githubLogin() {
+    this.requireGithub();
+  }
 
   @Get('github/callback')
   @UseGuards(GithubAuthGuard)
@@ -268,6 +287,7 @@ export class AuthController {
     summary: 'GitHub OAuth callback — redirects with a one-time exchange code',
   })
   async githubCallback(@Req() req: any, @Res() res: Response) {
+    this.requireGithub();
     const frontendUrl =
       this.configService.get<string>('FRONTEND_URL') ?? 'http://localhost:5173';
     try {
@@ -303,7 +323,9 @@ export class AuthController {
   @Get('google')
   @UseGuards(GoogleAuthGuard)
   @ApiOperation({ summary: 'Initiate Google OAuth flow' })
-  googleLogin() {}
+  googleLogin() {
+    this.requireGoogle();
+  }
 
   @Get('google/callback')
   @UseGuards(GoogleAuthGuard)
@@ -311,6 +333,7 @@ export class AuthController {
     summary: 'Google OAuth callback — redirects with a one-time exchange code',
   })
   async googleCallback(@Req() req: any, @Res() res: Response) {
+    this.requireGoogle();
     const frontendUrl =
       this.configService.get<string>('FRONTEND_URL') ?? 'http://localhost:5173';
     try {
