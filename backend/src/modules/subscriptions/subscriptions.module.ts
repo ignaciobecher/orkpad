@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ClientsModule } from '../clients/clients.module';
-import { ProductsModule } from '../products/products.module';
 import { SubscriptionsController } from './subscriptions.controller';
 import { SubscriptionsService } from './subscriptions.service';
 import { SubscriptionsRepository } from './subscriptions.repository';
@@ -17,7 +16,6 @@ import { SubscriptionPaymentsController } from './subscription-payments.controll
 @Module({
   imports: [
     ClientsModule,
-    ProductsModule,
     MongooseModule.forFeature([
       { name: Subscription.name, schema: SubscriptionSchema },
       { name: SubscriptionPayment.name, schema: SubscriptionPaymentSchema },

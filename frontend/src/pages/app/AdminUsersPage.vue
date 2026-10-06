@@ -15,13 +15,9 @@
       <h1 class="page-title">Usuarios del Sistema</h1>
       <span class="user-count">{{ usersData.total }} usuarios</span>
       <div class="header-actions">
-        <button class="marketing-btn" @click="openAnnouncementModal">
+        <button class="header-btn" @click="openAnnouncementModal">
           <span class="material-symbols-outlined btn-icon">notifications_active</span>
           Nuevo Anuncio
-        </button>
-        <button class="marketing-btn" @click="openMarketingModal">
-          <span class="material-symbols-outlined btn-icon">campaign</span>
-          Email Marketing
         </button>
       </div>
     </header>
@@ -83,85 +79,6 @@
         </tbody>
       </table>
     </div>
-
-    <!-- Marketing Modal -->
-    <div v-if="marketingModal.open" class="modal-overlay" @click.self="closeMarketingModal">
-      <div class="modal">
-        <div class="modal-header">
-          <div>
-            <p class="modal-label">CAMPAÑAS</p>
-            <h2 class="modal-title">Email Marketing</h2>
-          </div>
-          <button class="modal-close" @click="closeMarketingModal">
-            <span class="material-symbols-outlined">close</span>
-          </button>
-        </div>
-
-        <div class="modal-body">
-          <!-- Template selector -->
-          <div class="section">
-            <p class="section-label">PLANTILLA</p>
-            <div class="template-list">
-              <button
-                v-for="tpl in marketingTemplates"
-                :key="tpl.id"
-                class="template-item"
-                :class="{ 'template-item--selected': marketingModal.selectedTemplate === tpl.id }"
-                @click="selectTemplate(tpl.id)"
-              >
-                <div class="template-item-header">
-                  <span class="template-name">{{ tpl.name }}</span>
-                  <span v-if="marketingModal.selectedTemplate === tpl.id" class="material-symbols-outlined template-check">check_circle</span>
-                </div>
-                <p class="template-desc">{{ tpl.description }}</p>
-                <p class="template-subject">Asunto: {{ tpl.subject }}</p>
-              </button>
-            </div>
-          </div>
-
-          <!-- Preview -->
-          <div v-if="selectedTemplateData" class="section">
-            <p class="section-label">PREVISUALIZACIÓN</p>
-            <div class="preview-box">
-              <div class="preview-meta">
-                <span class="preview-meta-row"><span class="preview-meta-key">Para:</span> Todos los usuarios ({{ usersData.total }})</span>
-                <span class="preview-meta-row"><span class="preview-meta-key">Asunto:</span> {{ selectedTemplateData.subject }}</span>
-              </div>
-              <div class="preview-content">
-                <div class="preview-label-tag">{{ selectedTemplateData.previewTag }}</div>
-                <p class="preview-headline">{{ selectedTemplateData.previewHeadline }}</p>
-                <p class="preview-body">{{ selectedTemplateData.previewBody }}</p>
-                <div class="preview-bullets">
-                  <p v-for="bullet in selectedTemplateData.previewBullets" :key="bullet" class="preview-bullet">
-                    <span class="bullet-arrow">→</span> {{ bullet }}
-                  </p>
-                </div>
-                <div class="preview-cta">{{ selectedTemplateData.previewCta }}</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="modal-footer">
-          <div v-if="marketingModal.result" class="send-result">
-            <span class="material-symbols-outlined result-icon">check_circle</span>
-            {{ marketingModal.result.sent }} emails enviados de {{ marketingModal.result.total }} usuarios
-          </div>
-          <div v-else class="modal-actions">
-            <button class="cancel-btn" :disabled="marketingModal.sending" @click="closeMarketingModal">Cancelar</button>
-            <button
-              class="send-btn"
-              :disabled="!marketingModal.selectedTemplate || marketingModal.sending"
-              @click="sendMarketing"
-            >
-              <span v-if="marketingModal.sending" class="material-symbols-outlined spinning btn-icon">sync</span>
-              <span v-else class="material-symbols-outlined btn-icon">send</span>
-              {{ marketingModal.sending ? 'Enviando...' : `Enviar a todos (${usersData.total})` }}
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
     </div>
 
     <AnnouncementComposerModal
@@ -177,7 +94,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed, onMounted, watch } from 'vue'
+import { defineComponent, ref, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { usersApi } from '@/api/users/users.api'
 import { useAuthStore } from '@/stores/auth.store'
@@ -186,37 +103,6 @@ import { isAdminUser } from '@/utils/admin'
 import SupportAdminInbox from '@/components/support/SupportAdminInbox.vue'
 import AnnouncementComposerModal from '@/components/notifications/AnnouncementComposerModal.vue'
 import type { User, PaginatedResponse } from '@/api/users/users.types'
-
-interface MarketingTemplate {
-  id: string
-  name: string
-  description: string
-  subject: string
-  previewTag: string
-  previewHeadline: string
-  previewBody: string
-  previewBullets: string[]
-  previewCta: string
-}
-
-const marketingTemplates: MarketingTemplate[] = [
-  {
-    id: 'academia',
-    name: 'Nueva funcionalidad: Academia',
-    description: 'Anuncia el lanzamiento de la sección Academia con recursos para freelancers.',
-    subject: 'Conocé la Academia de Orkpad — recursos para freelancers',
-    previewTag: 'NUEVA FUNCIONALIDAD',
-    previewHeadline: 'Hola [nombre], te presentamos la Academia',
-    previewBody: 'Acabamos de lanzar la Academia de Orkpad: una biblioteca de recursos pensada especialmente para freelancers que quieren hacer crecer su negocio.',
-    previewBullets: [
-      'Cómo conseguir clientes y hacer crecer tu cartera',
-      'Contratos y propuestas que protegen tu trabajo',
-      'Cómo estructurar pagos recurrentes y retainers',
-      'Productividad y gestión de proyectos para independientes',
-    ],
-    previewCta: 'VER ACADEMIA →',
-  },
-]
 
 export default defineComponent({
   name: 'AdminUsersPage',
@@ -232,16 +118,6 @@ export default defineComponent({
     const sentIds = ref<Set<string>>(new Set())
     const announcementModalOpen = ref(false)
 
-    const marketingModal = ref({
-      open: false,
-      selectedTemplate: '' as string,
-      sending: false,
-      result: null as { sent: number; total: number; templateId: string } | null,
-    })
-
-    const selectedTemplateData = computed(() =>
-      marketingTemplates.find((t) => t.id === marketingModal.value.selectedTemplate) ?? null
-    )
 
     const isAdmin = () => isAdminUser(authStore.user?._id)
 
@@ -330,32 +206,6 @@ export default defineComponent({
       announcementModalOpen.value = false
     }
 
-    const openMarketingModal = () => {
-      marketingModal.value = { open: true, selectedTemplate: 'academia', sending: false, result: null }
-    }
-
-    const closeMarketingModal = () => {
-      marketingModal.value.open = false
-    }
-
-    const selectTemplate = (id: string) => {
-      marketingModal.value.selectedTemplate = id
-      marketingModal.value.result = null
-    }
-
-    const sendMarketing = async () => {
-      if (!marketingModal.value.selectedTemplate) return
-      marketingModal.value.sending = true
-      try {
-        const { data } = await usersApi.sendMarketing(marketingModal.value.selectedTemplate)
-        marketingModal.value.result = data
-      } catch (err) {
-        console.error('Error sending marketing email:', err)
-      } finally {
-        marketingModal.value.sending = false
-      }
-    }
-
     return {
       loading,
       usersData,
@@ -369,13 +219,6 @@ export default defineComponent({
       authStore,
       supportStore,
       activeTab,
-      marketingModal,
-      marketingTemplates,
-      selectedTemplateData,
-      openMarketingModal,
-      closeMarketingModal,
-      selectTemplate,
-      sendMarketing,
       announcementModalOpen,
       openAnnouncementModal,
       closeAnnouncementModal,
@@ -458,7 +301,7 @@ export default defineComponent({
   gap: 10px;
 }
 
-.marketing-btn {
+.header-btn {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -475,7 +318,7 @@ export default defineComponent({
   transition: background 0.15s, color 0.15s;
 }
 
-.marketing-btn:hover {
+.header-btn:hover {
   background: var(--color-primary);
   color: #fff;
 }

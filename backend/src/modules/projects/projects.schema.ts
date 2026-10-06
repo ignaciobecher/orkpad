@@ -58,12 +58,6 @@ export class Project extends BaseSchema {
   }[];
 
   @Prop({ default: false })
-  featuredInPortfolio: boolean;
-
-  @Prop()
-  coverImageUrl?: string;
-
-  @Prop({ default: false })
   isDemo: boolean;
 }
 
@@ -74,5 +68,4 @@ ProjectSchema.index({ workspaceId: 1, clientId: 1 });
 ProjectSchema.index({ workspaceId: 1, createdAt: -1 });
 ProjectSchema.index({ publicToken: 1 }, { sparse: true });
 ProjectSchema.index({ workspaceId: 1, linkVisibility: 1 });
-ProjectSchema.index({ workspaceId: 1, featuredInPortfolio: 1 });
 ProjectSchema.index({ workspaceId: 1, isDemo: 1 });

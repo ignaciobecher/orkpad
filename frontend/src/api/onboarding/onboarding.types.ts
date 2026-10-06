@@ -3,6 +3,8 @@ export interface OnboardingSteps {
   addedFirstProject: boolean
   addedThreeTasks: boolean
   loggedFirstHours: boolean
+  createdFirstQuote: boolean
+  addedFirstRetainer: boolean
 }
 
 export interface OnboardingChecklistItem {
@@ -18,8 +20,9 @@ export interface OnboardingStatus {
   completed: boolean
   steps: OnboardingSteps
   completedCount: number
-  totalCount: 4
+  totalCount: number
   checklist: OnboardingChecklistItem[]
+  hasDemoData: boolean
 }
 
 export interface WelcomePillar {

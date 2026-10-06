@@ -51,6 +51,12 @@
         <div v-if="celebrating" class="celebration">
           <div class="celebration-text">¡Orkpad está listo para trabajar contigo! 🚀</div>
         </div>
+
+        <!-- Help link -->
+        <router-link to="/help" class="widget-help-link">
+          <span class="material-symbols-outlined">menu_book</span>
+          Ver guía de uso
+        </router-link>
       </div>
     </div>
   </teleport>
@@ -322,5 +328,26 @@ export default defineComponent({
   font-size: 13px;
   font-weight: 600;
   color: var(--color-success);
+}
+
+.widget-help-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.widget-help-link:hover {
+  color: var(--color-primary);
+}
+
+.widget-help-link .material-symbols-outlined {
+  font-size: 14px;
 }
 </style>

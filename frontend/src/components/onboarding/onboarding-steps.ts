@@ -9,6 +9,8 @@ export const ONBOARDING_STEP_ICONS: Record<keyof OnboardingSteps, string> = {
   addedFirstProject: 'assignment',
   addedThreeTasks: 'task_alt',
   loggedFirstHours: 'timer',
+  createdFirstQuote: 'request_quote',
+  addedFirstRetainer: 'rebase_edit',
 }
 
 export const ONBOARDING_STEP_LABELS: Record<keyof OnboardingSteps, string> = {
@@ -16,4 +18,6 @@ export const ONBOARDING_STEP_LABELS: Record<keyof OnboardingSteps, string> = {
   addedFirstProject: 'Primer proyecto creado',
   addedThreeTasks: '3 tareas agregadas',
   loggedFirstHours: 'Primeras horas registradas',
+  createdFirstQuote: 'Primer presupuesto creado',
+  addedFirstRetainer: 'Primera cuota registrada',
 }

@@ -13,11 +13,6 @@ export class QuerySubscriptionDto {
   @IsOptional()
   clientId?: string;
 
-  @ApiPropertyOptional()
-  @IsString()
-  @IsOptional()
-  productId?: string;
-
   @ApiPropertyOptional({ enum: ['active', 'past_due', 'canceled'] })
   @IsIn(['active', 'past_due', 'canceled'])
   @IsOptional()

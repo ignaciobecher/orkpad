@@ -182,8 +182,12 @@
         <w-kpi-card :title="$t('projects.detail.taskDone')" :value="overview.taskStats.done" />
         <w-kpi-card :title="$t('projects.detail.taskInProgress')" :value="overview.taskStats.inProgress" />
         <w-kpi-card :title="$t('projects.detail.taskOverdue')" :value="overview.taskStats.overdue" />
+        <w-kpi-card :title="$t('projects.detail.hoursLogged')" :value="formatHours(overview.timeStats.totalMinutes)" />
+        <w-kpi-card :title="$t('projects.detail.quoted')" :value="formatMoney(overview.quoteStats.quoted, overview.project.currency)" />
         <w-kpi-card :title="$t('projects.detail.invoicePaid')" :value="formatMoney(overview.invoiceStats.paid, overview.project.currency)" />
         <w-kpi-card :title="$t('projects.detail.invoicePending')" :value="formatMoney(overview.invoiceStats.pending, overview.project.currency)" />
+        <w-kpi-card :title="$t('projects.detail.invoiceOverdue')" :value="formatMoney(overview.invoiceStats.overdue, overview.project.currency)" />
+        <w-kpi-card :title="$t('projects.detail.activeRetainers')" :value="overview.subscriptionStats.active" />
       </section>
 
       <!-- GitHub Section -->
@@ -257,6 +261,10 @@
           <div class="section-header">
             <h2 class="section-title">{{ $t('projects.detail.pendingTasks') }}</h2>
             <span class="section-count">{{ overview.pendingTasks.length }}</span>
+            <router-link to="/app/tasks" class="section-link">
+              {{ $t('projects.detail.viewTasks') }}
+              <span class="material-symbols-outlined">arrow_forward</span>
+            </router-link>
           </div>
           <w-card class="no-padding">
             <w-table :headers="taskHeaders" :items="overview.pendingTasks" :empty-message="$t('projects.detail.noTasks')">
@@ -296,6 +304,10 @@
           <div class="section-header">
             <h2 class="section-title">{{ $t('projects.detail.invoices') }}</h2>
             <span class="section-count">{{ overview.invoices.length }}</span>
+            <router-link to="/app/finance" class="section-link">
+              {{ $t('projects.detail.viewInvoices') }}
+              <span class="material-symbols-outlined">arrow_forward</span>
+            </router-link>
           </div>
           <w-card class="no-padding">
             <w-table :headers="invoiceHeaders" :items="overview.invoices" :empty-message="$t('projects.detail.noInvoices')">
@@ -307,6 +319,51 @@
               </template>
               <template #item-dueDate="{ item }">
                 {{ item.dueDate ? formatDate(item.dueDate) : '—' }}
+              </template>
+            </w-table>
+          </w-card>
+        </section>
+
+        <section class="detail-section full-width">
+          <div class="section-header">
+            <h2 class="section-title">{{ $t('projects.detail.quotes') }}</h2>
+            <span class="section-count">{{ overview.quotes.length }}</span>
+            <router-link to="/app/quotes" class="section-link">
+              {{ $t('projects.detail.viewQuotes') }}
+              <span class="material-symbols-outlined">arrow_forward</span>
+            </router-link>
+          </div>
+          <w-card class="no-padding">
+            <w-table :headers="quoteHeaders" :items="overview.quotes" :empty-message="$t('projects.detail.noQuotes')">
+              <template #item-status="{ item }">
+                <w-badge :color="getQuoteStatusColor(item.status)">{{ item.status }}</w-badge>
+              </template>
+              <template #item-total="{ item }">
+                {{ formatMoney(item.total, item.currency) }}
+              </template>
+            </w-table>
+          </w-card>
+        </section>
+
+        <section class="detail-section full-width">
+          <div class="section-header">
+            <h2 class="section-title">{{ $t('projects.detail.retainers') }}</h2>
+            <span class="section-count">{{ overview.subscriptions.length }}</span>
+            <router-link to="/app/subscriptions" class="section-link">
+              {{ $t('projects.detail.viewSubscriptions') }}
+              <span class="material-symbols-outlined">arrow_forward</span>
+            </router-link>
+          </div>
+          <w-card class="no-padding">
+            <w-table :headers="subscriptionHeaders" :items="overview.subscriptions" :empty-message="$t('projects.detail.noSubscriptions')">
+              <template #item-status="{ item }">
+                <w-badge :color="getSubscriptionStatusColor(item.status)">{{ item.status }}</w-badge>
+              </template>
+              <template #item-price="{ item }">
+                {{ formatMoney(item.price, item.currency) }}
+              </template>
+              <template #item-nextBillingDate="{ item }">
+                {{ item.nextBillingDate ? formatDate(item.nextBillingDate) : '—' }}
               </template>
             </w-table>
           </w-card>
@@ -404,6 +461,22 @@ export default defineComponent({
         { key: 'tags', label: this.$t('docs.fields.tags').toUpperCase() },
       ]
     },
+    quoteHeaders() {
+      return [
+        { key: 'number', label: this.$t('finance.fields.number').toUpperCase() },
+        { key: 'title', label: this.$t('docs.fields.title').toUpperCase() },
+        { key: 'status', label: this.$t('projects.fields.status').toUpperCase() },
+        { key: 'total', label: this.$t('finance.fields.total') },
+      ]
+    },
+    subscriptionHeaders() {
+      return [
+        { key: 'planName', label: this.$t('subscriptions.fields.plan').toUpperCase() },
+        { key: 'status', label: this.$t('projects.fields.status').toUpperCase() },
+        { key: 'price', label: this.$t('subscriptions.fields.price').toUpperCase() },
+        { key: 'nextBillingDate', label: this.$t('subscriptions.fields.nextBilling').toUpperCase() },
+      ]
+    },
   },
   methods: {
     ...mapActions(useProjectsStore, [
@@ -423,6 +496,11 @@ export default defineComponent({
         currency: currency || 'USD',
         maximumFractionDigits: 0,
       }).format(amount)
+    },
+    formatHours(totalMinutes: number | undefined) {
+      if (totalMinutes === undefined || totalMinutes === null) return '—'
+      const hours = totalMinutes / 60
+      return `${hours % 1 === 0 ? hours : hours.toFixed(1)} h`
     },
     getStatusColor(status: string) {
       if (status === 'active') return 'var(--color-primary)'
@@ -445,6 +523,17 @@ export default defineComponent({
       if (status === 'paid' || status === 'collected') return 'var(--color-success)'
       if (status === 'overdue') return 'var(--color-error)'
       if (status === 'sent' || status === 'pending') return 'var(--color-warning)'
+      return 'var(--color-text-muted)'
+    },
+    getQuoteStatusColor(status: string) {
+      if (status === 'accepted') return 'var(--color-success)'
+      if (status === 'sent') return 'var(--color-primary)'
+      if (status === 'rejected' || status === 'expired') return 'var(--color-error)'
+      return 'var(--color-text-muted)'
+    },
+    getSubscriptionStatusColor(status: string) {
+      if (status === 'active') return 'var(--color-success)'
+      if (status === 'past_due') return 'var(--color-warning)'
       return 'var(--color-text-muted)'
     },
     isOverdue(dueDate?: string) {
@@ -712,6 +801,27 @@ export default defineComponent({
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.section-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-primary);
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.section-link:hover {
+  text-decoration: underline;
+}
+
+.section-link .material-symbols-outlined {
+  font-size: 14px;
 }
 
 .section-title {

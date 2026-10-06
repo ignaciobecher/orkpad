@@ -174,25 +174,11 @@ export default defineComponent({
           ],
         },
         {
-          label: this.$t('sidebar.sections.sales'),
-          items: [
-            { text: this.$t('sidebar.items.pipeline'), to: '/app/pipeline', icon: 'account_tree' },
-            /*      { text: 'Portfolio', to: '/app/portfolio', icon: 'person_pin' }, */
-          ],
-        },
-        {
-          label: this.$t('sidebar.sections.prospection'),
-          items: [
-            { text: this.$t('sidebar.items.leads'), to: '/app/leads', icon: 'contacts', exact: true },
-            { text: this.$t('sidebar.items.leadCampaigns'), to: '/app/leads/campaigns', icon: 'mark_email_read' },
-          ]
-        },
-        {
           label: this.$t('sidebar.sections.planning'),
           items: [
             { text: 'Planner', to: '/app/planner', icon: 'view_day' },
             { text: this.$t('sidebar.items.agenda'), to: '/app/agenda', icon: 'calendar_month' },
-            { text: this.$t('sidebar.items.growth', 'Crecimiento'), to: '/app/growth', icon: 'rocket_launch' },
+            { text: this.$t('sidebar.items.goals', 'Objetivos'), to: '/app/goals', icon: 'flag' },
           ],
         },
         {
@@ -209,7 +195,6 @@ export default defineComponent({
         {
           label: this.$t('sidebar.sections.operations'),
           items: [
-            { text: this.$t('sidebar.items.myProducts'), to: '/app/products', icon: 'inventory_2' },
             {
               text: this.$t('sidebar.items.subscriptions'),
               to: '/app/subscriptions',
@@ -226,18 +211,6 @@ export default defineComponent({
           label: this.$t('sidebar.sections.knowledge'),
           items: [
             { text: this.$t('sidebar.items.docs'), to: '/app/docs', icon: 'description' },
-            { text: 'Academia', to: '/app/resources', icon: 'school' },
-          ],
-        },
-        {
-          label: 'Marketing',
-          items: [
-            { text: 'Dashboard', to: '/app/marketing', icon: 'insights' },
-            { text: 'Calendario', to: '/app/marketing/calendar', icon: 'calendar_month' },
-            { text: 'Ideas', to: '/app/marketing/ideas', icon: 'lightbulb' },
-            { text: 'Prompts', to: '/app/marketing/prompts', icon: 'auto_awesome' },
-            { text: 'Posts', to: '/app/marketing/posts', icon: 'campaign' },
-            { text: 'Identidad de Redes', to: '/app/social-identity', icon: 'fingerprint' },
           ],
         },
       ]

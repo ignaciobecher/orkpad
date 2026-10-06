@@ -55,6 +55,27 @@
               <span v-else class="onboarding-step-done-label">Listo</span>
             </li>
           </ul>
+
+          <div class="onboarding-demo-row">
+            <w-button
+              v-if="!onboardingStore.hasDemoData"
+              variant="ghost"
+              :loading="onboardingStore.demoLoading"
+              @click="onboardingStore.seedDemoData()"
+            >
+              <span class="material-symbols-outlined mr-1">auto_awesome</span>
+              Probar con datos de ejemplo
+            </w-button>
+            <w-button
+              v-else
+              variant="ghost"
+              :loading="onboardingStore.demoLoading"
+              @click="onboardingStore.removeDemoData()"
+            >
+              <span class="material-symbols-outlined mr-1">delete_sweep</span>
+              Quitar datos de ejemplo
+            </w-button>
+          </div>
         </w-card>
       </section>
 
@@ -440,6 +461,18 @@ export default defineComponent({
   display: flex;
   flex-direction: column;
   gap: 8px;
+}
+
+.onboarding-demo-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--color-border);
+}
+
+.mr-1 {
+  margin-right: 4px;
 }
 
 .onboarding-step {

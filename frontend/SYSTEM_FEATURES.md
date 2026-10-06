@@ -1,6 +1,6 @@
-# Orkpad - Sistema de Gestión Operativa (Orkpad)
+# Orkpad - Sistema de Gestión para Agencias de Software
 
-Este documento detalla las funcionalidades actuales y planificadas del sistema Orkpad, diseñado para centralizar la operación, ventas, finanzas e infraestructura de agencias y profesionales.
+Este documento detalla las funcionalidades del sistema Orkpad, diseñado para centralizar la operación de agencias de desarrollo: clientes, proyectos, tareas, horas, finanzas y cuotas recurrentes — con cada proyecto mostrando sus totales vinculados.
 
 ## 🚀 Módulos Principales
 
@@ -8,29 +8,30 @@ Este documento detalla las funcionalidades actuales y planificadas del sistema O
 
 - **Dashboard**: Vista panorámica con métricas clave, tareas próximas y estado general del espacio de trabajo.
 - **Clientes**: Gestión completa de base de datos de clientes, incluyendo contactos, información fiscal y vista 360° de su actividad.
-- **Proyectos**: Organización de trabajos por proyectos, vinculación con clientes y seguimiento de hitos.
+- **Proyectos**: Organización de trabajos por proyectos con totales vinculados (tareas pendientes, horas registradas, presupuestos, facturas cobradas/pendientes/vencidas y cuotas del cliente), vinculación con clientes, links públicos para compartir avance y repositorios GitHub.
 - **Tareas (Kanban)**: Tablero visual para la gestión de tareas con estados personalizables, prioridades, fechas de vencimiento y asignación de responsables.
 
-### 2. Ventas y Pipeline (Sales)
+### 2. Finanzas y Control (Finance)
 
-- **Pipeline**: Gestión de oportunidades comerciales en formato visual, permitiendo mover prospectos a través del embudo de ventas hasta el cierre.
-
-### 3. Finanzas y Control (Finance)
-
-- **Facturación y Gastos**: Registro de ingresos y egresos, gestión de facturas por cliente y seguimiento de estados (Pendiente, Pagado, Vencido).
+- **Facturación y Gastos**: Registro de ingresos y egresos, gestión de facturas por cliente y proyecto, seguimiento de estados (Pendiente, Pagado, Vencido).
+- **Presupuestos**: Cotizaciones vinculadas a clientes y proyectos, convertibles en trabajo facturable.
+- **Cuotas / Suscripciones**: Gestión de pagos recurrentes de clientes, ciclos de facturación y control de renovaciones.
 - **Balance General**: Cálculo automático de flujo de caja y rentabilidad.
 - **Control de Tiempo (Time Tracking)**: Registro de jornadas laborales y bloques de tiempo dedicados a proyectos específicos para análisis de productividad y facturación por horas.
 
-### 4. Productos e Infraestructura
+### 3. Planificación y Organización
 
-- **Catálogo de Productos**: Definición de servicios, productos digitales o físicos con precios y monedas configurables.
-- **Suscripciones**: Gestión de pagos recurrentes, ciclos de facturación automáticos y control de renovaciones.
-- **Infraestructura**: Inventario de recursos tecnológicos (Cloud, IA, Bases de datos, etc.) vinculados a proveedores, permitiendo controlar costos operativos de la arquitectura técnica.
-
-### 5. Conocimiento y Organización
-
+- **Planner**: Organización del día en bloques de tiempo.
+- **Objetivos**: Metas y hábitos para la agencia.
 - **Documentación (Docs)**: Base de conocimientos interna con editor de texto enriquecido para manuales, procesos y notas compartidas.
 - **Agenda**: Calendario interactivo para programar reuniones, recordatorios y citas vinculadas a clientes o tareas.
+- **Pizarra**: Notas rápidas.
+
+### 4. Comunicación
+
+- **Mensajería**: Conversación con clientes sin salir de la plataforma.
+- **Soporte**: Bandeja de soporte con inbox administrable.
+- **Notificaciones**: Notificaciones in-app (vencimientos, renovaciones, facturas) y push.
 
 ---
 

@@ -53,6 +53,9 @@ export const useAuthStore = defineStore('auth', {
           this.pendingEmailVerification = true
           this.pendingEmail = dto.email
         } else {
+          // Self-hosted registration doubles as first login: show the
+          // welcome tour when the app layout initializes.
+          this.justLoggedInFirstTime = true
           await this.fetchMe()
         }
       } catch (err: any) {

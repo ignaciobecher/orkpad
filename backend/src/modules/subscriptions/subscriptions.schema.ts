@@ -29,6 +29,9 @@ export class Subscription extends BaseSchema {
 
   @Prop({ required: true, type: Date })
   nextBillingDate: Date;
+
+  @Prop({ default: false })
+  isDemo: boolean;
 }
 
 export const SubscriptionSchema = SchemaFactory.createForClass(Subscription);
@@ -38,3 +41,4 @@ SubscriptionSchema.index({ workspaceId: 1, status: 1 });
 SubscriptionSchema.index({ workspaceId: 1, clientId: 1 });
 SubscriptionSchema.index({ workspaceId: 1, nextBillingDate: 1 });
 SubscriptionSchema.index({ workspaceId: 1, createdAt: -1 });
+SubscriptionSchema.index({ workspaceId: 1, isDemo: 1 });

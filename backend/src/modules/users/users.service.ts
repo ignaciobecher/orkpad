@@ -213,6 +213,8 @@ export class UsersService {
       addedFirstProject: boolean;
       addedThreeTasks: boolean;
       loggedFirstHours: boolean;
+      createdFirstQuote: boolean;
+      addedFirstRetainer: boolean;
     },
   ): Promise<void> {
     await this.usersRepository.update(userId, {

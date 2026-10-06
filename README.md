@@ -73,7 +73,23 @@ The root URL redirects to **registration**. Create your account with email + pas
 
 > **Note:** email verification is skipped when `RESEND_API_KEY` is not set, so your first account works immediately. If you later configure Resend, new accounts will verify by email as usual.
 
-### 5. Stop the stack
+### 5. Your first 5 minutes
+
+After registering you'll land on the **dashboard** with a welcome tour and a setup checklist:
+
+1. **Take the tour** — a quick walkthrough of every section (clients, projects, invoicing, time tracking, finance, messaging), or skip it.
+2. **Follow the checklist** — 6 steps that take you exactly where you need to go, with the creation form opening automatically where it matters:
+   - Add your first client
+   - Create your first project
+   - Add at least 3 tasks
+   - Log your first hours
+   - Create your first quote
+   - Register your first retainer (cuota)
+3. **Try demo data** — the last tour slide and the dashboard checklist both offer one-click sample data (a demo client, project, tasks, quote, and retainer) so you can explore with realistic content. Remove it anytime from the dashboard checklist.
+
+Every empty list (clients, projects, quotes, retainers, invoices) also guides you with a direct creation button. Completing steps shows a progress bar (`Setup n/6`) in the sidebar and fires celebratory toasts as you go. The checklist hides itself once everything is done, and the built-in help (`/help`) documents every module.
+
+### 6. Stop the stack
 
 Press `Ctrl+C` in the terminal where Docker is running, or run:
 

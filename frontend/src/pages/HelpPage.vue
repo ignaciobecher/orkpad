@@ -109,10 +109,6 @@
             <ul>
               <li><strong>INGRESOS DEL MES:</strong> TOTAL DE FACTURAS PAGADAS Y PENDIENTES.</li>
               <li><strong>PROYECTOS ACTIVOS:</strong> CONTEO DE TRABAJOS EN EJECUCIÓN.</li>
-              <li>
-                <strong>VENTAS EN PIPELINE:</strong> VALOR ESTIMADO DE TUS OPORTUNIDADES
-                COMERCIALES.
-              </li>
             </ul>
 
             <div class="tutorial-box">
@@ -252,41 +248,6 @@
             </div>
           </section>
 
-          <!-- Sales Pipeline -->
-          <section id="pipeline" class="article-section">
-            <h2>PIPELINE DE VENTAS</h2>
-            <p>
-              TRANSFORMA LEADS EN CLIENTES. EL PIPELINE VISUAL TE PERMITE RASTREAR TUS OPORTUNIDADES
-              COMERCIALES SIN ESFUERZO.
-            </p>
-
-            <h3>ETAPAS DEL EMBUDO</h3>
-            <div class="pipeline-steps">
-              <div class="step">LEAD</div>
-              <div class="arrow">→</div>
-              <div class="step">REUNIÓN</div>
-              <div class="arrow">→</div>
-              <div class="step">PROPUESTA</div>
-              <div class="arrow">→</div>
-              <div class="step">NEGOCIACIÓN</div>
-              <div class="arrow">→</div>
-              <div class="step">CIERRE</div>
-            </div>
-
-            <div class="tutorial-box">
-              <h4>
-                <span class="material-symbols-outlined">play_circle</span> TUTORIAL: CERRAR UNA
-                VENTA
-              </h4>
-              <p>
-                CREA UNA TARJETA EN LA COLUMNA DE LEAD. A MEDIDA QUE AVANCES EN LA NEGOCIACIÓN,
-                ARRASTRA LA TARJETA HACIA LA DERECHA. AL LLEGAR A LA ÚLTIMA COLUMNA, PODRÁS
-                CONVERTIR AUTOMÁTICAMENTE EL PROSPECTO EN UN CLIENTE REAL.
-              </p>
-            </div>
-          </section>
-
-          <!-- Planner -->
           <section id="planner" class="article-section">
             <h2>PLANNER</h2>
             <p>
@@ -435,9 +396,8 @@
           <section id="client-subscriptions" class="article-section">
             <h2>SUSCRIPCIONES DE CLIENTES</h2>
             <p>
-              LLEVÁ EL CONTROL DE TUS INGRESOS RECURRENTES. CADA SUSCRIPCIÓN LIGA UN CLIENTE (Y
-              OPCIONALMENTE UN PRODUCTO DE TU CATÁLOGO) CON UN PLAN, CICLO DE FACTURACIÓN, PRECIO Y
-              PRÓXIMA FECHA DE COBRO.
+              LLEVÁ EL CONTROL DE TUS INGRESOS RECURRENTES. CADA SUSCRIPCIÓN LIGA UN CLIENTE
+              CON UN PLAN, CICLO DE FACTURACIÓN, PRECIO Y PRÓXIMA FECHA DE COBRO.
             </p>
 
             <div class="info-box tip">
@@ -457,7 +417,7 @@
                 <li>
                   VE A <strong>SUSCRIPCIONES</strong> EN EL MENÚ LATERAL (SECCIÓN OPERACIONES).
                 </li>
-                <li>SELECCIONÁ EL CLIENTE Y, SI APLICA, EL PRODUCTO DE TU CATÁLOGO.</li>
+                <li>SELECCIONÁ EL CLIENTE.</li>
                 <li>DEFINÍ EL PRECIO Y EL CICLO (MENSUAL O ANUAL).</li>
                 <li>ORKPAD TE AVISARÁ CUANDO SE ACERQUE LA PRÓXIMA FECHA DE FACTURACIÓN.</li>
               </ol>
@@ -493,34 +453,6 @@
           </section>
 
           <!-- Products & Subscriptions -->
-          <section id="products" class="article-section">
-            <h2>PRODUCTOS Y SUSCRIPCIONES</h2>
-            <p>
-              GESTIONA TU CATÁLOGO DE SERVICIOS Y PRODUCTOS. AUTOMATIZA EL COBRO DE SERVICIOS
-              RECURRENTES.
-            </p>
-
-            <ul>
-              <li>
-                <strong>CATÁLOGO:</strong> DEFINE PRECIOS, MONEDAS Y DESCRIPCIONES DE TUS PRODUCTOS.
-              </li>
-              <li>
-                <strong>SUSCRIPCIONES:</strong> GESTIONA CLIENTES CON PAGOS MENSUALES O ANUALES. EL
-                SISTEMA TE AVISARÁ CUANDO UNA RENOVACIÓN ESTÉ CERCA.
-              </li>
-            </ul>
-
-            <div class="tutorial-box">
-              <h4>
-                <span class="material-symbols-outlined">play_circle</span> CREAR UNA SUSCRIPCIÓN
-              </h4>
-              <p>
-                ASOCIA UN PRODUCTO DE TU CATÁLOGO A UN CLIENTE Y DEFINE LA RECURRENCIA (EJ: CADA 30
-                DÍAS). ORKPAD GENERARÁ LAS FACTURAS AUTOMÁTICAMENTE EN CADA CICLO.
-              </p>
-            </div>
-          </section>
-
           <section id="docs" class="article-section">
             <h2>CONOCIMIENTO (DOCS INTERNA)</h2>
             <p>
@@ -535,34 +467,6 @@
           </section>
 
           <!-- Academy / Resources -->
-          <section id="resources" class="article-section">
-            <h2>ACADEMIA</h2>
-            <p>
-              UNA BIBLIOTECA DE GUÍAS PENSADAS PARA FREELANCERS: CÓMO ARMAR PROPUESTAS, REDACTAR
-              CONTRATOS, COBRAR SIN PROBLEMAS Y GESTIONAR CLIENTES DE FORMA PROFESIONAL.
-            </p>
-
-            <div class="info-box tip">
-              <span class="material-symbols-outlined">school</span>
-              <p>
-                USÁ EL BUSCADOR O LOS FILTROS POR CATEGORÍA PARA ENCONTRAR RÁPIDO LA GUÍA QUE
-                NECESITÁS. CADA TARJETA MUESTRA UN EXTRACTO, EL TIEMPO DE LECTURA Y SUS TAGS.
-              </p>
-            </div>
-
-            <div class="tutorial-box">
-              <h4>
-                <span class="material-symbols-outlined">play_circle</span> CÓMO USAR LA ACADEMIA
-              </h4>
-              <p>
-                VE A <strong>ACADEMIA</strong> EN EL MENÚ LATERAL (SECCIÓN CONOCIMIENTO), ELEGÍ UNA
-                GUÍA Y HACÉ CLIC PARA LEER EL ARTÍCULO COMPLETO. AL FINAL DE CADA GUÍA VAS A
-                ENCONTRAR SUGERENCIAS PARA SEGUIR APRENDIENDO.
-              </p>
-            </div>
-          </section>
-
-          <!-- Notes / Pizarra -->
           <section id="notes" class="article-section">
             <h2>PIZARRA (NOTAS RÁPIDAS)</h2>
             <p>
@@ -742,120 +646,6 @@
             </div>
           </section>
 
-          <!-- Marketing Dashboard -->
-          <section id="marketing" class="article-section">
-            <h2>MARKETING</h2>
-            <p>
-              UNA SUITE COMPLETA PARA PLANIFICAR, CREAR Y MEDIR TU CONTENIDO EN REDES SOCIALES,
-              DESDE LA IDEA HASTA LA PUBLICACIÓN.
-            </p>
-
-            <div class="info-box info">
-              <span class="material-symbols-outlined">insights</span>
-              <p>
-                EL <strong>DASHBOARD</strong> MUESTRA CUÁNTAS PUBLICACIONES TENÉS POR ESTADO, LAS
-                PRÓXIMAS DE LA SEMANA, LA DISTRIBUCIÓN POR RED SOCIAL Y LA MEJOR PUBLICACIÓN DE CADA
-                RED. SI TODAVÍA NO TENÉS ACTIVIDAD, TE OFRECE ACCESOS DIRECTOS PARA CREAR UNA IDEA,
-                UN PROMPT O UNA PUBLICACIÓN.
-              </p>
-            </div>
-
-            <h3>CALENDARIO DE CONTENIDO</h3>
-            <p>
-              VISTA MENSUAL O SEMANAL DE TUS PUBLICACIONES PROGRAMADAS, CON FILTRO POR RED SOCIAL Y
-              COLORES POR ESTADO. HACÉ CLIC EN UN DÍA PARA VER EL DETALLE O EN UNA PUBLICACIÓN PARA
-              EDITARLA O CARGAR SUS MÉTRICAS.
-            </p>
-
-            <h3>IDEAS</h3>
-            <p>
-              UN TABLERO KANBAN PARA ORGANIZAR IDEAS DE CONTENIDO POR ESTADO (ARRASTRÁ Y SOLTÁ ENTRE
-              COLUMNAS), CON FILTROS POR RED, TAGS Y FECHA ESTIMADA.
-            </p>
-
-            <h3>PROMPTS</h3>
-            <p>
-              UN BANCO DE PROMPTS DE IA REUTILIZABLES PARA GENERAR CONTENIDO MÁS RÁPIDO, CON
-              BUSCADOR Y FILTRO POR RED SOCIAL.
-            </p>
-
-            <h3>PUBLICACIONES</h3>
-            <p>
-              EL LISTADO COMPLETO DE PUBLICACIONES CON FILTROS POR ESTADO, RED Y RANGO DE FECHAS.
-            </p>
-
-            <div class="info-box tip">
-              <span class="material-symbols-outlined">upload_file</span>
-              <p>
-                <strong>IMPORTACIÓN MASIVA:</strong> USÁ EL BOTÓN <strong>IMPORTAR</strong> EN
-                PUBLICACIONES PARA CARGAR CONTENIDO GENERADO CON IA DESDE UNA PLANTILLA DE EXCEL
-                DESCARGABLE, IDEAL PARA PLANIFICAR MUCHOS POSTS DE UNA SOLA VEZ.
-              </p>
-            </div>
-
-            <div class="tutorial-box">
-              <h4>
-                <span class="material-symbols-outlined">play_circle</span> TUTORIAL: PLANIFICAR UNA
-                PUBLICACIÓN
-              </h4>
-              <ol>
-                <li>
-                  CREÁ UNA <strong>IDEA</strong> EN EL TABLERO O USÁ UN <strong>PROMPT</strong> PARA
-                  GENERAR CONTENIDO.
-                </li>
-                <li>
-                  VE AL <strong>CALENDARIO</strong> Y HACÉ CLIC EN
-                  <strong>NUEVA PUBLICACIÓN</strong>.
-                </li>
-                <li>ELEGÍ LA RED SOCIAL, LA FECHA Y COMPLETÁ EL CONTENIDO.</li>
-                <li>
-                  UNA VEZ PUBLICADO EN LA RED REAL, CARGÁ LAS MÉTRICAS DESDE EL CALENDARIO PARA
-                  VERLAS REFLEJADAS EN EL DASHBOARD.
-                </li>
-              </ol>
-            </div>
-          </section>
-
-          <!-- Social Identity -->
-          <section id="social-identity" class="article-section">
-            <h2>IDENTIDAD DE REDES</h2>
-            <p>
-              DEFINÍ LA ESTRATEGIA Y EL TONO DE CADA CUENTA DE RED SOCIAL QUE GESTIONÁS: PROPÓSITO,
-              VOZ DE MARCA Y OBJETIVOS. NO ES GESTIÓN DE PUBLICACIONES, SINO EL "MANUAL DE ESTILO"
-              DETRÁS DE ELLAS.
-            </p>
-
-            <div class="info-box tip">
-              <span class="material-symbols-outlined">fingerprint</span>
-              <p>
-                CADA CUENTA PERMITE <strong>REGISTRAR SEMANA</strong> PARA CARGAR SUS MÉTRICAS
-                SEMANALES Y HACER SEGUIMIENTO DE SU EVOLUCIÓN A LO LARGO DEL TIEMPO.
-              </p>
-            </div>
-
-            <div class="tutorial-box">
-              <h4>
-                <span class="material-symbols-outlined">play_circle</span> TUTORIAL: AGREGAR UNA
-                CUENTA
-              </h4>
-              <ol>
-                <li>
-                  VE A <strong>IDENTIDAD DE REDES</strong> EN EL MENÚ LATERAL (SECCIÓN MARKETING).
-                </li>
-                <li>
-                  HACÉ CLIC EN <strong>NUEVA CUENTA</strong> Y COMPLETÁ RED SOCIAL, PROPÓSITO Y
-                  TONO.
-                </li>
-                <li>
-                  ENTRÁ AL DETALLE DE LA CUENTA CUANDO QUIERAS ACTUALIZAR SU ESTRATEGIA O VER SU
-                  HISTORIAL.
-                </li>
-                <li>USÁ <strong>REGISTRAR SEMANA</strong> PERIÓDICAMENTE PARA CARGAR MÉTRICAS.</li>
-              </ol>
-            </div>
-          </section>
-
-          <!-- Agenda -->
           <section id="agenda" class="article-section">
             <h2>CALENDARIO Y AGENDA</h2>
             <p>
@@ -926,7 +716,6 @@ export default defineComponent({
           { id: 'crm', label: 'CLIENTES (CRM)', icon: 'group' },
           { id: 'messaging', label: 'MENSAJERÍA', icon: 'chat' },
           { id: 'projects', label: 'PROYECTOS Y TAREAS', icon: 'assignment' },
-          { id: 'pipeline', label: 'PIPELINE VENTAS', icon: 'account_tree' },
         ],
       },
       {
@@ -942,7 +731,6 @@ export default defineComponent({
         items: [
           { id: 'finance', label: 'FINANZAS', icon: 'account_balance_wallet' },
           { id: 'quotes', label: 'PRESUPUESTOS', icon: 'request_quote' },
-          { id: 'products', label: 'PRODUCTOS', icon: 'inventory_2' },
           { id: 'client-subscriptions', label: 'SUSCRIPCIONES DE CLIENTES', icon: 'rebase_edit' },
         ],
       },
@@ -961,17 +749,9 @@ export default defineComponent({
         ],
       },
       {
-        title: 'MARKETING',
-        items: [
-          { id: 'marketing', label: 'MARKETING', icon: 'insights' },
-          { id: 'social-identity', label: 'IDENTIDAD DE REDES', icon: 'fingerprint' },
-        ],
-      },
-      {
         title: 'CONOCIMIENTO',
         items: [
           { id: 'docs', label: 'DOCUMENTACIÓN INTERNA', icon: 'description' },
-          { id: 'resources', label: 'ACADEMIA', icon: 'school' },
         ],
       },
       {
@@ -1413,25 +1193,6 @@ li {
   grid-template-columns: 1fr 1fr;
   gap: 48px;
   margin: 40px 0;
-}
-
-.pipeline-steps {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 32px 0;
-  flex-wrap: wrap;
-}
-
-.step {
-  padding: 8px 16px;
-  border: 1px solid var(--color-border);
-  font-family: var(--font-mono);
-  font-size: 12px;
-}
-
-.arrow {
-  color: var(--color-text-muted);
 }
 
 .finance-grid {

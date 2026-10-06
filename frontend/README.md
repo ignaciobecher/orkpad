@@ -6,12 +6,10 @@ The root URL (`/`) redirects to registration — there is no marketing landing p
 
 ## Features
 
-- **Work**: dashboard, clients, projects, Kanban tasks, and time tracking.
-- **Sales**: visual pipeline to move prospects from first contact to close, plus leads and email campaigns.
-- **Finance**: invoicing, expenses, quotes, balance and cash-flow reports, and recurring subscriptions.
-- **Operations**: product catalog and recurring subscriptions.
-- **Knowledge**: internal documentation (docs) and an interactive agenda.
-- **Advanced**: automated task-completion notifications, client portal (coming soon), portfolio builder, marketing toolkit, and social identity manager.
+- **Work**: dashboard, clients, projects with linked totals, Kanban tasks, and time tracking.
+- **Finance**: invoicing, expenses, quotes, balance and cash-flow reports, and recurring retainers (cuotas).
+- **Planning**: visual planner, goals, calendar and internal docs.
+- **Operations**: client messaging, support inbox, notes, GitHub repo linking, and notifications.
 - **Internationalization**: UI in Spanish and English (switchable from the app settings).
 - **PWA**: installable offline-first web app.
 - **Self-hosted & privacy-first**: each workspace is isolated and all data can be exported at any time.

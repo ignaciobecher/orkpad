@@ -181,8 +181,6 @@ import { formatDate, isExpiringSoon } from '@/utils/date'
 import {
   loadClientOptionById,
   loadClientOptions,
-  loadProductOptionById,
-  loadProductOptions,
 } from '@/utils/remote-entity-options'
 
 export default defineComponent({
@@ -355,10 +353,6 @@ export default defineComponent({
       },
       { name: 'planName', label: 'Plan', type: 'text', required: true },
       { name: 'nextBillingDate', label: 'Próxima factura', type: 'date', required: true },
-      {
-        name: 'productId', label: 'Producto', type: 'remote-select',
-        searchPlaceholder: 'Buscar producto...', loadOptions: loadProductOptions, loadOptionByValue: loadProductOptionById,
-      },
       { name: 'price', label: 'Precio', type: 'number', centsField: true },
       { name: 'currency', label: 'Moneda', type: 'text' },
       { name: 'billingCycle', label: 'Ciclo', type: 'select', options: [

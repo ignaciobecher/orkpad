@@ -31,8 +31,6 @@ import { Project, ProjectDocument } from '../projects/projects.schema';
 import { Task, TaskDocument } from '../tasks/tasks.schema';
 import { Invoice, InvoiceDocument } from '../invoices/invoices.schema';
 import { Event, EventDocument } from '../agenda/agenda.schema';
-import { Deal, DealDocument } from '../pipeline/pipeline.schema';
-import { Product, ProductDocument } from '../products/products.schema';
 import {
   Subscription,
   SubscriptionDocument,
@@ -93,9 +91,6 @@ export class AuthService {
     @InjectModel(Invoice.name)
     private readonly invoiceModel: Model<InvoiceDocument>,
     @InjectModel(Event.name) private readonly eventModel: Model<EventDocument>,
-    @InjectModel(Deal.name) private readonly dealModel: Model<DealDocument>,
-    @InjectModel(Product.name)
-    private readonly productModel: Model<ProductDocument>,
     @InjectModel(Subscription.name)
     private readonly subscriptionModel: Model<SubscriptionDocument>,
     @InjectModel(Doc.name) private readonly docModel: Model<DocumentDocument>,
@@ -214,7 +209,7 @@ export class AuthService {
         message:
           'Completá estos pasos para sacarle el máximo provecho a tu cuenta.',
         type: 'success',
-        link: '/onboarding',
+        link: '/app/dashboard',
         refType: 'onboarding',
       });
     } catch {
@@ -567,8 +562,6 @@ export class AuthService {
       tasks,
       invoices,
       events,
-      deals,
-      products,
       subscriptions,
       docs,
       taskColumns,
@@ -592,14 +585,6 @@ export class AuthService {
         .lean()
         .exec(),
       this.eventModel
-        .find(baseFilter as any)
-        .lean()
-        .exec(),
-      this.dealModel
-        .find(baseFilter as any)
-        .lean()
-        .exec(),
-      this.productModel
         .find(baseFilter as any)
         .lean()
         .exec(),
@@ -640,8 +625,6 @@ export class AuthService {
       timeEntries,
       workSessions,
       events,
-      deals,
-      products,
       subscriptions,
       docs,
     };
@@ -673,7 +656,7 @@ export class AuthService {
       title: 'Agregá tu primer cliente',
       description:
         'Así vas a poder facturarle y trackear todos sus proyectos en un solo lugar.',
-      cta: { label: 'Agregar cliente', route: '/clients/new' },
+      cta: { label: 'Agregar cliente', route: '/app/clients?new=1' },
     },
     {
       id: 'addedFirstProject' as const,
@@ -681,7 +664,7 @@ export class AuthService {
       title: 'Creá tu primer proyecto',
       description:
         'Organizá el trabajo de tus clientes en proyectos con tareas, tiempos y entregables.',
-      cta: { label: 'Crear proyecto', route: '/projects/new' },
+      cta: { label: 'Crear proyecto', route: '/app/projects?new=1' },
     },
     {
       id: 'addedThreeTasks' as const,
@@ -689,7 +672,7 @@ export class AuthService {
       title: 'Sumá al menos 3 tareas',
       description:
         'Desglosá tu trabajo en tareas para no perder de vista lo que falta hacer.',
-      cta: { label: 'Crear tarea', route: '/tasks/new' },
+      cta: { label: 'Crear tarea', route: '/app/tasks' },
     },
     {
       id: 'loggedFirstHours' as const,
@@ -697,14 +680,30 @@ export class AuthService {
       title: 'Registrá tus primeras horas',
       description:
         'Trackeá el tiempo que le dedicás a cada proyecto para facturar con precisión.',
-      cta: { label: 'Iniciar timer', route: '/time-tracking' },
+      cta: { label: 'Iniciar timer', route: '/app/time-tracking' },
+    },
+    {
+      id: 'createdFirstQuote' as const,
+      order: 5,
+      title: 'Creá tu primer presupuesto',
+      description:
+        'Cotizá el trabajo para un cliente y seguilo hasta que lo acepte.',
+      cta: { label: 'Crear presupuesto', route: '/app/quotes' },
+    },
+    {
+      id: 'addedFirstRetainer' as const,
+      order: 6,
+      title: 'Registrá tu primera cuota',
+      description:
+        'Si tenés ingresos recurrentes, cargalos como suscripción para no perder de vista ningún cobro.',
+      cta: { label: 'Registrar cuota', route: '/app/subscriptions' },
     },
   ];
 
   async getOnboardingStatus(userId: string, workspaceId: string) {
     const base = { workspaceId, isDeleted: false, isDemo: { $ne: true } };
 
-    const [clientCount, projectCount, taskCount, timeEntryCount] =
+    const [clientCount, projectCount, taskCount, timeEntryCount, quoteCount, retainerCount, demoCount] =
       await Promise.all([
         this.clientModel.countDocuments(base as any),
         this.projectModel.countDocuments(base as any),
@@ -713,6 +712,15 @@ export class AuthService {
           workspaceId,
           isDeleted: false,
         } as any),
+        this.quoteModel.countDocuments(base as any),
+        this.subscriptionModel.countDocuments(base as any),
+        Promise.all([
+          this.clientModel.countDocuments({ workspaceId, isDemo: true, isDeleted: false } as any),
+          this.projectModel.countDocuments({ workspaceId, isDemo: true, isDeleted: false } as any),
+          this.taskModel.countDocuments({ workspaceId, isDemo: true, isDeleted: false } as any),
+          this.quoteModel.countDocuments({ workspaceId, isDemo: true, isDeleted: false } as any),
+          this.subscriptionModel.countDocuments({ workspaceId, isDemo: true, isDeleted: false } as any),
+        ]).then((counts) => counts.reduce((a, b) => a + b, 0)),
       ]);
 
     const steps = {
@@ -720,10 +728,12 @@ export class AuthService {
       addedFirstProject: projectCount > 0,
       addedThreeTasks: taskCount >= 3,
       loggedFirstHours: timeEntryCount > 0,
+      createdFirstQuote: quoteCount > 0,
+      addedFirstRetainer: retainerCount > 0,
     };
 
     const completedCount = Object.values(steps).filter(Boolean).length;
-    const completed = completedCount === 4;
+    const completed = completedCount === 6;
 
     const user = await this.usersService.findById(userId);
     const stepsChanged =
@@ -745,7 +755,14 @@ export class AuthService {
       completed: steps[def.id],
     }));
 
-    return { completed, steps, completedCount, totalCount: 4, checklist };
+    return {
+      completed,
+      steps,
+      completedCount,
+      totalCount: 6,
+      checklist,
+      hasDemoData: demoCount > 0,
+    };
   }
 
   async webauthnRegisterChallenge(userId: string) {

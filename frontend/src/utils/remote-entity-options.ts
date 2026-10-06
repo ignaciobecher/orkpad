@@ -1,9 +1,7 @@
 import { clientsApi } from '@/api/clients/clients.api'
-import { productsApi } from '@/api/products/products.api'
 import { projectsApi } from '@/api/projects/projects.api'
 import { tasksApi } from '@/api/tasks/tasks.api'
 import { usersApi } from '@/api/users/users.api'
-import { marketingIdeasApi } from '@/api/marketing/marketing-ideas.api'
 
 export interface RemoteOption {
   value: string
@@ -93,25 +91,6 @@ export async function loadTaskOptionById(id: string): Promise<RemoteOption | nul
   }
 }
 
-export async function loadProductOptions(search = '', formData: Record<string, any> = {}, page = 1): Promise<RemoteOption[]> {
-  const { data } = await productsApi.getAll({ search, limit: DEFAULT_LIMIT, page })
-  return data.data.map((product) => ({
-    value: product._id,
-    label: product.name,
-    description: safeDescription(product.type, product.currency),
-  }))
-}
-
-export async function loadProductOptionById(id: string): Promise<RemoteOption | null> {
-  if (!id) return null
-  const { data } = await productsApi.getById(id)
-  return {
-    value: data._id,
-    label: data.name,
-    description: safeDescription(data.type, data.currency),
-  }
-}
-
 export async function loadUserOptions(search = '', formData: Record<string, any> = {}, page = 1): Promise<RemoteOption[]> {
   const { data } = await usersApi.getAll({ search, limit: DEFAULT_LIMIT, page })
   return data.data.map((user) => ({
@@ -128,24 +107,5 @@ export async function loadUserOptionById(id: string): Promise<RemoteOption | nul
     value: data._id,
     label: data.name,
     description: data.email,
-  }
-}
-
-export async function loadMarketingIdeaOptions(search = '', formData: Record<string, any> = {}, page = 1): Promise<RemoteOption[]> {
-  const { data } = await marketingIdeasApi.getAll({ search, limit: DEFAULT_LIMIT, page })
-  return data.data.map((idea) => ({
-    value: idea._id,
-    label: idea.title,
-    description: safeDescription(...idea.networks),
-  }))
-}
-
-export async function loadMarketingIdeaOptionById(id: string): Promise<RemoteOption | null> {
-  if (!id) return null
-  const { data } = await marketingIdeasApi.getById(id)
-  return {
-    value: data._id,
-    label: data.title,
-    description: safeDescription(...data.networks),
   }
 }

@@ -96,6 +96,14 @@
           </template>
         </w-table>
       </w-card>
+
+      <div v-if="!loading && formattedItems.length === 0" class="empty-cta">
+        <p class="empty-cta-text">{{ $t('finance.emptyHint') }}</p>
+        <w-button variant="primary" @click="openNewModal">
+          <span class="material-symbols-outlined mr-2">add</span>
+          {{ $t('finance.newInvoice') }}
+        </w-button>
+      </div>
     </main>
 
     <w-crud-modal v-model="showCrudModal" :schema="crudSchema" :initial-data="crudData" :loading="loading" @save="onSaveCrud" />
@@ -290,6 +298,22 @@ export default defineComponent({
 .filter-select { background-color: var(--color-bg-surface); border: 1px solid var(--color-border); padding: 8px 12px; font-family: var(--font-mono); font-size: 11px; color: var(--color-text-base); outline: none; }
 
 .page-content { flex-grow: 1; min-width: 0; display: flex; flex-direction: column; }
+
+.empty-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 16px;
+  padding: 20px;
+  border: 1px dashed var(--color-border);
+}
+
+.empty-cta-text {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  margin: 0;
+}
 .no-padding { display: flex; flex-direction: column; min-width: 0; }
 .no-padding :deep(.w-card__body) { padding: 0 !important; display: flex; flex-direction: column; flex-grow: 1; min-width: 0; }
 

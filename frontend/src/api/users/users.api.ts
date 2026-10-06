@@ -16,7 +16,4 @@ export const usersApi = {
 
   sendFollowUp: (id: string) =>
     apiClient.post<{ message: string }>(`${ADMIN_BASE}/${id}/send-followup`),
-
-  sendMarketing: (templateId: string) =>
-    apiClient.post<{ sent: number; total: number; templateId: string }>(`${ADMIN_BASE}/send-marketing`, { templateId }),
 }

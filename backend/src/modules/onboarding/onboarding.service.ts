@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { ClientsService } from '../clients/clients.service';
 import { ProjectsService } from '../projects/projects.service';
 import { TasksService } from '../tasks/tasks.service';
+import { QuotesService } from '../quotes/quotes.service';
+import { SubscriptionsService } from '../subscriptions/subscriptions.service';
 
 @Injectable()
 export class OnboardingService {
@@ -15,7 +17,7 @@ export class OnboardingService {
         description:
           'Centralizá contactos, notas y el historial de cada cliente.',
         icon: 'group',
-        route: '/clients',
+        route: '/app/clients',
       },
       {
         id: 'projects-tasks',
@@ -23,7 +25,7 @@ export class OnboardingService {
         description:
           'Organizá el trabajo en tableros Kanban con columnas personalizables.',
         icon: 'account_tree',
-        route: '/projects',
+        route: '/app/projects',
       },
       {
         id: 'invoicing',
@@ -31,7 +33,7 @@ export class OnboardingService {
         description:
           'Generá presupuestos, convertilos en facturas y exportá PDFs listos para enviar.',
         icon: 'description',
-        route: '/invoices',
+        route: '/app/finance',
       },
       {
         id: 'time-tracking',
@@ -39,38 +41,22 @@ export class OnboardingService {
         description:
           'Registrá horas por proyecto con un timer o carga manual, y facturalas con precisión.',
         icon: 'schedule',
-        route: '/time-tracking',
+        route: '/app/time-tracking',
       },
       {
-        id: 'pipeline',
-        title: 'Pipeline de oportunidades',
+        id: 'finance',
+        title: 'Finanzas y cuotas',
         description:
-          'Seguí tus deals desde el primer contacto hasta el cierre.',
-        icon: 'trending_up',
-        route: '/pipeline',
-      },
-      {
-        id: 'portfolio',
-        title: 'Portfolio público',
-        description:
-          'Publicá tu perfil y proyectos para conseguir nuevos clientes.',
-        icon: 'work',
-        route: '/portfolio',
-      },
-      {
-        id: 'lead-campaigns',
-        title: 'Campañas de leads',
-        description:
-          'Organizá tus potenciales clientes y contactalos con campañas de email.',
-        icon: 'campaign',
-        route: '/leads',
+          'Presupuestos, facturas y cuotas recurrentes vinculados a cada proyecto, con totales siempre a la vista.',
+        icon: 'payments',
+        route: '/app/finance',
       },
       {
         id: 'messaging',
         title: 'Mensajería',
         description: 'Conversá con tus clientes sin salir de la plataforma.',
         icon: 'chat',
-        route: '/messages',
+        route: '/app/messaging',
       },
     ],
   };
@@ -79,6 +65,8 @@ export class OnboardingService {
     private readonly clientsService: ClientsService,
     private readonly projectsService: ProjectsService,
     private readonly tasksService: TasksService,
+    private readonly quotesService: QuotesService,
+    private readonly subscriptionsService: SubscriptionsService,
   ) {}
 
   getWelcomeContent() {
@@ -117,14 +105,47 @@ export class OnboardingService {
       } as any),
     ]);
 
-    return { alreadySeeded: false, client, project, tasks: [taskOne, taskTwo] };
+    const clientId = (client._id as any).toString();
+    const [quote, subscription] = await Promise.all([
+      this.quotesService.create(workspaceId, {
+        title: 'Ejemplo: Presupuesto rediseño web',
+        number: 'DEMO-001',
+        clientId,
+        projectId,
+        status: 'sent',
+        items: [
+          {
+            description: 'Diseño y desarrollo',
+            quantity: 1,
+            unitPrice: 5000,
+            amount: 5000,
+          },
+        ],
+        currency: 'USD',
+        isDemo: true,
+      } as any),
+      this.subscriptionsService.create(workspaceId, {
+        clientId,
+        planName: 'Ejemplo: Mantenimiento mensual',
+        price: 500,
+        currency: 'USD',
+        billingCycle: 'monthly',
+        status: 'active',
+        nextBillingDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+        isDemo: true,
+      } as any),
+    ]);
+
+    return { alreadySeeded: false, client, project, tasks: [taskOne, taskTwo], quote, subscription };
   }
 
   async clearDemoData(workspaceId: string) {
-    const [clients, projects, tasks] = await Promise.all([
+    const [clients, projects, tasks, quotes, subscriptions] = await Promise.all([
       this.clientsService.findDemo(workspaceId),
       this.projectsService.findDemo(workspaceId),
       this.tasksService.findDemo(workspaceId),
+      this.quotesService.findDemo(workspaceId),
+      this.subscriptionsService.findDemo(workspaceId),
     ]);
 
     await Promise.all([
@@ -137,10 +158,21 @@ export class OnboardingService {
       ...tasks.data.map((t: any) =>
         this.tasksService.remove(workspaceId, t._id.toString()),
       ),
+      ...quotes.data.map((q: any) =>
+        this.quotesService.remove(workspaceId, q._id.toString()),
+      ),
+      ...subscriptions.data.map((s: any) =>
+        this.subscriptionsService.remove(workspaceId, s._id.toString()),
+      ),
     ]);
 
     return {
-      removed: clients.data.length + projects.data.length + tasks.data.length,
+      removed:
+        clients.data.length +
+        projects.data.length +
+        tasks.data.length +
+        quotes.data.length +
+        subscriptions.data.length,
     };
   }
 }

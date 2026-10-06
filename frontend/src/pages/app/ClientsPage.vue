@@ -53,6 +53,14 @@
           </template>
         </w-table>
       </w-card>
+
+      <div v-if="!loading && items.length === 0" class="empty-cta">
+        <p class="empty-cta-text">{{ $t('clients.emptyHint') }}</p>
+        <w-button variant="primary" @click="openNewClientModal">
+          <span class="material-symbols-outlined mr-2">person_add</span>
+          {{ $t('clients.newClient') }}
+        </w-button>
+      </div>
     </main>
 
     <!-- Client Detail Drawer -->
@@ -172,6 +180,13 @@ export default defineComponent({
   },
   mounted() {
     this.fetchAll()
+    // Deep link from the onboarding checklist (?new=1): open the create
+    // modal directly so a new user manages something in one click.
+    if (this.$route.query.new) {
+      this.openNewClientModal()
+      const { new: _dropped, ...rest } = this.$route.query
+      this.$router.replace({ query: rest })
+    }
   }
 })
 </script>
@@ -287,6 +302,26 @@ export default defineComponent({
   min-width: 0;
   display: flex;
   flex-direction: column;
+}
+
+.empty-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 16px;
+  padding: 20px;
+  border: 1px dashed var(--color-border);
+}
+
+.empty-cta-text {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.mr-2 {
+  margin-right: 8px;
 }
 
 .no-padding {

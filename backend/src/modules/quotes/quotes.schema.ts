@@ -143,6 +143,9 @@ export class Quote extends BaseSchema {
 
   @Prop({ type: String, default: null })
   pdfUrl: string | null;
+
+  @Prop({ default: false })
+  isDemo: boolean;
 }
 
 export const QuoteSchema = SchemaFactory.createForClass(Quote);
@@ -153,3 +156,4 @@ QuoteSchema.index({ workspaceId: 1, createdAt: -1 });
 QuoteSchema.index({ workspaceId: 1, clientId: 1 });
 QuoteSchema.index({ workspaceId: 1, projectId: 1 });
 QuoteSchema.index({ workspaceId: 1, issueDate: -1 });
+QuoteSchema.index({ workspaceId: 1, isDemo: 1 });

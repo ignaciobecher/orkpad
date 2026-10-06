@@ -97,6 +97,14 @@
           </template>
         </w-table>
       </w-card>
+
+      <div v-if="!loading && items.length === 0" class="empty-cta">
+        <p class="empty-cta-text">Cotizá tu primer trabajo para un cliente y seguilo hasta que lo acepte.</p>
+        <w-button variant="primary" @click="openNewQuote">
+          <span class="material-symbols-outlined mr-2">add</span>
+          Nuevo Presupuesto
+        </w-button>
+      </div>
     </main>
 
     <!-- Quote Builder Modal -->
@@ -226,7 +234,7 @@
                   </div>
                   <div class="form-field">
                     <label class="field-label">Sitio web</label>
-                    <input v-model="form.freelancerWebsite" class="field-input" placeholder="www.tuportfolio.com" />
+                    <input v-model="form.freelancerWebsite" class="field-input" placeholder="www.tusitio.com" />
                   </div>
                   <div class="form-field full-width">
                     <label class="field-label">Dirección</label>
@@ -655,6 +663,22 @@ export default defineComponent({
 
 /* Table */
 .page-content { flex-grow: 1; min-width: 0; display: flex; flex-direction: column; }
+
+.empty-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 16px;
+  padding: 20px;
+  border: 1px dashed var(--color-border);
+}
+
+.empty-cta-text {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  margin: 0;
+}
 .no-padding { display: flex; flex-direction: column; min-width: 0; }
 .no-padding :deep(.w-card__body) { padding: 0 !important; display: flex; flex-direction: column; flex-grow: 1; min-width: 0; }
 .title-cell { display: flex; flex-direction: column; gap: 2px; }

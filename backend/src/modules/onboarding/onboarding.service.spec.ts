@@ -3,6 +3,8 @@ import { OnboardingService } from './onboarding.service';
 import { ClientsService } from '../clients/clients.service';
 import { ProjectsService } from '../projects/projects.service';
 import { TasksService } from '../tasks/tasks.service';
+import { QuotesService } from '../quotes/quotes.service';
+import { SubscriptionsService } from '../subscriptions/subscriptions.service';
 
 const workspaceId = 'ws-1';
 
@@ -11,6 +13,8 @@ describe('OnboardingService', () => {
   let clientsService: jest.Mocked<ClientsService>;
   let projectsService: jest.Mocked<ProjectsService>;
   let tasksService: jest.Mocked<TasksService>;
+  let quotesService: jest.Mocked<QuotesService>;
+  let subscriptionsService: jest.Mocked<SubscriptionsService>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -40,6 +44,22 @@ describe('OnboardingService', () => {
             remove: jest.fn(),
           },
         },
+        {
+          provide: QuotesService,
+          useValue: {
+            findDemo: jest.fn(),
+            create: jest.fn(),
+            remove: jest.fn(),
+          },
+        },
+        {
+          provide: SubscriptionsService,
+          useValue: {
+            findDemo: jest.fn(),
+            create: jest.fn(),
+            remove: jest.fn(),
+          },
+        },
       ],
     }).compile();
 
@@ -47,6 +67,8 @@ describe('OnboardingService', () => {
     clientsService = module.get(ClientsService);
     projectsService = module.get(ProjectsService);
     tasksService = module.get(TasksService);
+    quotesService = module.get(QuotesService);
+    subscriptionsService = module.get(SubscriptionsService);
   });
 
   describe('getWelcomeContent', () => {
@@ -95,6 +117,8 @@ describe('OnboardingService', () => {
       tasksService.create
         .mockResolvedValueOnce({ _id: 'task-1' } as any)
         .mockResolvedValueOnce({ _id: 'task-2' } as any);
+      quotesService.create.mockResolvedValue({ _id: 'quote-1' } as any);
+      subscriptionsService.create.mockResolvedValue({ _id: 'sub-1' } as any);
 
       const result = await service.seedDemoData(workspaceId);
 
@@ -107,6 +131,14 @@ describe('OnboardingService', () => {
         expect.objectContaining({ clientId: 'client-1', isDemo: true }),
       );
       expect(tasksService.create).toHaveBeenCalledTimes(2);
+      expect(quotesService.create).toHaveBeenCalledWith(
+        workspaceId,
+        expect.objectContaining({ clientId: 'client-1', isDemo: true }),
+      );
+      expect(subscriptionsService.create).toHaveBeenCalledWith(
+        workspaceId,
+        expect.objectContaining({ clientId: 'client-1', isDemo: true }),
+      );
       expect(tasksService.create).toHaveBeenNthCalledWith(
         1,
         workspaceId,
@@ -136,6 +168,18 @@ describe('OnboardingService', () => {
         page: 1,
         limit: 100,
       } as any);
+      quotesService.findDemo.mockResolvedValue({
+        data: [{ _id: 'q1' }],
+        total: 1,
+        page: 1,
+        limit: 100,
+      } as any);
+      subscriptionsService.findDemo.mockResolvedValue({
+        data: [{ _id: 's1' }],
+        total: 1,
+        page: 1,
+        limit: 100,
+      } as any);
 
       const result = await service.clearDemoData(workspaceId);
 
@@ -143,7 +187,9 @@ describe('OnboardingService', () => {
       expect(projectsService.remove).toHaveBeenCalledWith(workspaceId, 'p1');
       expect(tasksService.remove).toHaveBeenCalledWith(workspaceId, 't1');
       expect(tasksService.remove).toHaveBeenCalledWith(workspaceId, 't2');
-      expect(result).toEqual({ removed: 4 });
+      expect(quotesService.remove).toHaveBeenCalledWith(workspaceId, 'q1');
+      expect(subscriptionsService.remove).toHaveBeenCalledWith(workspaceId, 's1');
+      expect(result).toEqual({ removed: 6 });
     });
   });
 });

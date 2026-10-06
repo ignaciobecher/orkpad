@@ -20,15 +20,12 @@ import {
   derivePeriodRange,
   getPreviousPeriodKey,
 } from './goals-period.util';
-import { GamificationService } from '../gamification/gamification.service';
-import { GAMIFICATION_POINTS } from '../gamification/gamification.constants';
 
 @Injectable()
 export class GoalsService {
   constructor(
     private readonly goalsRepository: GoalsRepository,
     private readonly goalEntriesRepository: GoalEntriesRepository,
-    private readonly gamificationService: GamificationService,
   ) {}
 
   async findAll(workspaceId: string, userId: string, query: QueryGoalDto) {
@@ -227,7 +224,6 @@ export class GoalsService {
     if (!updated) throw new NotFoundException(`Goal entry not found`);
 
     await this.recalculateStreak(workspaceId, goalId);
-    await this.awardCompletionPoints(workspaceId, userId, goalId, updated);
     return updated;
   }
 
@@ -249,7 +245,6 @@ export class GoalsService {
     if (!updated) throw new NotFoundException(`Goal entry not found`);
 
     await this.recalculateStreak(workspaceId, goalId);
-    await this.revokeCompletionPoints(workspaceId, userId, updated);
     return updated;
   }
 
@@ -336,46 +331,7 @@ export class GoalsService {
 
     await this.recalculateStreak(workspaceId, goalId);
 
-    if (updated) {
-      if (shouldBeCompleted) {
-        await this.awardCompletionPoints(workspaceId, userId, goalId, updated);
-      } else {
-        await this.revokeCompletionPoints(workspaceId, userId, updated);
-      }
-    }
-
     return updated ?? entry;
-  }
-
-  private async awardCompletionPoints(
-    workspaceId: string,
-    userId: string,
-    goalId: string,
-    entry: GoalEntryDocument,
-  ): Promise<void> {
-    const goal = await this.goalsRepository.findOne(workspaceId, goalId);
-    if (!goal || goal.type !== 'habit') return;
-
-    await this.gamificationService.awardPoints(workspaceId, userId, {
-      type: 'goal_complete',
-      points: GAMIFICATION_POINTS.GOAL_COMPLETE,
-      refId: String(entry._id),
-      refType: 'goal_entry_complete',
-      statKey: 'goalsCompleted',
-    });
-  }
-
-  private async revokeCompletionPoints(
-    workspaceId: string,
-    userId: string,
-    entry: GoalEntryDocument,
-  ): Promise<void> {
-    await this.gamificationService.revokePoints(
-      workspaceId,
-      userId,
-      'goal_entry_complete',
-      String(entry._id),
-    );
   }
 
   private async recalculateStreak(

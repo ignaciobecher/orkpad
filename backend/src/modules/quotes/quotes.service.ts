@@ -69,6 +69,14 @@ export class QuotesService {
     return quote;
   }
 
+  async findDemo(workspaceId: string) {
+    return this.quotesRepository.findAll(
+      workspaceId,
+      { isDemo: true },
+      { limit: 100 },
+    );
+  }
+
   async generatePdf(workspaceId: string, id: string): Promise<Buffer> {
     const quote = await this.findOne(workspaceId, id);
     return this.quotesPdfService.generate(quote);

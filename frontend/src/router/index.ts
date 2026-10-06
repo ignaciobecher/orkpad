@@ -19,8 +19,6 @@ const TasksPage = () => import('@/pages/app/TasksPage.vue')
 const FinancePage = () => import('@/pages/app/FinancePage.vue')
 const SubscriptionsPage = () => import('@/pages/app/SubscriptionsPage.vue')
 const TimeTrackingPage = () => import('@/pages/app/TimeTrackingPage.vue')
-const PipelinePage = () => import('@/pages/app/PipelinePage.vue')
-const ProductsPage = () => import('@/pages/app/ProductsPage.vue')
 const DocsPage = () => import('@/pages/app/DocsPage.vue')
 const AgendaPage = () => import('@/pages/app/AgendaPage.vue')
 const SettingsPage = () => import('@/pages/app/SettingsPage.vue')
@@ -31,17 +29,10 @@ const QuotesPage = () => import('@/pages/app/QuotesPage.vue')
 const NotesPage = () => import('@/pages/app/NotesPage.vue')
 const MessagingPage = () => import('@/pages/app/MessagingPage.vue')
 const ConnectionsPage = () => import('@/pages/app/ConnectionsPage.vue')
-const LeadsPage = () => import('@/pages/app/leads/LeadsPage.vue')
-const LeadDetailPage = () => import('@/pages/app/leads/LeadDetailPage.vue')
-const LeadCampaignsPage = () => import('@/pages/app/leads/LeadCampaignsPage.vue')
-
-const PortfolioPage = () => import('@/pages/app/PortfolioPage.vue')
-const PublicPortfolioPage = () => import('@/pages/PublicPortfolioPage.vue')
+const GoalsPage = () => import('@/pages/app/GoalsPage.vue')
 
 const HelpPage = () => import('@/pages/HelpPage.vue')
 const PrivacyPolicyPage = () => import('@/pages/PrivacyPolicyPage.vue')
-const ResourcesPage = () => import('@/pages/app/ResourcesPage.vue')
-const ResourceDetailPage = () => import('@/pages/app/ResourceDetailPage.vue')
 
 const router = createRouter({
   history: createWebHistory(),
@@ -114,8 +105,7 @@ const router = createRouter({
         { path: 'subscriptions',  name: 'subscriptions',  component: SubscriptionsPage },
         { path: 'subscriptions/:id', name: 'subscription-detail', component: () => import('@/pages/app/SubscriptionDetailPage.vue') },
         { path: 'time-tracking',  name: 'time-tracking',  component: TimeTrackingPage },
-        { path: 'pipeline',       name: 'pipeline',       component: PipelinePage },
-        { path: 'products',       name: 'products',       component: ProductsPage },
+        { path: 'goals',          name: 'goals',          component: GoalsPage },
         { path: 'docs',           name: 'docs',           component: DocsPage },
         { path: 'agenda',         name: 'agenda',         component: AgendaPage },
         { path: 'settings',       name: 'settings',       component: SettingsPage },
@@ -125,23 +115,7 @@ const router = createRouter({
         { path: 'notes',          name: 'notes',          component: NotesPage },
         { path: 'messaging',      name: 'messaging',      component: MessagingPage },
         { path: 'integrations',   name: 'integrations',   component: ConnectionsPage },
-        { path: 'leads',          name: 'leads',          component: LeadsPage },
-        { path: 'leads/campaigns',name: 'lead-campaigns', component: LeadCampaignsPage },
-        { path: 'leads/:id',      name: 'lead-detail',    component: LeadDetailPage },
-        { path: 'portfolio',          name: 'portfolio',          component: PortfolioPage },
-        { path: 'portfolio/builder', name: 'portfolio-builder',  component: () => import('@/pages/app/PortfolioBuilderPage.vue') },
-        { path: 'portfolio/preview', name: 'portfolio-preview',  component: () => import('@/pages/app/PortfolioPreviewPage.vue') },
-        { path: 'resources',      name: 'resources',      component: ResourcesPage },
-        { path: 'resources/:slug', name: 'resource-detail', component: ResourceDetailPage },
         { path: 'planner',        name: 'planner',        component: () => import('@/pages/app/PlannerPage.vue') },
-        { path: 'growth',         name: 'growth',         component: () => import('@/pages/app/GrowthPage.vue') },
-        { path: 'marketing',          name: 'marketing-dashboard', component: () => import('@/pages/app/marketing/MarketingDashboardPage.vue') },
-        { path: 'marketing/calendar', name: 'marketing-calendar',  component: () => import('@/pages/app/marketing/MarketingCalendarPage.vue') },
-        { path: 'marketing/ideas',    name: 'marketing-ideas',     component: () => import('@/pages/app/marketing/MarketingIdeasPage.vue') },
-        { path: 'marketing/prompts',  name: 'marketing-prompts',   component: () => import('@/pages/app/marketing/MarketingPromptsPage.vue') },
-        { path: 'marketing/posts',    name: 'marketing-posts',     component: () => import('@/pages/app/marketing/MarketingPostsPage.vue') },
-        { path: 'social-identity',     name: 'social-identity',        component: () => import('@/pages/app/social-identity/SocialIdentityPage.vue') },
-        { path: 'social-identity/:id', name: 'social-identity-detail', component: () => import('@/pages/app/social-identity/SocialIdentityDetailPage.vue') },
         { path: '',               redirect: { name: 'dashboard' } }
       ]
     },
@@ -149,11 +123,6 @@ const router = createRouter({
       path: '/p/:token',
       name: 'public-project',
       component: PublicProjectPage,
-    },
-    {
-      path: '/portfolio/:slug',
-      name: 'public-portfolio',
-      component: PublicPortfolioPage,
     },
     {
       path: '/:pathMatch(.*)*',

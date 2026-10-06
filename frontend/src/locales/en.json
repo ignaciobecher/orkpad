@@ -115,6 +115,7 @@
         "desc": "Your clients see their project status without texting you."
       },
       "agenda": {
+      "goals": "Goals",
         "title": "Integrated agenda",
         "desc": "Meetings, milestones and deadlines connected to your projects."
       },
@@ -310,8 +311,6 @@
     "sections": {
       "work": "WORK",
       "clients": "CLIENTS",
-      "sales": "SALES",
-      "prospection": "PROSPECTION",
       "planning": "PLANNING",
       "finance": "FINANCE",
       "operations": "OPERATIONS",
@@ -322,17 +321,12 @@
       "clients": "Clients",
       "projects": "Projects",
       "tasks": "Tasks",
-      "pipeline": "Pipeline",
-      "leads": "Leads",
-      "leadCampaigns": "Campaigns",
       "finance": "Finance",
       "timeTracking": "Time Tracking",
-      "myProducts": "My Products",
       "subscriptions": "Subscriptions",
       "integrations": "Integrations",
       "docs": "Documentation",
       "agenda": "Agenda",
-      "growth": "Growth",
       "settings": "Settings",
       "logout": "Logout"
     },
@@ -401,6 +395,7 @@
     "archived": "ARCHIVED",
     "newClient": "NEW CLIENT",
     "noClients": "No registered clients found.",
+    "emptyHint": "Add your first client to start running your agency.",
     "editProfile": "Edit Profile",
     "close": "Close",
     "deleteConfirm": "Are you sure you want to delete {name}?",
@@ -418,6 +413,7 @@
     "searchPlaceholder": "SEARCH PROJECT...",
     "newProject": "NEW PROJECT",
     "noProjects": "No projects found.",
+    "emptyHint": "Create your first project to organize client work.",
     "deleteConfirm": "Are you sure you want to delete this project?",
     "viewDetail": "View detail",
     "noClient": "No client",
@@ -442,7 +438,19 @@
       "invoices": "INVOICES",
       "noInvoices": "No invoices",
       "documents": "DOCUMENTS",
-      "noDocuments": "No documents"
+      "noDocuments": "No documents",
+      "hoursLogged": "HOURS LOGGED",
+      "quoted": "QUOTED",
+      "invoiceOverdue": "OVERDUE INVOICES",
+      "activeRetainers": "ACTIVE RETAINERS",
+      "quotes": "QUOTES",
+      "noQuotes": "No quotes",
+      "retainers": "CLIENT RETAINERS",
+      "noSubscriptions": "No retainers",
+      "viewTasks": "View tasks",
+      "viewInvoices": "View finance",
+      "viewQuotes": "View quotes",
+      "viewSubscriptions": "View subscriptions"
     },
     "fields": {
       "name": "Name",
@@ -514,6 +522,7 @@
     "searchPlaceholder": "SEARCH INVOICE...",
     "newInvoice": "NEW INVOICE",
     "noInvoices": "No invoices found.",
+    "emptyHint": "Record your first invoice to keep the books up to date.",
     "deleteConfirm": "Are you sure you want to delete this invoice?",
     "fields": {
       "number": "Invoice Number",
@@ -547,48 +556,6 @@
       "cancelled": "CANCELLED"
     },
     "dependsOnClient": "Select a client first"
-  },
-  "pipeline": {
-    "title": "Pipeline",
-    "searchPlaceholder": "SEARCH...",
-    "new": "NEW",
-    "noRecords": "No records found.",
-    "deleteConfirm": "Are you sure you want to delete this record?",
-    "fields": {
-      "title": "Title",
-      "client": "Client",
-      "value": "Value",
-      "currency": "Currency",
-      "stage": "Stage",
-      "expectedClose": "Expected Close"
-    },
-    "stages": {
-      "lead": "Lead",
-      "contacted": "Contacted",
-      "proposal": "Proposal",
-      "won": "Won",
-      "lost": "Lost"
-    }
-  },
-  "products": {
-    "title": "Products",
-    "searchPlaceholder": "SEARCH...",
-    "new": "NEW",
-    "noRecords": "No records found.",
-    "deleteConfirm": "Are you sure you want to delete this record?",
-    "fields": {
-      "name": "Name",
-      "description": "Description",
-      "price": "Price",
-      "currency": "Currency",
-      "type": "Type",
-      "status": "Status"
-    },
-    "types": {
-      "service": "Service",
-      "digital": "Digital",
-      "physical": "Physical"
-    }
   },
   "settings": {
     "title": "Settings",
@@ -697,7 +664,9 @@
       "name": "Name",
       "price": "Price",
       "interval": "Interval",
-      "status": "Status"
+      "status": "Status",
+      "plan": "Plan",
+      "nextBilling": "Next charge"
     }
   },
   "timeTracking": {

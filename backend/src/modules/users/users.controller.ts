@@ -1,5 +1,4 @@
 import {
-  Body,
   Controller,
   Get,
   HttpCode,
@@ -15,7 +14,6 @@ import { WorkspaceId } from '../../common/decorators/workspace-id.decorator';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { AdminGuard } from '../../common/guards/admin.guard';
 import { QueryUserDto } from './dto/query-user.dto';
-import { SendMarketingDto } from './dto/send-marketing.dto';
 import { UsersService } from './users.service';
 import { MailService } from '../mail/mail.service';
 
@@ -63,22 +61,5 @@ export class AdminUsersController {
     if (!user) throw new NotFoundException(`User ${id} not found`);
     await this.mailService.sendFollowUpEmail(user.email, user.name);
     return { message: `Follow-up email sent to ${user.email}` };
-  }
-
-  @Post('send-marketing')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Send a marketing email to all users (admin only)' })
-  async sendMarketing(@Body() dto: SendMarketingDto) {
-    const result = await this.usersService.findAll({ limit: 1000 });
-    let sent = 0;
-    for (const user of result.data) {
-      await this.mailService.sendMarketingEmail(
-        user.email,
-        user.name,
-        dto.templateId,
-      );
-      sent++;
-    }
-    return { sent, total: result.total, templateId: dto.templateId };
   }
 }

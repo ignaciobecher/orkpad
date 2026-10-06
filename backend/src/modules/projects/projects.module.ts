@@ -17,6 +17,15 @@ import {
 } from './project-link-credential.schema';
 import { Task, TaskSchema } from '../tasks/tasks.schema';
 import { Invoice, InvoiceSchema } from '../invoices/invoices.schema';
+import { Quote, QuoteSchema } from '../quotes/quotes.schema';
+import {
+  Subscription,
+  SubscriptionSchema,
+} from '../subscriptions/subscriptions.schema';
+import {
+  TimeEntry,
+  TimeEntrySchema,
+} from '../time-tracking/time-tracking.schema';
 import { Document, DocumentSchema } from '../docs/docs.schema';
 
 @Module({
@@ -30,6 +39,9 @@ import { Document, DocumentSchema } from '../docs/docs.schema';
       { name: ProjectLinkCredential.name, schema: ProjectLinkCredentialSchema },
       { name: Task.name, schema: TaskSchema },
       { name: Invoice.name, schema: InvoiceSchema },
+      { name: Quote.name, schema: QuoteSchema },
+      { name: Subscription.name, schema: SubscriptionSchema },
+      { name: TimeEntry.name, schema: TimeEntrySchema },
       { name: Document.name, schema: DocumentSchema },
     ]),
   ],

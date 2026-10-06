@@ -66,19 +66,4 @@ export class CreateProjectDto {
   @IsDateString()
   @IsOptional()
   linkExpiresAt?: string | null;
-
-  @ApiPropertyOptional({
-    default: false,
-    description: 'Show this project on the public portfolio page',
-  })
-  @IsBoolean()
-  @IsOptional()
-  featuredInPortfolio?: boolean;
-
-  @ApiPropertyOptional({
-    description: 'Cover image URL shown in the public portfolio',
-  })
-  @IsString()
-  @IsOptional()
-  coverImageUrl?: string;
 }

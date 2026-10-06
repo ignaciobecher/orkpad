@@ -1,6 +1,6 @@
 # Orkpad
 
-**Orkpad** is an open source, multi-tenant SaaS backend for freelancers. It provides a single place to run the operational side of a freelance business: clients, projects, tasks, invoices, quotes, time tracking, leads, a sales pipeline, a planner, and marketing tools.
+**Orkpad** is an open source, multi-tenant backend for software agencies and freelancers. It provides a single place to run the operational side of the business: clients, projects, tasks, invoices, quotes, time tracking, recurring retainers, planner, goals, and docs — with every project showing its linked totals (pending tasks, hours, quotes, invoices, retainers).
 
 Data is isolated per workspace: multiple users can collaborate inside a workspace, and every query is enforced to stay within it.
 
@@ -12,10 +12,8 @@ Data is isolated per workspace: multiple users can collaborate inside a workspac
 - **Projects & tasks** — projects with shareable external links, tasks, checklists, and kanban-style columns.
 - **Invoices & quotes** — invoicing with PDF generation and quote/estimate tracking.
 - **Time tracking** — work sessions and time logs per project/task.
-- **Leads & outreach** — leads, email campaigns (via Resend), and outreach workflows.
-- **Pipeline** — sales pipeline (deals) with stages.
-- **Planner** — planner blocks, tasks, and reusable templates.
-- **Marketing** — marketing templates, social identity tracking, goals, growth hub, gamification, and an academy/resources area for learning content.
+- **Retainers** — recurring client subscriptions (cuotas) with payment tracking and renewal reminders.
+- **Planner & goals** — planner blocks, tasks, reusable templates, and goal tracking.
 - **Realtime** — Socket.IO channels for client↔admin messaging and support conversations.
 - **Notifications** — in-app notifications and web push (VAPID).
 - **Authentication** — email/password with JWT access + refresh tokens, WebAuthn passkeys, and TOTP two-factor auth. GitHub OAuth exists only to link repositories (not for login). Without an email provider configured, new accounts verify instantly at registration.

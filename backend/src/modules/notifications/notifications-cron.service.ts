@@ -15,7 +15,6 @@ import {
   WorkSession,
   WorkSessionDocument,
 } from '../work-sessions/work-sessions.schema';
-import { Deal, DealDocument } from '../pipeline/pipeline.schema';
 
 @Injectable()
 export class NotificationsCronService {
@@ -35,7 +34,6 @@ export class NotificationsCronService {
     private readonly invoiceModel: Model<InvoiceDocument>,
     @InjectModel(WorkSession.name)
     private readonly workSessionModel: Model<WorkSessionDocument>,
-    @InjectModel(Deal.name) private readonly dealModel: Model<DealDocument>,
   ) {}
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
@@ -55,7 +53,6 @@ export class NotificationsCronService {
         this.checkTaskDeadlines(workspaceId, ownerId),
         this.checkSubscriptionRenewals(workspaceId, ownerId),
         this.checkOverdueInvoices(workspaceId, ownerId),
-        this.checkStalledDeals(workspaceId, ownerId),
       ]);
     }
     this.logger.log('Daily automated notification checks completed.');
@@ -266,31 +263,6 @@ export class NotificationsCronService {
         link: `/app/finance`,
         refId: inv._id.toString(),
         refType: 'invoice_overdue',
-      });
-    }
-  }
-
-  private async checkStalledDeals(workspaceId: string, userId: string) {
-    const fifteenDaysAgo = new Date();
-    fifteenDaysAgo.setDate(fifteenDaysAgo.getDate() - 15);
-
-    const stalledDeals = await this.dealModel
-      .find({
-        workspaceId,
-        isDeleted: false,
-        stage: { $nin: ['won', 'lost'] },
-        updatedAt: { $lt: fifteenDaysAgo },
-      })
-      .exec();
-
-    for (const deal of stalledDeals) {
-      await this.createNotificationIfNotExist(workspaceId, userId, {
-        title: 'Trato estancado',
-        message: `El trato "${deal.title}" no ha tenido actividad en 15 días.`,
-        type: 'warning',
-        link: `/app/pipeline`,
-        refId: deal._id.toString(),
-        refType: 'deal_stalled_15d',
       });
     }
   }

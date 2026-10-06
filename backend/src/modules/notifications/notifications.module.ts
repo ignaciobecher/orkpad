@@ -21,7 +21,6 @@ import {
   WorkSession,
   WorkSessionSchema,
 } from '../work-sessions/work-sessions.schema';
-import { Deal, DealSchema } from '../pipeline/pipeline.schema';
 
 @Module({
   imports: [
@@ -36,7 +35,6 @@ import { Deal, DealSchema } from '../pipeline/pipeline.schema';
       { name: Workspace.name, schema: WorkspaceSchema },
       { name: Invoice.name, schema: InvoiceSchema },
       { name: WorkSession.name, schema: WorkSessionSchema },
-      { name: Deal.name, schema: DealSchema },
     ]),
   ],
   controllers: [NotificationsController, AdminNotificationsController],

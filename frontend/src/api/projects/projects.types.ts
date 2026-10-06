@@ -11,8 +11,6 @@ export interface Project {
   publicToken?: string | null
   linkVisibility?: 'public' | 'private'
   linkExpiresAt?: string | null
-  featuredInPortfolio?: boolean
-  coverImageUrl?: string
   createdAt: string
   updatedAt: string
 }
@@ -44,8 +42,6 @@ export interface CreateProjectDto {
 }
 
 export interface UpdateProjectDto extends Partial<CreateProjectDto> {
-  featuredInPortfolio?: boolean
-  coverImageUrl?: string
 }
 
 export interface ProjectQueryDto {
@@ -87,6 +83,24 @@ export interface InvoiceStats {
   overdue: number
 }
 
+export interface QuoteStats {
+  total: number
+  quoted: number
+  accepted: number
+}
+
+export interface SubscriptionStats {
+  total: number
+  active: number
+  monthlyRecurring: number
+}
+
+export interface TimeStats {
+  totalMinutes: number
+  billableMinutes: number
+  billableAmount: number
+}
+
 export interface InvoiceSummary {
   _id: string
   number?: string
@@ -106,13 +120,38 @@ export interface DocumentSummary {
   updatedAt?: string
 }
 
+export interface QuoteSummary {
+  _id: string
+  title: string
+  number?: string
+  status: string
+  total: number
+  currency: string
+  createdAt?: string
+}
+
+export interface SubscriptionSummary {
+  _id: string
+  planName: string
+  price: number
+  currency: string
+  billingCycle: string
+  status: string
+  nextBillingDate?: string
+}
+
 export interface ProjectOverview {
   project: Project
   taskStats: TaskStats
   invoiceStats: InvoiceStats
+  quoteStats: QuoteStats
+  subscriptionStats: SubscriptionStats
+  timeStats: TimeStats
   recentTasks: TaskSummary[]
   pendingTasks: TaskSummary[]
   invoices: InvoiceSummary[]
+  quotes: QuoteSummary[]
+  subscriptions: SubscriptionSummary[]
   documents: DocumentSummary[]
 }
 

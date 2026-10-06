@@ -13,8 +13,6 @@ import { ProjectsModule } from './modules/projects/projects.module';
 import { TasksModule } from './modules/tasks/tasks.module';
 import { InvoicesModule } from './modules/invoices/invoices.module';
 import { TimeTrackingModule } from './modules/time-tracking/time-tracking.module';
-import { DealsModule } from './modules/pipeline/pipeline.module';
-import { ProductsModule } from './modules/products/products.module';
 import { SubscriptionsModule } from './modules/subscriptions/subscriptions.module';
 import { DocumentsModule } from './modules/docs/docs.module';
 import { EventsModule } from './modules/agenda/agenda.module';
@@ -28,22 +26,11 @@ import { GithubIntegrationModule } from './modules/github-integration/github-int
 import { NotesModule } from './modules/notes/notes.module';
 import { MessagingModule } from './modules/messaging/messaging.module';
 import { SupportModule } from './modules/support/support.module';
-import { LeadsModule } from './modules/leads/leads.module';
-import { LeadCampaignsModule } from './modules/lead-campaigns/lead-campaigns.module';
-import { TestimonialsModule } from './modules/testimonials/testimonials.module';
-import { PortfolioModule } from './modules/portfolio/portfolio.module';
-import { ResourcesModule } from './modules/resources/resources.module';
 import { PlannerBlocksModule } from './modules/planner-blocks/planner-blocks.module';
 import { PlannerTasksModule } from './modules/planner-tasks/planner-tasks.module';
 import { PlannerTemplatesModule } from './modules/planner-templates/planner-templates.module';
-import { MarketingModule } from './modules/marketing/marketing.module';
-import { SocialIdentityModule } from './modules/social-identity/social-identity.module';
 import { GoalsModule } from './modules/goals/goals.module';
 import { OnboardingModule } from './modules/onboarding/onboarding.module';
-import { GamificationModule } from './modules/gamification/gamification.module';
-import { LearningModule } from './modules/learning/learning.module';
-import { OutreachModule } from './modules/outreach/outreach.module';
-import { GrowthHubModule } from './modules/growth-hub/growth-hub.module';
 
 @Module({
   imports: [
@@ -76,7 +63,6 @@ import { GrowthHubModule } from './modules/growth-hub/growth-hub.module';
         ENCRYPTION_KEY: Joi.string().allow('').optional(),
         OPENAI_API_KEY: Joi.string().allow('').optional(),
         OPENAI_MODEL: Joi.string().allow('').optional(),
-        ADMIN_TOKEN: Joi.string().allow('').optional(),
       }),
       validationOptions: {
         allowUnknown: true,
@@ -100,8 +86,6 @@ import { GrowthHubModule } from './modules/growth-hub/growth-hub.module';
     TaskColumnsModule,
     InvoicesModule,
     TimeTrackingModule,
-    DealsModule,
-    ProductsModule,
     SubscriptionsModule,
     DocumentsModule,
     EventsModule,
@@ -114,21 +98,10 @@ import { GrowthHubModule } from './modules/growth-hub/growth-hub.module';
     NotesModule,
     MessagingModule,
     SupportModule,
-    LeadsModule,
-    LeadCampaignsModule,
-    TestimonialsModule,
-    PortfolioModule,
-    ResourcesModule,
     PlannerBlocksModule,
     PlannerTasksModule,
     PlannerTemplatesModule,
-    MarketingModule,
-    SocialIdentityModule,
     GoalsModule,
-    GamificationModule,
-    LearningModule,
-    OutreachModule,
-    GrowthHubModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -162,8 +162,6 @@ export class InvoiceLine extends BaseSchema { ... }
 | time entries | `time-entries` |
 | workspaces | `workspaces` |
 | users | `users` |
-| pipeline | `deals` |
-| products | `products` |
 | subscriptions | `subscriptions` |
 | docs | `documents` |
 | agenda | `events` |

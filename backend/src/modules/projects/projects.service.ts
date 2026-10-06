@@ -16,6 +16,15 @@ import { QueryProjectDto } from './dto/query-project.dto';
 import { Project, ProjectDocument } from './projects.schema';
 import { Task, TaskDocument } from '../tasks/tasks.schema';
 import { Invoice, InvoiceDocument } from '../invoices/invoices.schema';
+import { Quote, QuoteDocument } from '../quotes/quotes.schema';
+import {
+  Subscription,
+  SubscriptionDocument,
+} from '../subscriptions/subscriptions.schema';
+import {
+  TimeEntry,
+  TimeEntryDocument,
+} from '../time-tracking/time-tracking.schema';
 import { Document as DocModel, DocumentDocument } from '../docs/docs.schema';
 
 @Injectable()
@@ -30,6 +39,11 @@ export class ProjectsService {
     @InjectModel(Task.name) private readonly taskModel: Model<TaskDocument>,
     @InjectModel(Invoice.name)
     private readonly invoiceModel: Model<InvoiceDocument>,
+    @InjectModel(Quote.name) private readonly quoteModel: Model<QuoteDocument>,
+    @InjectModel(Subscription.name)
+    private readonly subscriptionModel: Model<SubscriptionDocument>,
+    @InjectModel(TimeEntry.name)
+    private readonly timeEntryModel: Model<TimeEntryDocument>,
     @InjectModel(DocModel.name)
     private readonly documentModel: Model<DocumentDocument>,
   ) {}
@@ -89,23 +103,44 @@ export class ProjectsService {
     const project = await this.projectsRepository.findOne(workspaceId, id);
     if (!project) throw new NotFoundException(`Project ${id} not found`);
 
-    const [tasks, invoices, documents] = await Promise.all([
-      this.taskModel
-        .find({ workspaceId, projectId: id, isDeleted: false })
-        .sort({ createdAt: -1 })
-        .lean()
-        .exec(),
-      this.invoiceModel
-        .find({ workspaceId, projectId: id, isDeleted: false })
-        .sort({ createdAt: -1 })
-        .lean()
-        .exec(),
-      this.documentModel
-        .find({ workspaceId, projectId: id, isDeleted: false })
-        .sort({ createdAt: -1 })
-        .lean()
-        .exec(),
-    ]);
+    const [tasks, invoices, documents, quotes, subscriptions, timeEntries] =
+      await Promise.all([
+        this.taskModel
+          .find({ workspaceId, projectId: id, isDeleted: false })
+          .sort({ createdAt: -1 })
+          .lean()
+          .exec(),
+        this.invoiceModel
+          .find({ workspaceId, projectId: id, isDeleted: false })
+          .sort({ createdAt: -1 })
+          .lean()
+          .exec(),
+        this.documentModel
+          .find({ workspaceId, projectId: id, isDeleted: false })
+          .sort({ createdAt: -1 })
+          .lean()
+          .exec(),
+        this.quoteModel
+          .find({ workspaceId, projectId: id, isDeleted: false })
+          .sort({ createdAt: -1 })
+          .lean()
+          .exec(),
+        // Retainers/cuotas belong to the client — surface them on every
+        // project of that client so totals stay linked.
+        this.subscriptionModel
+          .find({
+            workspaceId,
+            clientId: (project as any).clientId,
+            isDeleted: false,
+          })
+          .sort({ createdAt: -1 })
+          .lean()
+          .exec(),
+        this.timeEntryModel
+          .find({ workspaceId, projectId: id, isDeleted: false })
+          .lean()
+          .exec(),
+      ]);
 
     const now = new Date();
 
@@ -137,15 +172,58 @@ export class ProjectsService {
         .reduce((sum, i) => sum + (i.total ?? 0), 0),
     };
 
+    const quoteStats = {
+      total: quotes.length,
+      quoted: quotes
+        .filter((q) => q.status === 'sent' || q.status === 'accepted')
+        .reduce((sum, q) => sum + (q.total ?? 0), 0),
+      accepted: quotes
+        .filter((q) => q.status === 'accepted')
+        .reduce((sum, q) => sum + (q.total ?? 0), 0),
+    };
+
+    const activeSubscriptions = subscriptions.filter(
+      (s) => s.status === 'active',
+    );
+    const subscriptionStats = {
+      total: subscriptions.length,
+      active: activeSubscriptions.length,
+      // Normalized monthly recurring revenue across billing cycles.
+      monthlyRecurring: activeSubscriptions.reduce(
+        (sum, s) =>
+          sum +
+          (s.price ?? 0) * (s.billingCycle === 'yearly' ? 1 / 12 : 1),
+        0,
+      ),
+    };
+
+    const billableEntries = timeEntries.filter((t) => t.billable);
+    const timeStats = {
+      totalMinutes: timeEntries.reduce((sum, t) => sum + (t.duration ?? 0), 0),
+      billableMinutes: billableEntries.reduce(
+        (sum, t) => sum + (t.duration ?? 0),
+        0,
+      ),
+      billableAmount: billableEntries.reduce(
+        (sum, t) => sum + ((t.duration ?? 0) / 60) * (t.hourlyRate ?? 0),
+        0,
+      ),
+    };
+
     return {
       project,
       taskStats,
       invoiceStats,
+      quoteStats,
+      subscriptionStats,
+      timeStats,
       recentTasks: tasks.slice(0, 5),
       pendingTasks: tasks
         .filter((t) => t.status !== 'done' && t.status !== 'cancelled')
         .slice(0, 10),
       invoices,
+      quotes,
+      subscriptions,
       documents,
     };
   }
@@ -341,12 +419,4 @@ export class ProjectsService {
     }
   }
 
-  async findFeaturedForPortfolio(workspaceId: string) {
-    const result = await this.projectsRepository.findAll(
-      workspaceId,
-      { featuredInPortfolio: true },
-      { limit: 20, sort: { createdAt: -1 } },
-    );
-    return result.data;
-  }
 }

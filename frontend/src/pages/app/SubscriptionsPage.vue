@@ -65,6 +65,14 @@
           </template>
         </w-table>
       </w-card>
+
+      <div v-if="!loading && items.length === 0" class="empty-cta">
+        <p class="empty-cta-text">Cargá tu primera cuota recurrente para no perder de vista ningún cobro.</p>
+        <w-button variant="primary" @click="openNewModal">
+          <span class="material-symbols-outlined mr-2">add</span>
+          NUEVO
+        </w-button>
+      </div>
     </main>
 
     <w-crud-modal v-model="showCrudModal" :schema="crudSchema" :initial-data="crudData" :loading="loading" @save="onSaveCrud" />
@@ -83,8 +91,6 @@ import WCrudModal from '@/components/ui/WCrudModal.vue'
 import {
   loadClientOptionById,
   loadClientOptions,
-  loadProductOptionById,
-  loadProductOptions
 } from '@/utils/remote-entity-options'
 import { formatDate, isExpiringSoon } from '@/utils/date'
 
@@ -118,14 +124,6 @@ export default defineComponent({
         },
         { name: 'planName', label: 'Plan', type: 'text', required: true },
         { name: 'nextBillingDate', label: 'Próxima factura', type: 'date', required: true },
-        {
-          name: 'productId',
-          label: 'Producto',
-          type: 'remote-select',
-          searchPlaceholder: 'Buscar producto por nombre...',
-          loadOptions: loadProductOptions,
-          loadOptionByValue: loadProductOptionById
-        },
         { name: 'price', label: 'Precio', type: 'number', centsField: true },
         { name: 'currency', label: 'Moneda', type: 'text' },
         { name: 'billingCycle', label: 'Ciclo', type: 'select', options: [
@@ -232,6 +230,22 @@ export default defineComponent({
 .search-box input { width: 100%; background-color: var(--color-bg-surface); border: 1px solid var(--color-border); padding: 8px 12px 8px 36px; font-family: var(--font-mono); font-size: 11px; color: var(--color-text-base); outline: none; }
 
 .page-content { flex-grow: 1; min-width: 0; display: flex; flex-direction: column; }
+
+.empty-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 16px;
+  padding: 20px;
+  border: 1px dashed var(--color-border);
+}
+
+.empty-cta-text {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  margin: 0;
+}
 .no-padding { display: flex; flex-direction: column; min-width: 0; }
 .no-padding :deep(.w-card__body) { padding: 0 !important; display: flex; flex-direction: column; flex-grow: 1; min-width: 0; }
 

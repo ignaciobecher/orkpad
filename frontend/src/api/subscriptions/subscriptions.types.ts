@@ -1,7 +1,6 @@
 export interface Subscription {
   _id: string
   clientId: string
-  productId?: string
   planName: string
   price: number
   currency: string
@@ -44,7 +43,6 @@ export interface CreateSubscriptionDto {
   clientId: string
   planName: string
   nextBillingDate: string
-  productId?: string
   price?: number
   currency?: string
   billingCycle?: 'monthly' | 'yearly'

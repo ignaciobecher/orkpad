@@ -11,8 +11,6 @@ import { Project, ProjectSchema } from '../projects/projects.schema';
 import { Task, TaskSchema } from '../tasks/tasks.schema';
 import { Invoice, InvoiceSchema } from '../invoices/invoices.schema';
 import { Event, EventSchema } from '../agenda/agenda.schema';
-import { Deal, DealSchema } from '../pipeline/pipeline.schema';
-import { Product, ProductSchema } from '../products/products.schema';
 import {
   Subscription,
   SubscriptionSchema,
@@ -54,8 +52,6 @@ import { GithubStrategy } from './strategies/github.strategy';
       { name: Task.name, schema: TaskSchema },
       { name: Invoice.name, schema: InvoiceSchema },
       { name: Event.name, schema: EventSchema },
-      { name: Deal.name, schema: DealSchema },
-      { name: Product.name, schema: ProductSchema },
       { name: Subscription.name, schema: SubscriptionSchema },
       { name: Doc.name, schema: DocumentSchema },
       { name: TaskColumn.name, schema: TaskColumnSchema },

@@ -20,8 +20,9 @@ export const useOnboardingStore = defineStore('onboarding', {
   getters: {
     isComplete: (state) => state.status?.completed ?? false,
     completedCount: (state) => state.status?.completedCount ?? 0,
-    totalCount: (state) => state.status?.totalCount ?? 4,
+    totalCount: (state) => state.status?.totalCount ?? 6,
     checklist: (state) => state.status?.checklist ?? [],
+    hasDemoData: (state) => state.status?.hasDemoData ?? false,
   },
 
   actions: {
@@ -61,7 +62,7 @@ export const useOnboardingStore = defineStore('onboarding', {
         }
       }
 
-      if (prevCount < 2 && newCount >= 2) {
+      if (prevCount < 3 && newCount >= 3) {
         setTimeout(() => success('¡Ya tienes la mitad del setup! La app empieza a tomar forma.'), 600)
       }
     },

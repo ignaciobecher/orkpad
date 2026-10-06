@@ -14,11 +14,6 @@ export class CreateSubscriptionDto {
   @IsString()
   clientId: string;
 
-  @ApiPropertyOptional()
-  @IsString()
-  @IsOptional()
-  productId?: string;
-
   @ApiProperty({ example: 'Pro Plan' })
   @IsString()
   @MaxLength(200)

@@ -85,6 +85,8 @@ export class User {
       addedFirstProject: { type: Boolean, default: false },
       addedThreeTasks: { type: Boolean, default: false },
       loggedFirstHours: { type: Boolean, default: false },
+      createdFirstQuote: { type: Boolean, default: false },
+      addedFirstRetainer: { type: Boolean, default: false },
     },
     default: () => ({}),
   })
@@ -93,6 +95,8 @@ export class User {
     addedFirstProject: boolean;
     addedThreeTasks: boolean;
     loggedFirstHours: boolean;
+    createdFirstQuote: boolean;
+    addedFirstRetainer: boolean;
   };
 
   @Prop({
