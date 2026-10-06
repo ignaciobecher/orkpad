@@ -2,17 +2,17 @@
 
 **Orkpad** is an open-source app for freelancers. It replaces the broken Excel, the outdated Notion, and the scattered WhatsApp reminders. CRM, projects, time tracking, and billing — in one self-hostable place, under your control.
 
-The landing page (visible at the root URL when running the app) includes a live dashboard mockup of the product.
+The root URL (`/`) redirects to registration — there is no marketing landing page: a self-hosted instance opens directly into the product.
 
 ## Features
 
 - **Work**: dashboard, clients, projects, Kanban tasks, and time tracking.
-- **Sales**: visual pipeline to move prospects from first contact to close, plus lead prospection, searches, and campaigns.
+- **Sales**: visual pipeline to move prospects from first contact to close, plus leads and email campaigns.
 - **Finance**: invoicing, expenses, quotes, balance and cash-flow reports, and recurring subscriptions.
-- **Operations**: product catalog, infrastructure cost control (Railway, Netlify, Supabase), and monitoring.
+- **Operations**: product catalog and recurring subscriptions.
 - **Knowledge**: internal documentation (docs) and an interactive agenda.
 - **Advanced**: automated task-completion notifications, client portal (coming soon), portfolio builder, marketing toolkit, and social identity manager.
-- **Internationalization**: UI in Spanish and English (switchable from the landing page).
+- **Internationalization**: UI in Spanish and English (switchable from the app settings).
 - **PWA**: installable offline-first web app.
 - **Self-hosted & privacy-first**: each workspace is isolated and all data can be exported at any time.
 
@@ -74,7 +74,7 @@ src/
   composables/  # Reusable composition functions
   constants/    # Shared constants (e.g. community links)
   locales/      # vue-i18n translations (es/en)
-  pages/        # Route-level pages (landing, auth, app)
+  pages/        # Route-level pages (auth, app)
   router/       # Vue Router configuration and guards
   stores/       # Pinia stores
   utils/        # Formatting and helper utilities

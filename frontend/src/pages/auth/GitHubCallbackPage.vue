@@ -62,22 +62,35 @@ export default defineComponent({
 
     const state = ref<CallbackState>('loading')
     const errorMessage = ref('')
-    const authMode = ref<'login' | 'register'>(
-      (localStorage.getItem('github_auth_mode') as 'login' | 'register') ?? 'login',
+    const authMode = ref<'login' | 'register' | 'link'>(
+      (localStorage.getItem('github_auth_mode') as 'login' | 'register' | 'link') ?? 'login',
     )
 
     const isRegister = computed(() => authMode.value === 'register')
+    const isLink = computed(() => authMode.value === 'link')
 
     const loadingTitle = computed(() =>
-      isRegister.value ? 'CREANDO TU CUENTA CON GITHUB' : 'INICIANDO SESIÓN CON GITHUB',
+      isLink.value
+        ? 'CONECTANDO TU CUENTA DE GITHUB'
+        : isRegister.value
+          ? 'CREANDO TU CUENTA CON GITHUB'
+          : 'INICIANDO SESIÓN CON GITHUB',
     )
 
     const loadingSubtitle = computed(() =>
-      isRegister.value ? 'Configurando tu workspace...' : 'Verificando credenciales...',
+      isLink.value
+        ? 'Vinculando repositorios...'
+        : isRegister.value
+          ? 'Configurando tu workspace...'
+          : 'Verificando credenciales...',
     )
 
     const successTitle = computed(() =>
-      isRegister.value ? '¡CUENTA CREADA!' : '¡BIENVENIDO DE VUELTA!',
+      isLink.value
+        ? '¡CUENTA CONECTADA!'
+        : isRegister.value
+          ? '¡CUENTA CREADA!'
+          : '¡BIENVENIDO DE VUELTA!',
     )
 
     onMounted(async () => {
@@ -109,7 +122,7 @@ export default defineComponent({
 
           state.value = 'success'
           setTimeout(() => {
-            router.push('/app/dashboard')
+            router.push(mode === 'link' ? '/app/integrations' : '/app/dashboard')
           }, 1800)
         } else {
           state.value = 'error'

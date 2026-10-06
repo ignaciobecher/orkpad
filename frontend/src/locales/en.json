@@ -1,11 +1,4 @@
 {
-  "nav": {
-    "modules": "MODULES",
-    "workflow": "HOW IT WORKS",
-    "github": "GITHUB",
-    "docs": "DOCS",
-    "community": "COMMUNITY"
-  },
   "hero": {
     "chaosFiles": ["clients.xlsx", "invoices_v3_FINAL.xlsx", "projects_2024.notion", "wa_tracking.png", "proposal_bob.gdoc"],
     "title": "The open-source app",
@@ -247,10 +240,10 @@
   },
   "auth": {
     "login": {
-      "title": "Confirm Access",
+      "title": "Log In",
       "email": "Email Address",
       "password": "Password",
-      "submit": "Confirm Access",
+      "submit": "Log In",
       "createAccount": "Create account",
       "forgotPassword": "Forgot your password?"
     },
@@ -311,9 +304,6 @@
         }
       }
     },
-    "social": {
-      "orContinueWith": "OR CONTINUE WITH"
-    },
     "back": "Back"
   },
   "sidebar": {
@@ -325,8 +315,7 @@
       "planning": "PLANNING",
       "finance": "FINANCE",
       "operations": "OPERATIONS",
-      "knowledge": "KNOWLEDGE",
-      "monitoring": "INFRA MONITORING"
+      "knowledge": "KNOWLEDGE"
     },
     "items": {
       "dashboard": "Dashboard",
@@ -335,15 +324,11 @@
       "tasks": "Tasks",
       "pipeline": "Pipeline",
       "leads": "Leads",
-      "leadSearches": "Searches",
       "leadCampaigns": "Campaigns",
       "finance": "Finance",
       "timeTracking": "Time Tracking",
       "myProducts": "My Products",
       "subscriptions": "Subscriptions",
-      "infrastructure": "Infrastructure",
-      "monitoringOverview": "Overview",
-      "monitoringProjects": "Projects",
       "integrations": "Integrations",
       "docs": "Documentation",
       "agenda": "Agenda",
@@ -689,21 +674,6 @@
       "client": "Client"
     }
   },
-  "infrastructure": {
-    "title": "Infrastructure",
-    "searchPlaceholder": "SEARCH...",
-    "new": "NEW",
-    "noRecords": "No records found.",
-    "deleteConfirm": "Are you sure you want to delete this record?",
-    "fields": {
-      "name": "Name",
-      "provider": "Provider",
-      "type": "Type",
-      "status": "Status",
-      "cost": "Cost",
-      "currency": "Currency"
-    }
-  },
   "docs": {
     "title": "Documentation",
     "searchPlaceholder": "SEARCH...",
@@ -779,13 +749,13 @@
       "title": "1. Data We Collect",
       "intro": "We collect the following categories of information:",
       "accountTitle": "Account Information",
-      "accountText": "When you register, we collect your name, email address, and a securely hashed password (we never store your plain-text password). If you sign in via Google or GitHub OAuth, we receive your public profile information (name, email, and avatar) from those providers.",
+      "accountText": "When you register, we collect your name, email address, and a securely hashed password (we never store your plain-text password). If you link your GitHub account, we receive your public profile information (name, email, and avatar) from that provider.",
       "workspaceTitle": "Workspace & Business Data",
       "workspaceText": "All content you create within Orkpad — clients, projects, tasks, invoices, quotes, time entries, notes, documents, and any other records — is stored and associated with your workspace. This data belongs to you.",
       "usageTitle": "Usage & Technical Data",
       "usageText": "We may collect technical information such as IP addresses, browser type, device information, and general usage patterns (page views, feature interactions) to operate, improve, and secure the service.",
       "integrationsTitle": "Integration Data",
-      "integrationsText": "If you connect Orkpad to Google (Calendar, Gmail) or GitHub, we receive and store OAuth access tokens and the data you explicitly authorize those integrations to access (e.g., calendar events, repository information). You can revoke these integrations at any time from your settings."
+      "integrationsText": "If you connect Orkpad to GitHub, we receive and store OAuth access tokens and the data you explicitly authorize that integration to access (e.g., repository information). You can revoke this integration at any time from your settings."
     },
     "s2": {
       "title": "2. How We Use Your Data",
@@ -796,7 +766,7 @@
       "emails": "Transactional emails:",
       "emailsText": "To send verification emails, password reset links, and important system notifications (e.g., task reminders, follow-up alerts).",
       "sync": "Integration sync:",
-      "syncText": "To synchronize data with Google Calendar, Gmail, and GitHub as authorized by you.",
+      "syncText": "To synchronize data with GitHub as authorized by you.",
       "improvement": "Service improvement:",
       "improvementText": "To understand how users interact with the platform and fix issues.",
       "noSell": "We do not sell your personal data to third parties. We do not use your data for advertising."
@@ -804,12 +774,8 @@
     "s3": {
       "title": "3. Third-Party Services",
       "intro": "Orkpad relies on the following third-party providers to operate. Each provider processes data according to their own privacy policies:",
-      "googleDesc": "Used for OAuth authentication (sign in with Google), Google Calendar synchronization, and Gmail integration. When you connect your Google account, Google shares your profile information and, if authorized, calendar and email send permissions with us.",
-      "googleLink": "Google Privacy Policy",
-      "githubDesc": "Used for OAuth authentication (sign in with GitHub) and repository integrations (listing repos, viewing commits and pull requests within Orkpad projects). We only access the repositories you authorize.",
+      "githubDesc": "Used to link your GitHub account and repository integrations (listing repos, viewing commits and pull requests within Orkpad projects). We only access the repositories you authorize.",
       "githubLink": "GitHub Privacy Statement",
-      "railwayDesc": "Orkpad's backend infrastructure is hosted on Railway. Your data is stored on Railway's servers. Railway may collect infrastructure-level logs and metrics.",
-      "railwayLink": "Railway Privacy Policy",
       "resendDesc": "We use Resend to deliver transactional emails (account verification, password reset, notifications). Resend processes your email address and the content of these messages.",
       "resendLink": "Resend Privacy Policy",
       "mongoDesc": "All Orkpad workspace data is stored in MongoDB Atlas, a cloud database service. Data is encrypted at rest and in transit.",
@@ -861,7 +827,7 @@
       "objection": "Objection:",
       "objectionText": "Object to certain types of processing.",
       "revoke": "Revoke integrations:",
-      "revokeText": "Disconnect Google or GitHub integrations at any time from your account settings, revoking our access to those services.",
+      "revokeText": "You can revoke Orkpad's access to GitHub at any time from your GitHub account settings.",
       "contact": "To exercise any of these rights, contact us at {email}. We will respond within 30 days."
     },
     "s8": {

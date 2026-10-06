@@ -1,10 +1,6 @@
 <template>
   <auth-layout>
     <div class="login-card">
-      <router-link to="/" class="back-link">
-        <span class="material-symbols-outlined">arrow_back</span>
-        {{ $t('auth.back') }}
-      </router-link>
       <div class="login-header">
         <div class="brand">
           <w-logo :height="52" />
@@ -82,8 +78,6 @@
           </w-button>
         </div>
 
-        <social-auth />
-
         <div class="login-footer">
           <router-link to="/register" class="forgot-link">{{
             $t('auth.login.createAccount')
@@ -130,7 +124,6 @@ import { useWebAuthn } from '@/composables/useWebAuthn'
 import AuthLayout from '@/components/layout/AuthLayout.vue'
 import WButton from '@/components/ui/WButton.vue'
 import WInput from '@/components/ui/WInput.vue'
-import SocialAuth from '@/components/auth/SocialAuth.vue'
 import WLogo from '@/components/ui/WLogo.vue'
 
 const REMEMBER_EMAIL_KEY = 'orkpad_remember_email'
@@ -138,7 +131,7 @@ const BIOMETRIC_DISMISSED_KEY = 'orkpad_biometric_dismissed'
 
 export default defineComponent({
   name: 'LoginPage',
-  components: { AuthLayout, WButton, WInput, SocialAuth, WLogo },
+  components: { AuthLayout, WButton, WInput, WLogo },
   setup() {
     const {
       isPlatformAvailable,
@@ -279,31 +272,6 @@ export default defineComponent({
   border: 1px solid var(--color-border);
   padding: 40px;
   position: relative;
-}
-
-.back-link {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  text-decoration: none;
-  color: var(--color-text-muted);
-  font-family: var(--font-mono);
-  font-size: 10px;
-  text-transform: uppercase;
-  transition: all 0.2s ease;
-  z-index: 10;
-}
-
-.back-link:hover {
-  color: var(--color-primary);
-  transform: translateX(-2px);
-}
-
-.back-link span {
-  font-size: 16px;
 }
 
 @media (max-width: 640px) {

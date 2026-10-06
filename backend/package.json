@@ -1,7 +1,7 @@
 {
   "name": "orkpad-backend",
   "version": "0.0.1",
-  "description": "Orkpad — open source multi-tenant SaaS backend for freelancers",
+  "description": "Orkpad \u2014 open source multi-tenant SaaS backend for freelancers",
   "author": "Orkpad contributors",
   "license": "Apache-2.0",
   "scripts": {
@@ -43,7 +43,6 @@
     "otplib": "^13.4.0",
     "passport": "^0.7.0",
     "passport-github2": "^0.1.12",
-    "passport-google-oauth20": "^2.0.0",
     "passport-jwt": "^4.0.1",
     "pdfkit": "^0.18.0",
     "qrcode": "^1.5.4",
@@ -68,7 +67,6 @@
     "@types/multer": "^1.4.13",
     "@types/node": "^24.0.0",
     "@types/passport-github2": "^1.2.9",
-    "@types/passport-google-oauth20": "^2.0.17",
     "@types/passport-jwt": "^4.0.1",
     "@types/qrcode": "^1.5.6",
     "@types/supertest": "^7.0.0",

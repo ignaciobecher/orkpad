@@ -12,7 +12,6 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
-import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { WorkspaceId } from '../../common/decorators/workspace-id.decorator';
 import { LeadCampaignsService } from './lead-campaigns.service';
 import { CreateLeadCampaignDto } from './dto/create-lead-campaign.dto';
@@ -65,14 +64,12 @@ export class LeadCampaignsController {
   @Post(':id/send')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
-    summary:
-      'Send campaign emails to eligible leads — uses Gmail if connected, Resend otherwise',
+    summary: 'Send campaign emails to eligible leads via Resend',
   })
   sendCampaign(
     @WorkspaceId() workspaceId: string,
     @Param('id') id: string,
-    @CurrentUser() user: { userId: string },
   ) {
-    return this.leadCampaignsService.sendCampaign(workspaceId, id, user.userId);
+    return this.leadCampaignsService.sendCampaign(workspaceId, id);
   }
 }

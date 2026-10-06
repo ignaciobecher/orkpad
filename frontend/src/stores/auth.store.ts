@@ -100,11 +100,5 @@ export const useAuthStore = defineStore('auth', {
       await this.fetchMe()
       return { alreadyExisted: data.alreadyExisted }
     },
-    async loginWithGoogleCode(code: string): Promise<{ alreadyExisted: boolean }> {
-      const { data } = await authApi.exchangeGoogleCode(code)
-      this.justLoggedInFirstTime = data.isFirstLogin
-      await this.fetchMe()
-      return { alreadyExisted: data.alreadyExisted }
-    },
   },
 })

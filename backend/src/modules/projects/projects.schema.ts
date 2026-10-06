@@ -57,15 +57,6 @@ export class Project extends BaseSchema {
     htmlUrl: string;
   }[];
 
-  @Prop({ type: String, default: null })
-  railwayProjectId: string | null;
-
-  @Prop({ type: String, default: null })
-  netlifySiteId: string | null;
-
-  @Prop({ type: String, default: null })
-  supabaseProjectRef: string | null;
-
   @Prop({ default: false })
   featuredInPortfolio: boolean;
 
@@ -84,8 +75,4 @@ ProjectSchema.index({ workspaceId: 1, createdAt: -1 });
 ProjectSchema.index({ publicToken: 1 }, { sparse: true });
 ProjectSchema.index({ workspaceId: 1, linkVisibility: 1 });
 ProjectSchema.index({ workspaceId: 1, featuredInPortfolio: 1 });
-ProjectSchema.index(
-  { workspaceId: 1, supabaseProjectRef: 1 },
-  { sparse: true },
-);
 ProjectSchema.index({ workspaceId: 1, isDemo: 1 });

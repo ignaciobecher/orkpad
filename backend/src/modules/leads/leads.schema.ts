@@ -18,7 +18,7 @@ export type LeadStatus =
   | 'qualified'
   | 'disqualified'
   | 'converted';
-export type LeadSource = 'google_maps' | 'manual' | 'import';
+export type LeadSource = 'manual' | 'import';
 export type LeadEmailSource =
   | 'homepage'
   | 'contact_page'
@@ -107,7 +107,7 @@ export class Lead extends BaseSchema {
   @Prop({ type: Date })
   lastContactedAt?: Date;
 
-  @Prop({ default: 'google_maps' })
+  @Prop({ default: 'manual' })
   source: LeadSource;
 
   @Prop({ type: [String], default: [] })

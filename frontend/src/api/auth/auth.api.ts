@@ -26,9 +26,6 @@ export const authApi = {
   exchangeGithubCode: (code: string) =>
     apiClient.post<OAuthExchangeResponse>(`${BASE}/github/exchange`, { code }),
 
-  exchangeGoogleCode: (code: string) =>
-    apiClient.post<OAuthExchangeResponse>(`${BASE}/google/exchange`, { code }),
-
   resendVerification: (email: string) =>
     apiClient.post(`${BASE}/resend-verification`, { email }),
 

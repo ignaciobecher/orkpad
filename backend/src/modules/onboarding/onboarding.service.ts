@@ -58,11 +58,11 @@ export class OnboardingService {
         route: '/portfolio',
       },
       {
-        id: 'lead-scraping',
-        title: 'Prospección de leads',
+        id: 'lead-campaigns',
+        title: 'Campañas de leads',
         description:
-          'Encontrá y organizá potenciales clientes con búsquedas y campañas automatizadas.',
-        icon: 'search',
+          'Organizá tus potenciales clientes y contactalos con campañas de email.',
+        icon: 'campaign',
         route: '/leads',
       },
       {

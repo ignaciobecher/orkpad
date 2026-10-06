@@ -38,10 +38,10 @@ export class QueryLeadDto {
   @IsOptional()
   searchId?: string;
 
-  @ApiPropertyOptional({ enum: ['google_maps', 'manual', 'import'] })
-  @IsIn(['google_maps', 'manual', 'import'])
+  @ApiPropertyOptional({ enum: ['manual', 'import'] })
+  @IsIn(['manual', 'import'])
   @IsOptional()
-  source?: 'google_maps' | 'manual' | 'import';
+  source?: 'manual' | 'import';
 
   @ApiPropertyOptional({
     description: 'Filter leads by whether they have an email address',

@@ -97,12 +97,12 @@ export class CreateLeadDto {
   status?: 'new' | 'contacted' | 'qualified' | 'disqualified' | 'converted';
 
   @ApiPropertyOptional({
-    enum: ['google_maps', 'manual', 'import'],
+    enum: ['manual', 'import'],
     default: 'manual',
   })
-  @IsIn(['google_maps', 'manual', 'import'])
+  @IsIn(['manual', 'import'])
   @IsOptional()
-  source?: 'google_maps' | 'manual' | 'import';
+  source?: 'manual' | 'import';
 
   @ApiPropertyOptional({ minimum: 0, maximum: 100 })
   @IsNumber()

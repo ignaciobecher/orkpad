@@ -112,8 +112,6 @@ export default defineComponent({
       { text: t('sidebar.items.timeTracking'), to: '/app/time-tracking', icon: 'timer', section: t('sidebar.sections.finance') },
       { text: t('sidebar.items.myProducts'), to: '/app/products', icon: 'inventory_2', section: t('sidebar.sections.products') },
       { text: t('sidebar.items.subscriptions'), to: '/app/subscriptions', icon: 'rebase_edit', section: t('sidebar.sections.products') },
-      { text: t('sidebar.items.infrastructure'), to: '/app/infrastructure', icon: 'terminal', section: t('sidebar.sections.products') },
-      { text: t('sidebar.items.railway', 'Railway'), to: '/app/railway', icon: 'rocket_launch', section: t('sidebar.sections.products') },
       { text: t('sidebar.items.integrations', 'Integraciones'), to: '/app/integrations', icon: 'electrical_services', section: t('sidebar.sections.products') },
       { text: t('sidebar.items.notes', 'Pizarra'), to: '/app/notes', icon: 'edit_note', section: t('sidebar.sections.work') },
       { text: t('sidebar.items.docs'), to: '/app/docs', icon: 'description', section: t('sidebar.sections.knowledge') },

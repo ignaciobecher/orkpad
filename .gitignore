@@ -16,3 +16,6 @@ Thumbs.db
 # Dependencies and build output (each app has its own .gitignore too)
 node_modules
 dist
+
+# Local-only compose overrides (e.g. alternative ports for dev)
+docker-compose.override.yml

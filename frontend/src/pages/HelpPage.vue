@@ -521,21 +521,6 @@
             </div>
           </section>
 
-          <!-- Infrastructure -->
-          <section id="infra" class="article-section">
-            <h2>INFRAESTRUCTURA Y RECURSOS</h2>
-            <p>
-              CONTROLA TUS RECURSOS TÉCNICOS. IDEAL PARA AGENCIA QUE GESTIONAN SERVIDORES, DOMINIOS
-              O APIS PARA SUS CLIENTES.
-            </p>
-
-            <p>
-              ESTE MÓDULO TE PERMITE VINCULAR COSTOS DE PROVEEDORES (AWS, GOOGLE CLOUD, VERCEL) A
-              PROYECTOS ESPECÍFICOS PARA ENTENDER LA RENTABILIDAD REAL DE TUS SISTEMAS.
-            </p>
-          </section>
-
-          <!-- Knowledge Base -->
           <section id="docs" class="article-section">
             <h2>CONOCIMIENTO (DOCS INTERNA)</h2>
             <p>
@@ -627,16 +612,16 @@
             <div class="info-box info">
               <span class="material-symbols-outlined">commit</span>
               <p>
-                LA INTEGRACIÓN CON GITHUB FUNCIONA VÍA OAUTH. SIMPLEMENTE INICIÁ SESIÓN CON TU
-                CUENTA DE GITHUB UNA VEZ Y ORKPAD TENDRÁ ACCESO A TUS REPOSITORIOS.
+                LA INTEGRACIÓN CON GITHUB FUNCIONA VÍA OAUTH. CONECTÁ TU CUENTA DESDE
+                INTEGRACIONES UNA VEZ Y ORKPAD TENDRÁ ACCESO A TUS REPOSITORIOS.
               </p>
             </div>
 
             <h3>¿QUÉ PODÉS HACER?</h3>
             <ul>
               <li>
-                <strong>CONECTAR VÍA OAUTH:</strong> UN CLIC EN "INICIAR SESIÓN CON GITHUB" Y LISTO.
-                NO NECESITÁS TOKENS MANUALES.
+                <strong>CONECTAR VÍA OAUTH:</strong> UN CLIC EN "CONECTAR GITHUB" DESDE
+                INTEGRACIONES Y LISTO. NO NECESITÁS TOKENS MANUALES.
               </li>
               <li>
                 <strong>VINCULAR REPOSITORIOS:</strong> ASOCIÁ UNO O VARIOS REPOSITORIOS A CADA
@@ -666,8 +651,8 @@
               </h4>
               <ol>
                 <li>
-                  VE A <strong>CONFIGURACIÓN</strong> O HACÉ CLIC EN
-                  <strong>INICIAR SESIÓN CON GITHUB</strong> EN LA PANTALLA DE LOGIN.
+                  VE A <strong>INTEGRACIONES</strong> EN EL MENÚ LATERAL Y HACÉ CLIC EN
+                  <strong>CONECTAR GITHUB</strong>.
                 </li>
                 <li>AUTORIZÁ A ORKPAD EN LA PANTALLA DE GITHUB.</li>
                 <li>SERÁS REDIRIGIDO DE VUELTA A LA APP CON TU CUENTA VINCULADA.</li>
@@ -725,160 +710,6 @@
             </div>
           </section>
 
-          <!-- Monitoring Overview -->
-          <section id="monitoring" class="article-section">
-            <h2>MONITOREO DE INFRAESTRUCTURA</h2>
-            <p>
-              UN DASHBOARD CONSOLIDADO CON LA SALUD DE TODAS TUS INTEGRACIONES DE INFRAESTRUCTURA
-              (RAILWAY Y NETLIFY) EN UNA SOLA PANTALLA.
-            </p>
-
-            <ul>
-              <li>
-                <strong>ESTADO DE CONEXIÓN:</strong> VE DE UN VISTAZO QUÉ SERVICIOS ESTÁN
-                CONECTADOS.
-              </li>
-              <li>
-                <strong>KPIS:</strong> PROYECTOS VINCULADOS, % DE ÉXITO DE DEPLOYS/BUILDS Y FALLOS
-                EN LAS ÚLTIMAS 24HS.
-              </li>
-              <li>
-                <strong>GRÁFICOS:</strong> DISTRIBUCIÓN DE ESTADOS Y USO DE CPU, RAM, DISCO Y RED EN
-                EL TIEMPO.
-              </li>
-            </ul>
-
-            <div class="tutorial-box">
-              <h4><span class="material-symbols-outlined">play_circle</span> CÓMO USARLO</h4>
-              <p>
-                SI UN SERVICIO NO ESTÁ CONECTADO, HACÉ CLIC EN SU CARD PARA IR A
-                <strong>INTEGRACIONES</strong> Y CONECTARLO. USÁ EL BOTÓN
-                <strong>ACTUALIZAR</strong> PARA REFRESCAR LOS DATOS EN VIVO.
-              </p>
-            </div>
-          </section>
-
-          <!-- Railway Integration -->
-          <section id="railway" class="article-section">
-            <h2>INTEGRACIÓN CON RAILWAY</h2>
-            <p>
-              CONECTA TU CUENTA DE RAILWAY PARA VER EL ESTADO DE TUS DEPLOYMENTS, SERVICIOS Y
-              PROYECTOS DIRECTAMENTE DESDE ORKPAD SIN SALIR DE LA PLATAFORMA.
-            </p>
-
-            <div class="info-box info">
-              <span class="material-symbols-outlined">rocket_launch</span>
-              <p>
-                RAILWAY ES UNA PLATAFORMA DE INFRAESTRUCTURA EN LA NUBE. CON ESTA INTEGRACIÓN PODÉS
-                MONITOREAR TUS DESPLIEGUES EN TIEMPO REAL Y RECIBIR ALERTAS CUANDO ALGO FALLE.
-              </p>
-            </div>
-
-            <h3>¿QUÉ PODÉS HACER?</h3>
-            <ul>
-              <li><strong>CONECTAR CUENTA:</strong> USÁS UN TOKEN DE API PERSONAL DE RAILWAY.</li>
-              <li><strong>VER PROYECTOS:</strong> LISTADO DE TODOS TUS PROYECTOS DE RAILWAY.</li>
-              <li>
-                <strong>VINCULAR A PROYECTOS:</strong> ASOCIÁ UN PROYECTO DE RAILWAY A UN PROYECTO
-                DE ORKPAD PARA SEGUIMIENTO INTEGRADO.
-              </li>
-              <li>
-                <strong>DEPLOYMENTS EN TIEMPO REAL:</strong> VER EL HISTORIAL DE DEPLOYMENTS CON
-                ESTADO (OK, FALLÓ, BUILDING, ETC.).
-              </li>
-              <li>
-                <strong>NOTIFICACIONES AUTOMÁTICAS:</strong> ORKPAD CHEQUEA CADA 5 MINUTOS Y TE
-                NOTIFICA SI UN DEPLOY FALLA O SE CAE.
-              </li>
-            </ul>
-
-            <div class="tutorial-box">
-              <h4>
-                <span class="material-symbols-outlined">play_circle</span> TUTORIAL: CONECTAR
-                RAILWAY
-              </h4>
-              <ol>
-                <li>VE A <strong>INTEGRACIONES</strong> EN EL MENÚ LATERAL.</li>
-                <li>EN LA CARD DE RAILWAY, HAZ CLIC EN <strong>CONECTAR RAILWAY</strong>.</li>
-                <li>GENERÁ UN TOKEN EN <strong>railway.app/account/tokens</strong> Y COPIALO.</li>
-                <li>PEGÁ EL TOKEN EN EL CAMPO Y HACÉ CLIC EN <strong>CONECTAR</strong>.</li>
-                <li>
-                  UNA VEZ CONECTADO, APARECE EL BOTÓN <strong>VER RAILWAY</strong> QUE TE LLEVA AL
-                  OVERVIEW COMPLETO.
-                </li>
-              </ol>
-            </div>
-
-            <div class="tutorial-box">
-              <h4>
-                <span class="material-symbols-outlined">play_circle</span> TUTORIAL: VINCULAR UN
-                PROYECTO
-              </h4>
-              <ol>
-                <li>ABRÍ CUALQUIER PROYECTO EN <strong>PROYECTOS</strong>.</li>
-                <li>
-                  EN LA SECCIÓN <strong>RAILWAY</strong> DEL DETALLE, HACÉ CLIC EN
-                  <strong>VINCULAR PROYECTO</strong>.
-                </li>
-                <li>
-                  SELECCIONÁ EL PROYECTO DE RAILWAY EN EL BUSCADOR Y HACÉ CLIC EN
-                  <strong>VINCULAR</strong>.
-                </li>
-                <li>
-                  DESDE AHÍ PODÉS VER LOS DEPLOYMENTS DIRECTAMENTE CON EL BOTÓN
-                  <strong>VER DEPLOYMENTS</strong>.
-                </li>
-              </ol>
-            </div>
-
-            <div class="info-box tip">
-              <span class="material-symbols-outlined">notifications</span>
-              <p>
-                <strong>NOTIFICACIONES AUTOMÁTICAS:</strong> CUANDO UN DEPLOY FALLA O SE CRASHEA,
-                RECIBIRÁS UNA ALERTA EN EL CENTRO DE NOTIFICACIONES CON UN LINK DIRECTO A LA PÁGINA
-                DE DEPLOYMENTS DEL PROYECTO AFECTADO.
-              </p>
-            </div>
-          </section>
-
-          <!-- Netlify Integration -->
-          <section id="netlify" class="article-section">
-            <h2>INTEGRACIÓN CON NETLIFY</h2>
-            <p>
-              CONECTÁ TU CUENTA DE NETLIFY PARA VER TUS SITIOS Y DEPLOYS VINCULADOS A PROYECTOS DE
-              ORKPAD, SIN SALIR DE LA PLATAFORMA.
-            </p>
-
-            <div class="info-box info">
-              <span class="material-symbols-outlined">language</span>
-              <p>
-                POR CADA SITIO VINCULADO PODÉS VER SU URL PÚBLICA, EL ESTADO DEL ÚLTIMO DEPLOY Y EL
-                HISTORIAL DE DEPLOYS RECIENTES (RAMA, DURACIÓN Y FECHA).
-              </p>
-            </div>
-
-            <div class="tutorial-box">
-              <h4>
-                <span class="material-symbols-outlined">play_circle</span> TUTORIAL: VINCULAR UN
-                SITIO DE NETLIFY
-              </h4>
-              <ol>
-                <li>
-                  ABRÍ EL PROYECTO EN <strong>PROYECTOS</strong> AL QUE QUERÉS VINCULAR EL SITIO.
-                </li>
-                <li>
-                  EN LA SECCIÓN <strong>NETLIFY</strong> DEL DETALLE, CONECTÁ EL SITIO
-                  CORRESPONDIENTE.
-                </li>
-                <li>
-                  DESDE AHÍ (O DESDE <strong>NETLIFY</strong> EN EL MENÚ LATERAL) PODÉS VER EL
-                  ESTADO Y EL HISTORIAL DE DEPLOYS.
-                </li>
-              </ol>
-            </div>
-          </section>
-
-          <!-- Integrations -->
           <section id="integrations" class="article-section">
             <h2>INTEGRACIONES</h2>
             <p>
@@ -888,24 +719,14 @@
 
             <div class="finance-grid">
               <div class="finance-item">
-                <span class="material-symbols-outlined">rocket_launch</span>
-                <h4>RAILWAY</h4>
-                <p>INFRAESTRUCTURA EN LA NUBE. DEPLOYMENTS Y SERVICIOS EN TIEMPO REAL.</p>
-              </div>
-              <div class="finance-item">
                 <span class="material-symbols-outlined">commit</span>
                 <h4>GITHUB</h4>
                 <p>REPOSITORIOS, COMMITS Y PULL REQUESTS VINCULADOS A PROYECTOS.</p>
               </div>
               <div class="finance-item">
-                <span class="material-symbols-outlined">language</span>
-                <h4>NETLIFY</h4>
-                <p>SITIOS Y DEPLOYS VINCULADOS A PROYECTOS, CON HISTORIAL EN TIEMPO REAL.</p>
-              </div>
-              <div class="finance-item">
                 <span class="material-symbols-outlined">add_circle</span>
                 <h4>PRÓXIMAMENTE</h4>
-                <p>VERCEL, STRIPE, NOTION Y MÁS INTEGRACIONES EN CAMINO.</p>
+                <p>MÁS INTEGRACIONES EN CAMINO.</p>
               </div>
             </div>
 
@@ -914,9 +735,9 @@
                 <span class="material-symbols-outlined">play_circle</span> ACCEDER A INTEGRACIONES
               </h4>
               <p>
-                VE AL MENÚ LATERAL Y HACÉ CLIC EN <strong>INTEGRACIONES</strong> (SECCIÓN PRODUCTS).
-                DESDE AHÍ PODÉS CONECTAR O DESCONECTAR SERVICIOS, VER EL ESTADO DE CADA INTEGRACIÓN
-                Y ACCEDER A SUS PANELES ESPECÍFICOS.
+                VE AL MENÚ LATERAL Y HACÉ CLIC EN <strong>INTEGRACIONES</strong>.
+                DESDE AHÍ PODÉS CONECTAR TU CUENTA DE GITHUB PARA VINCULAR REPOSITORIOS
+                A TUS PROYECTOS.
               </p>
             </div>
           </section>
@@ -1133,13 +954,9 @@ export default defineComponent({
         ],
       },
       {
-        title: 'INFRAESTRUCTURA',
+        title: 'INTEGRACIONES',
         items: [
-          { id: 'infra', label: 'INFRAESTRUCTURA', icon: 'terminal' },
-          { id: 'monitoring', label: 'MONITOREO', icon: 'monitor_heart' },
           { id: 'github', label: 'GITHUB', icon: 'commit' },
-          { id: 'railway', label: 'RAILWAY', icon: 'rocket_launch' },
-          { id: 'netlify', label: 'NETLIFY', icon: 'language' },
           { id: 'integrations', label: 'INTEGRACIONES', icon: 'electrical_services' },
         ],
       },

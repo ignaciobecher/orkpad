@@ -20,7 +20,6 @@ import { ConfigService } from '@nestjs/config';
 import type { Response } from 'express';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { GithubAuthGuard } from '../../common/guards/github-auth.guard';
-import { GoogleAuthGuard } from '../../common/guards/google-auth.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { WorkspaceId } from '../../common/decorators/workspace-id.decorator';
 import { AuthService } from './auth.service';
@@ -53,20 +52,28 @@ export class AuthController {
     }
   }
 
-  private requireGoogle() {
-    if (!this.configService.get<string>('GOOGLE_CLIENT_ID')) {
-      throw new NotImplementedException(
-        'Google OAuth is not configured. Set GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, and GOOGLE_CALLBACK_URL to enable it.',
-      );
-    }
-  }
-
   @Post('register')
   @ApiOperation({
-    summary: 'Register a new account — sends verification email',
+    summary:
+      'Register a new account — sends a verification email when configured, otherwise the account is verified immediately',
   })
-  async register(@Body() dto: RegisterDto) {
-    return this.authService.register(dto);
+  async register(
+    @Body() dto: RegisterDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const result = await this.authService.register(dto);
+    if (
+      !result.requiresEmailVerification &&
+      result.accessToken &&
+      result.refreshToken
+    ) {
+      this.setTokensCookies(res, result.accessToken, result.refreshToken);
+    }
+    return {
+      success: true,
+      requiresEmailVerification: result.requiresEmailVerification,
+      isFirstLogin: result.isFirstLogin ?? false,
+    };
   }
 
   @Post('login')
@@ -276,7 +283,7 @@ export class AuthController {
 
   @Get('github')
   @UseGuards(GithubAuthGuard)
-  @ApiOperation({ summary: 'Initiate GitHub OAuth flow' })
+  @ApiOperation({ summary: 'Connect a GitHub account (repo linking)' })
   githubLogin() {
     this.requireGithub();
   }
@@ -310,52 +317,6 @@ export class AuthController {
     summary: 'Exchange one-time OAuth code for httpOnly session cookies',
   })
   async githubExchange(
-    @Body('code') code: string,
-    @Res({ passthrough: true }) res: Response,
-  ) {
-    if (!code) throw new UnauthorizedException('Missing code');
-    const { tokens, alreadyExisted, isFirstLogin } =
-      this.authService.exchangeOAuthCode(code);
-    this.setTokensCookies(res, tokens.accessToken, tokens.refreshToken);
-    return { success: true, alreadyExisted, isFirstLogin };
-  }
-
-  @Get('google')
-  @UseGuards(GoogleAuthGuard)
-  @ApiOperation({ summary: 'Initiate Google OAuth flow' })
-  googleLogin() {
-    this.requireGoogle();
-  }
-
-  @Get('google/callback')
-  @UseGuards(GoogleAuthGuard)
-  @ApiOperation({
-    summary: 'Google OAuth callback — redirects with a one-time exchange code',
-  })
-  async googleCallback(@Req() req: any, @Res() res: Response) {
-    this.requireGoogle();
-    const frontendUrl =
-      this.configService.get<string>('FRONTEND_URL') ?? 'http://localhost:5173';
-    try {
-      const { code, alreadyExisted } = await this.authService.googleLogin(
-        req.user,
-      );
-
-      const params = new URLSearchParams({ code });
-      if (alreadyExisted) params.set('info', 'already_exists');
-
-      res.redirect(`${frontendUrl}/auth/google/callback?${params.toString()}`);
-    } catch {
-      res.redirect(`${frontendUrl}/auth/google/callback?error=google_failed`);
-    }
-  }
-
-  @Post('google/exchange')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({
-    summary: 'Exchange one-time Google OAuth code for httpOnly session cookies',
-  })
-  async googleExchange(
     @Body('code') code: string,
     @Res({ passthrough: true }) res: Response,
   ) {

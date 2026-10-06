@@ -42,10 +42,10 @@
         </div>
       </div>
       <div class="header-right">
-        <router-link to="/app/leads/searches">
+        <router-link to="/app/leads/campaigns">
           <w-button variant="secondary">
-            <span class="material-symbols-outlined mr-2">travel_explore</span>
-            Nueva búsqueda
+            <span class="material-symbols-outlined mr-2">mark_email_read</span>
+            Ver campañas
           </w-button>
         </router-link>
       </div>
@@ -57,7 +57,7 @@
           :headers="headers"
           :items="items"
           :loading="loading"
-          empty-message="No hay leads. Iniciá una búsqueda para encontrar potenciales clientes."
+          empty-message="No hay leads. Agregá tu primer lead manualmente o importalo."
           @row-click="viewLead"
         >
           <template #item-name="{ item }">

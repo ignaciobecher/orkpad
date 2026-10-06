@@ -22,18 +22,6 @@ export class User {
   githubAccessToken?: string | null;
 
   @Prop({ type: String, default: null })
-  googleId?: string | null;
-
-  @Prop({ type: String, default: null, select: false })
-  googleAccessToken?: string | null;
-
-  @Prop({ type: String, default: null, select: false })
-  googleRefreshToken?: string | null;
-
-  @Prop({ type: String, default: null })
-  googleEmail?: string | null;
-
-  @Prop({ type: String, default: null })
   avatarUrl?: string | null;
 
   @Prop({ type: String, default: null, select: false })

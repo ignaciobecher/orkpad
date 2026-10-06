@@ -6,7 +6,7 @@ This is a **monorepo** with two applications:
 
 | Directory  | Description                                         | Stack |
 | ---------- | --------------------------------------------------- | ----- |
-| `frontend/` | Web app (dashboard, landing, client portal, PWA)     | Vue 3, Vite, Vuetify, Tailwind, Pinia, vue-i18n |
+| `frontend/` | Web app (dashboard, client portal, PWA)               | Vue 3, Vite, Vuetify, Tailwind, Pinia, vue-i18n |
 | `backend/`  | Multi-tenant REST + realtime API                    | NestJS, MongoDB (Mongoose), Socket.IO, JWT |
 
 - **Multi-tenant**: each workspace is isolated; data never leaks between workspaces.
@@ -17,50 +17,38 @@ This is a **monorepo** with two applications:
 
 - [Docker](https://docs.docker.com/get-docker/) + [Docker Compose](https://docs.docker.com/compose/install/) (included with Docker Desktop)
 - [Git](https://git-scm.com/downloads)
-- A GitHub account (to fork/clone)
 
-That's it. Node.js, MongoDB, and everything else is handled inside Docker containers.
+That's it. Node.js, MongoDB, and everything else runs inside Docker containers. No accounts, no API keys, no external services required.
 
 ## Clone & Run with Docker
 
-### 1. Fork the repository (optional but recommended)
-
-Go to [https://github.com/ignaciobecher/orkpad](https://github.com/ignaciobecher/orkpad) and click **Fork**. This gives you your own copy under your GitHub account.
-
-### 2. Clone your fork
-
-```bash
-git clone https://github.com/<YOUR_USERNAME>/orkpad.git
-cd orkpad
-```
-
-If you didn't fork, clone the original repo directly:
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/ignaciobecher/orkpad.git
 cd orkpad
 ```
 
-### 3. Create the environment file
+### 2. Create the environment file
 
 ```bash
-cp backend/.env.example backend/.env
+cp .env.example .env
 ```
 
-Open `backend/.env` in any text editor. The **only values you must change** are the two JWT secrets — replace them with long random strings:
+Open `.env` in any text editor. The **only values you must change** are the two JWT secrets — replace them with long random strings (generate with `openssl rand -base64 48`):
 
 ```env
 JWT_SECRET=replace-this-with-a-long-random-string-at-least-16-chars
 JWT_REFRESH_SECRET=replace-this-with-another-long-random-string-16+
 ```
 
-Everything else can stay as-is for local development. The defaults work out of the box:
+Everything else works out of the box for local usage:
 
-- `MONGODB_URI` is overridden by Docker Compose to point to the internal Mongo container.
-- `FRONTEND_URL` defaults to `http://localhost:8080`.
-- OAuth, email, and push notification vars are optional — leave them empty.
+- MongoDB runs in its own container — no setup needed.
+- `FRONTEND_URL` / `VITE_API_URL` / `API_URL` default to `localhost`.
+- Email (`RESEND_API_KEY`) and GitHub OAuth are optional — leave them commented out.
 
-### 4. Start the stack
+### 3. Start the stack
 
 ```bash
 docker compose up --build
@@ -76,14 +64,16 @@ This builds and starts **three containers**:
 
 The first run takes a few minutes (downloading images, installing deps, building). Subsequent starts are fast.
 
-### 5. Open the app
+### 4. Open the app
 
 - **Frontend**: [http://localhost:8080](http://localhost:8080)
-- **Backend API docs**: [http://localhost:3000/docs](http://localhost:3000/docs)
+- **Backend API docs**: [http://localhost:3000/api](http://localhost:3000/api)
 
-Register a new account and start using Orkpad.
+The root URL redirects to **registration**. Create your account with email + password and start using Orkpad — no email server, no GitHub login, nothing else required.
 
-### 6. Stop the stack
+> **Note:** email verification is skipped when `RESEND_API_KEY` is not set, so your first account works immediately. If you later configure Resend, new accounts will verify by email as usual.
+
+### 5. Stop the stack
 
 Press `Ctrl+C` in the terminal where Docker is running, or run:
 
@@ -97,12 +87,14 @@ Your data persists in a Docker volume (`orkpad_mongo_data`). To wipe everything 
 docker compose down -v
 ```
 
-## Development (without Docker)
+### Development without Docker
 
 If you prefer to run without Docker, you need:
 
 - Node.js `^20.19.0` or `>=22.12.0`
 - A MongoDB instance (local, Docker, or a cloud cluster like [MongoDB Atlas](https://www.mongodb.com/atlas))
+
+> Local ports `3001` / `8081`: if ports `3000` / `8080` are taken on your machine, copy `docker-compose.override.yml.example` to `docker-compose.override.yml` (git-ignored) and adjust the ports there.
 
 ### Backend
 
@@ -154,28 +146,48 @@ Leave empty to disable. Configure only if you need the feature:
 
 | Service | Env vars | Purpose |
 |---------|----------|---------|
-| GitHub OAuth | `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`, `GITHUB_CALLBACK_URL` | Login with GitHub |
-| Google OAuth | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_CALLBACK_URL` | Login with Google + Calendar/Gmail |
-| Resend | `RESEND_API_KEY` | Transactional emails (verification, password reset) |
+| GitHub OAuth | `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`, `GITHUB_CALLBACK_URL` | Link GitHub repos to projects (login/register is always email + password) |
+| Resend | `RESEND_API_KEY` | Transactional emails (verification, password reset). When empty, new accounts verify instantly |
 | Web Push | `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY` | Browser push notifications |
-| Google Places | `GOOGLE_PLACES_API_KEY` | Lead scraping enrichment |
 
 ## Deploy to production
 
 ### Docker (VPS / self-hosted server)
 
-1. Clone the repo on your server
-2. Create `backend/.env` with production values:
-   - Set real random strings for `JWT_SECRET` and `JWT_REFRESH_SECRET`
-   - Set `FRONTEND_URL` to your public domain (e.g. `https://app.yourdomain.com`)
-   - Set `API_URL` to your public API domain (e.g. `https://api.yourdomain.com`)
-3. Run with Docker Compose:
+1. Clone the repo on your server and create `.env`:
 
-```bash
-docker compose up -d --build
-```
+   ```bash
+   git clone https://github.com/ignaciobecher/orkpad.git
+   cd orkpad
+   cp .env.example .env
+   ```
 
-4. Put a reverse proxy (nginx, Caddy, Traefik) in front of ports 8080 and 3000 to handle HTTPS.
+2. Edit `.env` with production values:
+   - Set real random strings for `JWT_SECRET` and `JWT_REFRESH_SECRET` (`openssl rand -base64 48`)
+   - Set `FRONTEND_URL` to your public app URL (e.g. `https://app.yourdomain.com`)
+   - Set `VITE_API_URL` and `API_URL` to your public API URL (e.g. `https://api.yourdomain.com`)
+   - Optional: `RESEND_API_KEY` for emails, `GITHUB_*` for repo linking
+
+   > **Important:** `VITE_API_URL` is baked into the frontend at build time — set it **before** running `docker compose up --build`. If you change it later, rebuild the frontend (`docker compose up -d --build frontend`).
+
+3. Start the stack:
+
+   ```bash
+   docker compose up -d --build
+   ```
+
+4. Put a reverse proxy in front to handle HTTPS. Example with Caddy:
+
+   ```
+   app.yourdomain.com {
+       reverse_proxy localhost:8080
+   }
+   api.yourdomain.com {
+       reverse_proxy localhost:3000
+   }
+   ```
+
+5. Open `https://app.yourdomain.com` — you'll land on registration. Create your account and you're in. Back up the `orkpad_mongo_data` Docker volume regularly.
 
 ### Railway / Render / Fly.io
 

@@ -37,10 +37,6 @@ import {
   Subscription,
   SubscriptionDocument,
 } from '../subscriptions/subscriptions.schema';
-import {
-  InfrastructureResource,
-  InfrastructureResourceDocument,
-} from '../infrastructure/infrastructure.schema';
 import { Document as Doc, DocumentDocument } from '../docs/docs.schema';
 import {
   TaskColumn,
@@ -102,8 +98,6 @@ export class AuthService {
     private readonly productModel: Model<ProductDocument>,
     @InjectModel(Subscription.name)
     private readonly subscriptionModel: Model<SubscriptionDocument>,
-    @InjectModel(InfrastructureResource.name)
-    private readonly infraModel: Model<InfrastructureResourceDocument>,
     @InjectModel(Doc.name) private readonly docModel: Model<DocumentDocument>,
     @InjectModel(TaskColumn.name)
     private readonly taskColumnModel: Model<TaskColumnDocument>,
@@ -116,7 +110,12 @@ export class AuthService {
     private readonly pushSubscriptionModel: Model<PushSubscriptionDocument>,
   ) {}
 
-  async register(dto: RegisterDto) {
+  async register(dto: RegisterDto): Promise<{
+    requiresEmailVerification: boolean;
+    accessToken?: string;
+    refreshToken?: string;
+    isFirstLogin?: boolean;
+  }> {
     const workspace = await this.workspacesService.create('pending', {
       name: `${dto.name}'s Workspace`,
     });
@@ -131,14 +130,33 @@ export class AuthService {
       termsVersion: '1.0.0',
     });
 
-    await this.workspacesService.update((workspace._id as any).toString(), {
-      ownerId: (user._id as any).toString(),
+    const userId = (user._id as any).toString();
+    const workspaceId = (workspace._id as any).toString();
+
+    await this.workspacesService.update(workspaceId, {
+      ownerId: userId,
     } as any);
+
+    // Self-hosted instances often run without an email provider. When email
+    // sending is disabled, verify the account immediately so registration
+    // works fully inside the container with just email + password.
+    if (!this.mailService.isEmailEnabled()) {
+      await this.usersService.markEmailVerified(userId);
+      const tokens = await this.generateTokens(
+        userId,
+        user.email,
+        user.workspaceId,
+      );
+      await this.usersService.updateRefreshToken(userId, tokens.refreshToken);
+      await this.usersService.updateLastLogin(userId);
+      await this.sendWelcomeNotification(user.workspaceId, userId);
+      return { requiresEmailVerification: false, ...tokens, isFirstLogin: true };
+    }
 
     const token = this.generateSecureToken();
     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
     await this.usersService.setEmailVerificationToken(
-      (user._id as any).toString(),
+      userId,
       token,
       expiresAt,
     );
@@ -422,93 +440,6 @@ export class AuthService {
     return { code, alreadyExisted, isFirstLogin };
   }
 
-  async googleLogin(profile: {
-    googleId: string;
-    email: string;
-    name: string;
-    avatarUrl: string | undefined;
-    accessToken: string;
-    refreshToken: string;
-  }): Promise<{
-    code: string;
-    alreadyExisted: boolean;
-    isFirstLogin: boolean;
-  }> {
-    let user = await this.usersService.findByGoogleId(profile.googleId);
-    let alreadyExisted = !!user;
-
-    if (!user) {
-      user = await this.usersService.findByEmail(profile.email);
-      if (user) {
-        alreadyExisted = true;
-        await this.usersService.linkGoogle(
-          (user._id as any).toString(),
-          profile.googleId,
-          profile.email,
-          profile.avatarUrl,
-        );
-        if (!user.emailVerified) {
-          await this.usersService.markEmailVerified(
-            (user._id as any).toString(),
-          );
-        }
-        user = await this.usersService.findById((user._id as any).toString());
-      }
-    }
-
-    if (!user) {
-      const workspace = await this.workspacesService.create('pending', {
-        name: `${profile.name}'s Workspace`,
-      });
-      user = await this.usersService.createGoogleUser({
-        name: profile.name,
-        email: profile.email,
-        googleId: profile.googleId,
-        avatarUrl: profile.avatarUrl,
-        googleEmail: profile.email,
-        workspaceId: (workspace._id as any).toString(),
-      });
-      await this.workspacesService.update((workspace._id as any).toString(), {
-        ownerId: (user._id as any).toString(),
-      } as any);
-    }
-
-    if (!user)
-      throw new UnauthorizedException('Error al procesar el usuario de Google');
-
-    const isFirstLogin = !user.lastLogin;
-    const tokens = await this.generateTokens(
-      (user._id as any).toString(),
-      user.email,
-      user.workspaceId,
-    );
-    await this.usersService.updateRefreshToken(
-      (user._id as any).toString(),
-      tokens.refreshToken,
-    );
-    await this.usersService.updateLastLogin((user._id as any).toString());
-    await this.usersService.updateGoogleTokens(
-      (user._id as any).toString(),
-      profile.accessToken,
-      profile.refreshToken,
-    );
-    if (isFirstLogin)
-      await this.sendWelcomeNotification(
-        user.workspaceId,
-        (user._id as any).toString(),
-      );
-
-    const code = crypto.randomBytes(32).toString('hex');
-    oauthCodes.set(code, {
-      tokens,
-      alreadyExisted,
-      isFirstLogin,
-      expiresAt: Date.now() + 30_000,
-    });
-
-    return { code, alreadyExisted, isFirstLogin };
-  }
-
   exchangeOAuthCode(code: string): {
     tokens: { accessToken: string; refreshToken: string };
     alreadyExisted: boolean;
@@ -639,7 +570,6 @@ export class AuthService {
       deals,
       products,
       subscriptions,
-      infrastructure,
       docs,
       taskColumns,
       timeEntries,
@@ -674,10 +604,6 @@ export class AuthService {
         .lean()
         .exec(),
       this.subscriptionModel
-        .find(baseFilter as any)
-        .lean()
-        .exec(),
-      this.infraModel
         .find(baseFilter as any)
         .lean()
         .exec(),
@@ -717,7 +643,6 @@ export class AuthService {
       deals,
       products,
       subscriptions,
-      infrastructure,
       docs,
     };
   }

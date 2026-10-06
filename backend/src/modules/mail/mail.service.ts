@@ -4,7 +4,7 @@ import { Resend } from 'resend';
 
 @Injectable()
 export class MailService {
-  private readonly resend: Resend;
+  private readonly resend: Resend | null;
   private readonly logger = new Logger(MailService.name);
   private readonly fromEmail: string;
   private readonly apiUrl: string;
@@ -14,8 +14,10 @@ export class MailService {
     const apiKey = configService.get<string>('RESEND_API_KEY');
     if (!apiKey) {
       this.logger.warn('RESEND_API_KEY is not set — emails will not be sent');
+      this.resend = null;
+    } else {
+      this.resend = new Resend(apiKey);
     }
-    this.resend = new Resend(apiKey);
     this.fromEmail =
       configService.get<string>('FROM_EMAIL') ?? 'no-reply@orkpad.com';
     this.apiUrl =
@@ -27,18 +29,34 @@ export class MailService {
     );
   }
 
+  /** Public check used by AuthService: self-hosted instances without an
+   *  email provider verify new accounts immediately at registration. */
+  isEmailEnabled(): boolean {
+    return this.isEnabled();
+  }
+
+  /** Emails are disabled when RESEND_API_KEY is not set — log and skip. */
+  private isEnabled(): boolean {
+    if (!this.resend) {
+      this.logger.warn('Skipping email — RESEND_API_KEY is not set');
+      return false;
+    }
+    return true;
+  }
+
   async sendVerificationEmail(
     to: string,
     name: string,
     token: string,
   ): Promise<void> {
+    if (!this.isEnabled()) return;
     const verificationUrl = `${this.apiUrl}/auth/verify-email?token=${token}`;
     const firstName = name.split(' ')[0];
 
     this.logger.log(
       `Sending verification email to ${to} — url: ${verificationUrl}`,
     );
-    const { data, error } = await this.resend.emails.send({
+    const { data, error } = await this.resend!.emails.send({
       from: `Orkpad <${this.fromEmail}>`,
       to,
       subject: 'Confirma tu cuenta en Orkpad',
@@ -59,11 +77,12 @@ export class MailService {
     name: string,
     token: string,
   ): Promise<void> {
+    if (!this.isEnabled()) return;
     const resetUrl = `${this.frontendUrl}/reset-password?token=${token}`;
     const firstName = name.split(' ')[0];
 
     this.logger.log(`Sending password reset email to ${to}`);
-    const { data, error } = await this.resend.emails.send({
+    const { data, error } = await this.resend!.emails.send({
       from: `Orkpad <${this.fromEmail}>`,
       to,
       subject: 'Restablece tu contraseña de Orkpad',
@@ -145,8 +164,9 @@ export class MailService {
     },
   ): Promise<void> {
     const subject = `Tarea completada: ${data.taskTitle}${data.projectName ? ` - ${data.projectName}` : ''}`;
+    if (!this.isEnabled()) return;
     this.logger.log(`Sending task completion email to ${to}`);
-    const { data: resData, error } = await this.resend.emails.send({
+    const { data: resData, error } = await this.resend!.emails.send({
       from: `Orkpad <${this.fromEmail}>`,
       to,
       subject,
@@ -310,8 +330,9 @@ export class MailService {
       conversationId: string;
     },
   ): Promise<void> {
+    if (!this.isEnabled()) return;
     this.logger.log(`Sending support message notification to ${to}`);
-    const { data: resData, error } = await this.resend.emails.send({
+    const { data: resData, error } = await this.resend!.emails.send({
       from: `Orkpad <${this.fromEmail}>`,
       to,
       subject: `Nuevo mensaje de soporte — ${data.customerName}`,
@@ -389,9 +410,10 @@ export class MailService {
   }
 
   async sendFollowUpEmail(to: string, name: string): Promise<void> {
+    if (!this.isEnabled()) return;
     const firstName = name.split(' ')[0];
     this.logger.log(`Sending follow-up email to ${to}`);
-    const { data, error } = await this.resend.emails.send({
+    const { data, error } = await this.resend!.emails.send({
       from: `Orkpad <${this.fromEmail}>`,
       to,
       subject: '¿Cómo viene tu experiencia con Orkpad?',
@@ -411,6 +433,7 @@ export class MailService {
     name: string,
     templateId: string,
   ): Promise<void> {
+    if (!this.isEnabled()) return;
     const firstName = name.split(' ')[0];
     const templates: Record<string, { subject: string; html: () => string }> = {
       academia: {
@@ -426,7 +449,7 @@ export class MailService {
     }
 
     this.logger.log(`Sending marketing email [${templateId}] to ${to}`);
-    const { data, error } = await this.resend.emails.send({
+    const { data, error } = await this.resend!.emails.send({
       from: `Orkpad <${this.fromEmail}>`,
       to,
       subject: template.subject,
@@ -603,9 +626,10 @@ export class MailService {
     bodyMessage: string,
     link?: string,
   ): Promise<void> {
+    if (!this.isEnabled()) return;
     const firstName = name.split(' ')[0];
     this.logger.log(`Sending announcement email to ${to}`);
-    const { data, error } = await this.resend.emails.send({
+    const { data, error } = await this.resend!.emails.send({
       from: `Orkpad <${this.fromEmail}>`,
       to,
       subject,

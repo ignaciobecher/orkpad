@@ -165,7 +165,6 @@ export class InvoiceLine extends BaseSchema { ... }
 | pipeline | `deals` |
 | products | `products` |
 | subscriptions | `subscriptions` |
-| infrastructure | `infrastructure-resources` |
 | docs | `documents` |
 | agenda | `events` |
 

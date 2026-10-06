@@ -12,14 +12,14 @@ Data is isolated per workspace: multiple users can collaborate inside a workspac
 - **Projects & tasks** — projects with shareable external links, tasks, checklists, and kanban-style columns.
 - **Invoices & quotes** — invoicing with PDF generation and quote/estimate tracking.
 - **Time tracking** — work sessions and time logs per project/task.
-- **Leads & outreach** — lead searches, scraping sources (e.g. Google Places), email campaigns, and outreach workflows.
+- **Leads & outreach** — leads, email campaigns (via Resend), and outreach workflows.
 - **Pipeline** — sales pipeline (deals) with stages.
 - **Planner** — planner blocks, tasks, and reusable templates.
 - **Marketing** — marketing templates, social identity tracking, goals, growth hub, gamification, and an academy/resources area for learning content.
 - **Realtime** — Socket.IO channels for client↔admin messaging and support conversations.
 - **Notifications** — in-app notifications and web push (VAPID).
-- **Authentication** — email/password with JWT access + refresh tokens, GitHub OAuth, Google OAuth, WebAuthn passkeys, and TOTP two-factor auth.
-- **Integrations** — GitHub, Google (OAuth, Gmail, Calendar, Places), Railway Deployments, Netlify, and Supabase.
+- **Authentication** — email/password with JWT access + refresh tokens, WebAuthn passkeys, and TOTP two-factor auth. GitHub OAuth exists only to link repositories (not for login). Without an email provider configured, new accounts verify instantly at registration.
+- **Integrations** — GitHub (repo linking).
 
 ## Architecture
 

@@ -184,7 +184,6 @@ export default defineComponent({
           label: this.$t('sidebar.sections.prospection'),
           items: [
             { text: this.$t('sidebar.items.leads'), to: '/app/leads', icon: 'contacts', exact: true },
-            { text: this.$t('sidebar.items.leadSearches'), to: '/app/leads/searches', icon: 'travel_explore' },
             { text: this.$t('sidebar.items.leadCampaigns'), to: '/app/leads/campaigns', icon: 'mark_email_read' },
           ]
         },
@@ -216,32 +215,6 @@ export default defineComponent({
               to: '/app/subscriptions',
               icon: 'rebase_edit',
             },
-            {
-              text: this.$t('sidebar.items.infrastructure'),
-              to: '/app/infrastructure',
-              icon: 'terminal',
-            },
-          ],
-        },
-        {
-          label: this.$t('sidebar.sections.monitoring', 'Monitoreo infra'),
-          items: [
-            {
-              text: this.$t('sidebar.items.monitoringOverview', 'Resumen'),
-              to: '/app/monitoring',
-              icon: 'monitor_heart',
-            },
-            {
-              text: 'Railway',
-              to: '/app/railway',
-              icon: 'rocket_launch',
-            },
-            {
-              text: 'Netlify',
-              to: '/app/netlify',
-              icon: 'language',
-            },
-            // { text: this.$t('sidebar.items.supabase', 'Supabase'), to: '/app/supabase', icon: 'database' }, // hidden for now
             {
               text: this.$t('sidebar.items.integrations', 'Integraciones'),
               to: '/app/integrations',

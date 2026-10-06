@@ -1,0 +1,17 @@
+# Local override example: alternative ports to avoid clashes with other projects.
+# Copy to `docker-compose.override.yml` (git-ignored) and adjust as needed:
+#   cp docker-compose.override.yml.example docker-compose.override.yml
+# This file is merged automatically with docker-compose.yml.
+services:
+  backend:
+    ports: !override
+      - "3001:3000"
+    environment:
+      FRONTEND_URL: http://localhost:8081
+      API_URL: http://localhost:3001
+  frontend:
+    build:
+      args:
+        VITE_API_URL: http://localhost:3001
+    ports: !override
+      - "8081:80"

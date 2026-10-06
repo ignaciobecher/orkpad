@@ -5,11 +5,9 @@ import { authGuard } from './guards'
 const AppLayout = () => import('@/components/layout/AppLayout.vue')
 
 // Pages
-const LandingPage = () => import('@/pages/LandingPage.vue')
 const LoginPage = () => import('@/pages/auth/LoginPage.vue')
 const RegisterPage = () => import('@/pages/auth/RegisterPage.vue')
 const GitHubCallbackPage = () => import('@/pages/auth/GitHubCallbackPage.vue')
-const GoogleCallbackPage = () => import('@/pages/auth/GoogleCallbackPage.vue')
 const EmailVerificationPendingPage = () => import('@/pages/auth/EmailVerificationPendingPage.vue')
 const EmailVerifiedPage = () => import('@/pages/auth/EmailVerifiedPage.vue')
 const ForgotPasswordPage = () => import('@/pages/auth/ForgotPasswordPage.vue')
@@ -19,7 +17,6 @@ const ClientsPage = () => import('@/pages/app/ClientsPage.vue')
 const ProjectsPage = () => import('@/pages/app/ProjectsPage.vue')
 const TasksPage = () => import('@/pages/app/TasksPage.vue')
 const FinancePage = () => import('@/pages/app/FinancePage.vue')
-const InfrastructurePage = () => import('@/pages/app/InfrastructurePage.vue')
 const SubscriptionsPage = () => import('@/pages/app/SubscriptionsPage.vue')
 const TimeTrackingPage = () => import('@/pages/app/TimeTrackingPage.vue')
 const PipelinePage = () => import('@/pages/app/PipelinePage.vue')
@@ -34,11 +31,8 @@ const QuotesPage = () => import('@/pages/app/QuotesPage.vue')
 const NotesPage = () => import('@/pages/app/NotesPage.vue')
 const MessagingPage = () => import('@/pages/app/MessagingPage.vue')
 const ConnectionsPage = () => import('@/pages/app/ConnectionsPage.vue')
-const RailwayPage = () => import('@/pages/app/RailwayPage.vue')
-const SupabasePage = () => import('@/pages/app/SupabasePage.vue')
 const LeadsPage = () => import('@/pages/app/leads/LeadsPage.vue')
 const LeadDetailPage = () => import('@/pages/app/leads/LeadDetailPage.vue')
-const LeadSearchesPage = () => import('@/pages/app/leads/LeadSearchesPage.vue')
 const LeadCampaignsPage = () => import('@/pages/app/leads/LeadCampaignsPage.vue')
 
 const PortfolioPage = () => import('@/pages/app/PortfolioPage.vue')
@@ -64,9 +58,7 @@ const router = createRouter({
     },
     {
       path: '/',
-      name: 'landing',
-      component: LandingPage,
-      meta: { guestOnly: true }
+      redirect: { name: 'register' },
     },
     {
       path: '/login',
@@ -84,11 +76,6 @@ const router = createRouter({
       path: '/auth/github/callback',
       name: 'github-callback',
       component: GitHubCallbackPage,
-    },
-    {
-      path: '/auth/google/callback',
-      name: 'google-callback',
-      component: GoogleCallbackPage,
     },
     {
       path: '/auth/email-pending',
@@ -124,7 +111,6 @@ const router = createRouter({
         { path: 'projects/:id/github', name: 'project-github', component: () => import('@/pages/app/ProjectGithubPage.vue') },
         { path: 'tasks',          name: 'tasks',          component: TasksPage },
         { path: 'finance',        name: 'finance',        component: FinancePage },
-        { path: 'infrastructure', name: 'infrastructure', component: InfrastructurePage },
         { path: 'subscriptions',  name: 'subscriptions',  component: SubscriptionsPage },
         { path: 'subscriptions/:id', name: 'subscription-detail', component: () => import('@/pages/app/SubscriptionDetailPage.vue') },
         { path: 'time-tracking',  name: 'time-tracking',  component: TimeTrackingPage },
@@ -139,15 +125,7 @@ const router = createRouter({
         { path: 'notes',          name: 'notes',          component: NotesPage },
         { path: 'messaging',      name: 'messaging',      component: MessagingPage },
         { path: 'integrations',   name: 'integrations',   component: ConnectionsPage },
-        { path: 'railway',        name: 'railway',        component: RailwayPage },
-        { path: 'monitoring',          name: 'monitoring-overview',  component: () => import('@/pages/app/MonitoringOverviewPage.vue') },
-        { path: 'monitoring/projects', name: 'monitoring-projects',  component: RailwayPage },
-        { path: 'projects/:id/railway', name: 'project-railway', component: () => import('@/pages/app/ProjectRailwayPage.vue') },
-        { path: 'netlify',        name: 'netlify',        component: () => import('@/pages/app/NetlifyPage.vue') },
-        { path: 'supabase',       name: 'supabase',       component: SupabasePage },
-        { path: 'projects/:id/netlify', name: 'project-netlify', component: () => import('@/pages/app/ProjectNetlifyPage.vue') },
         { path: 'leads',          name: 'leads',          component: LeadsPage },
-        { path: 'leads/searches', name: 'lead-searches',  component: LeadSearchesPage },
         { path: 'leads/campaigns',name: 'lead-campaigns', component: LeadCampaignsPage },
         { path: 'leads/:id',      name: 'lead-detail',    component: LeadDetailPage },
         { path: 'portfolio',          name: 'portfolio',          component: PortfolioPage },
@@ -179,7 +157,7 @@ const router = createRouter({
     },
     {
       path: '/:pathMatch(.*)*',
-      redirect: '/'
+      redirect: { name: 'register' }
     }
   ],
 })

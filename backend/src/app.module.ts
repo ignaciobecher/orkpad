@@ -16,7 +16,6 @@ import { TimeTrackingModule } from './modules/time-tracking/time-tracking.module
 import { DealsModule } from './modules/pipeline/pipeline.module';
 import { ProductsModule } from './modules/products/products.module';
 import { SubscriptionsModule } from './modules/subscriptions/subscriptions.module';
-import { InfrastructureResourcesModule } from './modules/infrastructure/infrastructure.module';
 import { DocumentsModule } from './modules/docs/docs.module';
 import { EventsModule } from './modules/agenda/agenda.module';
 import { TaskColumnsModule } from './modules/task-columns/task-columns.module';
@@ -26,17 +25,11 @@ import { PushSubscriptionsModule } from './modules/push-subscriptions/push-subsc
 import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { QuotesModule } from './modules/quotes/quotes.module';
 import { GithubIntegrationModule } from './modules/github-integration/github-integration.module';
-import { RailwayIntegrationModule } from './modules/railway-integration/railway-integration.module';
-import { NetlifyIntegrationModule } from './modules/netlify-integration/netlify-integration.module';
 import { NotesModule } from './modules/notes/notes.module';
 import { MessagingModule } from './modules/messaging/messaging.module';
 import { SupportModule } from './modules/support/support.module';
 import { LeadsModule } from './modules/leads/leads.module';
-import { LeadSearchesModule } from './modules/lead-searches/lead-searches.module';
 import { LeadCampaignsModule } from './modules/lead-campaigns/lead-campaigns.module';
-import { LeadScrapingModule } from './modules/lead-scraping/lead-scraping.module';
-import { GoogleIntegrationModule } from './modules/google-integration/google-integration.module';
-import { SupabaseIntegrationModule } from './modules/supabase-integration/supabase-integration.module';
 import { TestimonialsModule } from './modules/testimonials/testimonials.module';
 import { PortfolioModule } from './modules/portfolio/portfolio.module';
 import { ResourcesModule } from './modules/resources/resources.module';
@@ -68,26 +61,22 @@ import { GrowthHubModule } from './modules/growth-hub/growth-hub.module';
         JWT_EXPIRES_IN: Joi.string().default('15m'),
         JWT_REFRESH_EXPIRES_IN: Joi.string().default('7d'),
         PROJECT_LINK_JWT_EXPIRES_IN: Joi.string().default('4h'),
-        GITHUB_CLIENT_ID: Joi.string().optional(),
-        GITHUB_CLIENT_SECRET: Joi.string().optional(),
-        GITHUB_CALLBACK_URL: Joi.string().optional(),
-        GITHUB_WEBHOOK_SECRET: Joi.string().optional(),
-        GOOGLE_CLIENT_ID: Joi.string().optional(),
-        GOOGLE_CLIENT_SECRET: Joi.string().optional(),
-        GOOGLE_CALLBACK_URL: Joi.string().optional(),
-        GOOGLE_PLACES_API_KEY: Joi.string().optional(),
-        RESEND_API_KEY: Joi.string().optional(),
+        GITHUB_CLIENT_ID: Joi.string().allow('').optional(),
+        GITHUB_CLIENT_SECRET: Joi.string().allow('').optional(),
+        GITHUB_CALLBACK_URL: Joi.string().allow('').optional(),
+        GITHUB_WEBHOOK_SECRET: Joi.string().allow('').optional(),
+        RESEND_API_KEY: Joi.string().allow('').optional(),
         FROM_EMAIL: Joi.string().email().default('no-reply@orkpad.com'),
         API_URL: Joi.string().uri().default('http://localhost:3000'),
-        VAPID_PUBLIC_KEY: Joi.string().optional(),
-        VAPID_PRIVATE_KEY: Joi.string().optional(),
-        VAPID_SUBJECT: Joi.string().optional(),
-        ADMIN_USER_ID: Joi.string().optional(),
-        ADMIN_EMAIL: Joi.string().email().optional(),
-        ENCRYPTION_KEY: Joi.string().optional(),
-        OPENAI_API_KEY: Joi.string().optional(),
-        OPENAI_MODEL: Joi.string().optional(),
-        ADMIN_TOKEN: Joi.string().optional(),
+        VAPID_PUBLIC_KEY: Joi.string().allow('').optional(),
+        VAPID_PRIVATE_KEY: Joi.string().allow('').optional(),
+        VAPID_SUBJECT: Joi.string().allow('').optional(),
+        ADMIN_USER_ID: Joi.string().allow('').optional(),
+        ADMIN_EMAIL: Joi.string().email().allow('').optional(),
+        ENCRYPTION_KEY: Joi.string().allow('').optional(),
+        OPENAI_API_KEY: Joi.string().allow('').optional(),
+        OPENAI_MODEL: Joi.string().allow('').optional(),
+        ADMIN_TOKEN: Joi.string().allow('').optional(),
       }),
       validationOptions: {
         allowUnknown: true,
@@ -114,7 +103,6 @@ import { GrowthHubModule } from './modules/growth-hub/growth-hub.module';
     DealsModule,
     ProductsModule,
     SubscriptionsModule,
-    InfrastructureResourcesModule,
     DocumentsModule,
     EventsModule,
     WorkSessionsModule,
@@ -123,17 +111,11 @@ import { GrowthHubModule } from './modules/growth-hub/growth-hub.module';
     DashboardModule,
     QuotesModule,
     GithubIntegrationModule,
-    RailwayIntegrationModule,
-    NetlifyIntegrationModule,
     NotesModule,
     MessagingModule,
     SupportModule,
     LeadsModule,
-    LeadSearchesModule,
     LeadCampaignsModule,
-    LeadScrapingModule,
-    GoogleIntegrationModule,
-    SupabaseIntegrationModule,
     TestimonialsModule,
     PortfolioModule,
     ResourcesModule,

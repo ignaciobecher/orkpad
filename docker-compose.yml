@@ -8,23 +8,35 @@ services:
       - mongo_data:/data/db
     networks:
       - orkpad
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   backend:
     build: ./backend
     restart: unless-stopped
     env_file:
-      - ./backend/.env
+      # Single self-host config file (see .env.example). Optional here so
+      # `docker compose config` still works before the first setup — the
+      # required secrets below fail fast with a clear message instead.
+      - path: .env
+        required: false
     environment:
       # Override values that must point to the container network.
       MONGODB_URI: mongodb://mongo:27017/orkpad
       NODE_ENV: production
       FRONTEND_URL: ${FRONTEND_URL:-http://localhost:8080}
-      JWT_SECRET: ${JWT_SECRET:-change-me-access-token-secret}
-      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-change-me-refresh-token-secret}
+      API_URL: ${API_URL:-http://localhost:3000}
+      JWT_SECRET: ${JWT_SECRET:?Copy .env.example to .env and set JWT_SECRET}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:?Copy .env.example to .env and set JWT_REFRESH_SECRET}
     ports:
       - "3000:3000"
     depends_on:
-      - mongo
+      mongo:
+        condition: service_healthy
     networks:
       - orkpad
 

@@ -5,7 +5,6 @@ import { LeadCampaignsService } from './lead-campaigns.service';
 import { LeadCampaignsRepository } from './lead-campaigns.repository';
 import { LeadCampaign, LeadCampaignSchema } from './lead-campaigns.schema';
 import { LeadsModule } from '../leads/leads.module';
-import { GoogleIntegrationModule } from '../google-integration/google-integration.module';
 
 @Module({
   imports: [
@@ -13,7 +12,6 @@ import { GoogleIntegrationModule } from '../google-integration/google-integratio
       { name: LeadCampaign.name, schema: LeadCampaignSchema },
     ]),
     LeadsModule,
-    GoogleIntegrationModule,
   ],
   controllers: [LeadCampaignsController],
   providers: [LeadCampaignsService, LeadCampaignsRepository],

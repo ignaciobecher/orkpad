@@ -1,10 +1,6 @@
 <template>
   <auth-layout>
     <div class="login-card">
-      <router-link to="/" class="back-link">
-        <span class="material-symbols-outlined">arrow_back</span>
-        {{ $t('auth.back') }}
-      </router-link>
       <div class="login-header">
         <div class="brand">
           <w-logo :height="52" />
@@ -62,11 +58,9 @@
           </w-button>
         </div>
 
-        <social-auth mode="register" />
-
         <div class="login-footer">
           <router-link to="/login" class="forgot-link"
-            >{{ $t('auth.register.alreadyHaveAccount') }} {{ $t('nav.login') }}</router-link
+            >{{ $t('auth.register.alreadyHaveAccount') }} {{ $t('auth.login.submit') }}</router-link
           >
         </div>
       </form>
@@ -110,12 +104,11 @@ import WButton from '@/components/ui/WButton.vue'
 import WInput from '@/components/ui/WInput.vue'
 import WCheckbox from '@/components/ui/WCheckbox.vue'
 import WDrawer from '@/components/ui/WDrawer.vue'
-import SocialAuth from '@/components/auth/SocialAuth.vue'
 import WLogo from '@/components/ui/WLogo.vue'
 
 export default defineComponent({
   name: 'RegisterPage',
-  components: { AuthLayout, WButton, WInput, WCheckbox, WDrawer, SocialAuth, WLogo },
+  components: { AuthLayout, WButton, WInput, WCheckbox, WDrawer, WLogo },
   data() {
     return {
       showTerms: false,
@@ -161,31 +154,6 @@ export default defineComponent({
   border: 1px solid var(--color-border);
   padding: 40px;
   position: relative;
-}
-
-.back-link {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  text-decoration: none;
-  color: var(--color-text-muted);
-  font-family: var(--font-mono);
-  font-size: 10px;
-  text-transform: uppercase;
-  transition: all 0.2s ease;
-  z-index: 10;
-}
-
-.back-link:hover {
-  color: var(--color-primary);
-  transform: translateX(-2px);
-}
-
-.back-link span {
-  font-size: 16px;
 }
 
 @media (max-width: 640px) {

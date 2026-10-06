@@ -61,17 +61,6 @@ export class UsersRepository {
     return this.userModel.findOne({ githubId }).exec();
   }
 
-  async findByGoogleId(googleId: string): Promise<UserDocument | null> {
-    return this.userModel.findOne({ googleId }).exec();
-  }
-
-  async findByIdWithGoogleTokens(id: string): Promise<UserDocument | null> {
-    return this.userModel
-      .findById(id)
-      .select('+googleAccessToken +googleRefreshToken')
-      .exec();
-  }
-
   async findByIdWithSecrets(id: string): Promise<UserDocument | null> {
     return this.userModel.findById(id).select('+refreshToken').exec();
   }

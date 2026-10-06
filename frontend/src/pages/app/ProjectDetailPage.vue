@@ -216,231 +216,6 @@
         </w-card>
       </section>
 
-      <!-- Railway Section -->
-      <section class="railway-section">
-        <div class="section-header" style="margin-bottom: 12px;">
-          <span class="material-symbols-outlined" style="font-size:16px;color:var(--color-text-muted)">rocket_launch</span>
-          <h2 class="section-title">Railway</h2>
-          <w-button variant="ghost" style="margin-left:auto" @click="openRailwayDrawer">
-            <span class="material-symbols-outlined mr-1">{{ railwayProjectId ? 'edit' : 'add_link' }}</span>
-            {{ railwayProjectId ? 'Cambiar proyecto' : 'Vincular proyecto' }}
-          </w-button>
-          <w-button v-if="railwayProjectId" variant="ghost" @click="$router.push({ name: 'project-railway', params: { id: projectId } })">
-            <span class="material-symbols-outlined mr-1">open_in_new</span>
-            Ver deployments
-          </w-button>
-          <w-button v-if="railwayProjectId" variant="ghost" :loading="railwayStore.loading" @click="handleUnlinkRailway">
-            Desvincular
-          </w-button>
-        </div>
-
-        <w-card>
-          <div v-if="!railwayProjectId" class="github-hint">Sin proyecto Railway vinculado</div>
-          <div v-else class="railway-linked-row">
-            <span class="material-symbols-outlined" style="font-size:16px;color:var(--color-text-muted)">rocket_launch</span>
-            <span class="github-repo-link">{{ linkedRailwayName }}</span>
-            <w-badge color="var(--color-success)" style="margin-left:auto">Vinculado</w-badge>
-          </div>
-        </w-card>
-      </section>
-
-      <!-- Netlify Section -->
-      <section class="railway-section">
-        <div class="section-header" style="margin-bottom: 12px;">
-          <span class="material-symbols-outlined" style="font-size:16px;color:#00c7b7">language</span>
-          <h2 class="section-title">Netlify</h2>
-          <w-button variant="ghost" style="margin-left:auto" @click="openNetlifyDrawer">
-            <span class="material-symbols-outlined mr-1">{{ netlifySiteId ? 'edit' : 'add_link' }}</span>
-            {{ netlifySiteId ? 'Cambiar site' : 'Vincular site' }}
-          </w-button>
-          <w-button v-if="netlifySiteId" variant="ghost" @click="$router.push({ name: 'project-netlify', params: { id: projectId } })">
-            <span class="material-symbols-outlined mr-1">open_in_new</span>
-            Ver deploys
-          </w-button>
-          <w-button v-if="netlifySiteId" variant="ghost" :loading="netlifyStore.loading" @click="handleUnlinkNetlify">
-            Desvincular
-          </w-button>
-        </div>
-
-        <w-card>
-          <div v-if="!netlifySiteId" class="github-hint">Sin site de Netlify vinculado</div>
-          <div v-else class="railway-linked-row">
-            <span class="material-symbols-outlined" style="font-size:16px;color:#00c7b7">language</span>
-            <span class="github-repo-link">{{ linkedNetlifySiteName }}</span>
-            <w-badge color="var(--color-success)" style="margin-left:auto">Vinculado</w-badge>
-          </div>
-        </w-card>
-      </section>
-
-      <!-- Supabase Section -->
-      <section class="railway-section">
-        <div class="section-header" style="margin-bottom: 12px;">
-          <span class="material-symbols-outlined" style="font-size:16px;color:#3ecf8e">database</span>
-          <h2 class="section-title">Supabase</h2>
-          <w-button variant="ghost" style="margin-left:auto" @click="openSupabaseDrawer">
-            <span class="material-symbols-outlined mr-1">{{ supabaseProjectRef ? 'edit' : 'add_link' }}</span>
-            {{ supabaseProjectRef ? 'Cambiar proyecto' : 'Vincular proyecto' }}
-          </w-button>
-          <w-button v-if="supabaseProjectRef" variant="ghost" :loading="supabaseStore.loading" @click="handleUnlinkSupabase">
-            Desvincular
-          </w-button>
-        </div>
-
-        <w-card>
-          <div v-if="!supabaseProjectRef" class="github-hint">Sin proyecto Supabase vinculado</div>
-          <div v-else class="railway-linked-row">
-            <span class="material-symbols-outlined" style="font-size:16px;color:#3ecf8e">database</span>
-            <span class="github-repo-link">{{ supabaseProjectRef }}</span>
-            <w-badge color="var(--color-success)" style="margin-left:auto">Vinculado</w-badge>
-          </div>
-        </w-card>
-      </section>
-
-      <!-- Supabase project selector drawer -->
-      <w-drawer v-model="supabaseDrawerOpen" title="Vincular proyecto Supabase" width="420px">
-        <div class="repo-drawer-body">
-          <div v-if="!supabaseStore.isConnected" class="feed-empty">
-            Supabase no está conectado en este workspace.
-            <router-link to="/app/integrations" class="github-repo-link" style="display:block;margin-top:8px">Ir a Integraciones →</router-link>
-          </div>
-          <template v-else>
-            <div class="repo-search-box">
-              <span class="material-symbols-outlined">search</span>
-              <input
-                v-model="supabaseSearch"
-                type="text"
-                placeholder="Buscar proyecto Supabase..."
-                class="repo-search-input"
-              />
-            </div>
-            <div v-if="supabaseStore.projectsLoading" class="feed-empty">Cargando proyectos...</div>
-            <div v-else-if="supabaseStore.error" class="feed-empty" style="color:var(--color-error)">
-              Error: {{ supabaseStore.error }}.
-            </div>
-            <div v-else-if="!supabaseStore.supabaseProjects.length" class="feed-empty">No se encontraron proyectos de Supabase.</div>
-            <div v-else-if="!filteredSupabaseProjects.length" class="feed-empty">Sin resultados para "{{ supabaseSearch }}"</div>
-            <div
-              v-for="sp in filteredSupabaseProjects"
-              :key="sp.ref"
-              class="repo-item"
-              :class="{ selected: selectedSupabaseProject?.ref === sp.ref }"
-              @click="selectedSupabaseProject = sp"
-            >
-              <span class="material-symbols-outlined" style="font-size:16px;color:#3ecf8e">database</span>
-              <div style="flex:1;min-width:0">
-                <div style="font-size:13px;font-weight:500">{{ sp.name }}</div>
-                <div style="font-family:var(--font-mono);font-size:11px;color:var(--color-text-muted)">{{ sp.ref }} · {{ sp.region }}</div>
-              </div>
-            </div>
-          </template>
-        </div>
-        <template #footer>
-          <div style="display:flex;gap:8px;justify-content:flex-end;padding:16px">
-            <w-button variant="ghost" @click="supabaseDrawerOpen = false">Cancelar</w-button>
-            <w-button variant="primary" :disabled="!selectedSupabaseProject || supabaseStore.loading" @click="handleLinkSupabase">
-              Vincular
-            </w-button>
-          </div>
-        </template>
-      </w-drawer>
-
-      <!-- Netlify site selector drawer -->
-      <w-drawer v-model="netlifyDrawerOpen" title="Vincular site de Netlify" width="420px">
-        <div class="repo-drawer-body">
-          <div v-if="!netlifyStore.isConnected" class="feed-empty">
-            Netlify no está conectado en este workspace.
-            <router-link to="/app/integrations" class="github-repo-link" style="display:block;margin-top:8px">Ir a Integraciones →</router-link>
-          </div>
-          <template v-else>
-            <div class="repo-search-box">
-              <span class="material-symbols-outlined">search</span>
-              <input
-                v-model="netlifySearch"
-                type="text"
-                placeholder="Buscar site de Netlify..."
-                class="repo-search-input"
-              />
-            </div>
-            <div v-if="netlifyStore.sitesLoading" class="feed-empty">Cargando sites...</div>
-            <div v-else-if="netlifyStore.error" class="feed-empty" style="color:var(--color-error)">
-              Error: {{ netlifyStore.error }}.
-            </div>
-            <div v-else-if="!netlifyStore.sites.length" class="feed-empty">No se encontraron sites de Netlify.</div>
-            <div v-else-if="!filteredNetlifySites.length" class="feed-empty">Sin resultados para "{{ netlifySearch }}"</div>
-            <div
-              v-for="site in filteredNetlifySites"
-              :key="site.id"
-              class="repo-item"
-              :class="{ selected: selectedNetlifySite?.id === site.id }"
-              @click="selectedNetlifySite = site"
-            >
-              <span class="material-symbols-outlined" style="font-size:16px;color:#00c7b7">language</span>
-              <div style="display:flex;flex-direction:column;gap:2px;min-width:0">
-                <span class="repo-item-name">{{ site.name }}</span>
-                <span style="font-family:var(--font-mono);font-size:10px;color:var(--color-text-muted)">{{ site.url }}</span>
-              </div>
-            </div>
-          </template>
-        </div>
-        <template #footer>
-          <div style="display:flex;gap:8px;justify-content:flex-end;padding:16px">
-            <w-button variant="ghost" @click="netlifyDrawerOpen = false">Cancelar</w-button>
-            <w-button variant="primary" :disabled="!selectedNetlifySite || netlifyStore.loading" @click="handleLinkNetlify">
-              Vincular
-            </w-button>
-          </div>
-        </template>
-      </w-drawer>
-
-      <!-- Railway project selector drawer -->
-      <w-drawer v-model="railwayDrawerOpen" title="Vincular proyecto Railway" width="420px">
-        <div class="repo-drawer-body">
-          <div v-if="!railwayStore.isConnected" class="feed-empty">
-            Railway no está conectado en este workspace.
-            <router-link to="/app/integrations" class="github-repo-link" style="display:block;margin-top:8px">Ir a Integraciones →</router-link>
-          </div>
-          <template v-else>
-            <div class="repo-search-box">
-              <span class="material-symbols-outlined">search</span>
-              <input
-                v-model="railwaySearch"
-                type="text"
-                placeholder="Buscar proyecto Railway..."
-                class="repo-search-input"
-              />
-            </div>
-            <div v-if="railwayStore.projectsLoading" class="feed-empty">Cargando proyectos...</div>
-            <div v-else-if="railwayStore.error" class="feed-empty" style="color:var(--color-error)">
-              Error: {{ railwayStore.error }}.
-              <span style="display:block;margin-top:6px;color:var(--color-text-muted)">
-                Asegurate de usar un token de cuenta completa (sin workspace seleccionado) en
-                <a href="https://railway.app/account/tokens" target="_blank" style="color:var(--color-primary)">railway.app/account/tokens</a>.
-              </span>
-            </div>
-            <div v-else-if="!railwayStore.railwayProjects.length" class="feed-empty">No se encontraron proyectos de Railway.</div>
-            <div v-else-if="!filteredRailwayProjects.length" class="feed-empty">Sin resultados para "{{ railwaySearch }}"</div>
-            <div
-              v-for="rp in filteredRailwayProjects"
-              :key="rp.id"
-              class="repo-item"
-              :class="{ selected: selectedRailwayProject?.id === rp.id }"
-              @click="selectedRailwayProject = rp"
-            >
-              <span class="material-symbols-outlined" style="font-size:16px">rocket_launch</span>
-              <span class="repo-item-name">{{ rp.name }}</span>
-            </div>
-          </template>
-        </div>
-        <template #footer>
-          <div style="display:flex;gap:8px;justify-content:flex-end;padding:16px">
-            <w-button variant="ghost" @click="railwayDrawerOpen = false">Cancelar</w-button>
-            <w-button variant="primary" :disabled="!selectedRailwayProject || railwayStore.loading" @click="handleLinkRailway">
-              Vincular
-            </w-button>
-          </div>
-        </template>
-      </w-drawer>
-
       <!-- Repo selector drawer -->
       <w-drawer v-model="repoDrawerOpen" title="Conectar repositorio GitHub" width="420px">
         <div class="repo-drawer-body">
@@ -562,11 +337,6 @@ import { defineComponent } from 'vue'
 import { mapState, mapActions } from 'pinia'
 import { useProjectsStore } from '@/stores/projects.store'
 import { useGithubStore } from '@/stores/github.store'
-import { useRailwayStore } from '@/stores/railway.store'
-import { useNetlifyStore } from '@/stores/netlify.store'
-import { useSupabaseStore } from '@/stores/supabase.store'
-import type { SupabaseProject } from '@/api/supabase/supabase.types'
-import type { NetlifySite } from '@/api/netlify/netlify.types'
 import { useToast } from '@/composables/useToast'
 import { formatDate } from '@/utils/date'
 import WButton from '@/components/ui/WButton.vue'
@@ -595,18 +365,6 @@ export default defineComponent({
       repoSearch: '',
       selectedRepo: null as GithubRepo | null,
       githubStore: useGithubStore(),
-      railwayStore: useRailwayStore(),
-      railwayDrawerOpen: false,
-      railwaySearch: '',
-      selectedRailwayProject: null as { id: string; name: string } | null,
-      netlifyStore: useNetlifyStore(),
-      netlifyDrawerOpen: false,
-      netlifySearch: '',
-      selectedNetlifySite: null as NetlifySite | null,
-      supabaseStore: useSupabaseStore(),
-      supabaseDrawerOpen: false,
-      supabaseSearch: '',
-      selectedSupabaseProject: null as SupabaseProject | null,
     }
   },
   computed: {
@@ -623,42 +381,6 @@ export default defineComponent({
       const available = this.githubStore.repos.filter(r => !connected.has(`${r.owner}/${r.name}`))
       if (!q) return available
       return available.filter(r => r.fullName.toLowerCase().includes(q))
-    },
-    railwayProjectId(): string | null {
-      return (this.overview?.project as any)?.railwayProjectId ?? null
-    },
-    linkedRailwayName(): string {
-      if (!this.railwayProjectId) return ''
-      const found = this.railwayStore.railwayProjects.find((p) => p.id === this.railwayProjectId)
-      return found?.name ?? this.railwayProjectId
-    },
-    filteredRailwayProjects() {
-      const q = this.railwaySearch.toLowerCase().trim()
-      if (!q) return this.railwayStore.railwayProjects
-      return this.railwayStore.railwayProjects.filter((p) => p.name.toLowerCase().includes(q))
-    },
-    netlifySiteId(): string | null {
-      return (this.overview?.project as any)?.netlifySiteId ?? null
-    },
-    linkedNetlifySiteName(): string {
-      if (!this.netlifySiteId) return ''
-      const found = this.netlifyStore.sites.find((s) => s.id === this.netlifySiteId)
-      return found?.name ?? this.netlifySiteId
-    },
-    filteredNetlifySites() {
-      const q = this.netlifySearch.toLowerCase().trim()
-      if (!q) return this.netlifyStore.sites
-      return this.netlifyStore.sites.filter((s) => s.name.toLowerCase().includes(q) || s.url.toLowerCase().includes(q))
-    },
-    supabaseProjectRef(): string | null {
-      return (this.overview?.project as any)?.supabaseProjectRef ?? null
-    },
-    filteredSupabaseProjects() {
-      const q = this.supabaseSearch.toLowerCase().trim()
-      if (!q) return this.supabaseStore.supabaseProjects
-      return this.supabaseStore.supabaseProjects.filter(
-        (p) => p.name.toLowerCase().includes(q) || p.ref.toLowerCase().includes(q),
-      )
     },
     taskHeaders() {
       return [
@@ -816,80 +538,9 @@ export default defineComponent({
       await this.githubStore.disconnectRepo(this.projectId, repo.owner, repo.repo)
       await this.fetchOverview(this.projectId)
     },
-    async openRailwayDrawer() {
-      this.selectedRailwayProject = null
-      this.railwaySearch = ''
-      this.railwayDrawerOpen = true
-      if (!this.railwayStore.connection) {
-        await this.railwayStore.fetchConnection()
-      }
-      if (this.railwayStore.isConnected) {
-        await this.railwayStore.fetchProjects()
-      }
-    },
-    async handleLinkRailway() {
-      if (!this.selectedRailwayProject) return
-      await this.railwayStore.linkProject(this.projectId, { railwayProjectId: this.selectedRailwayProject.id })
-      this.railwayDrawerOpen = false
-      await this.fetchOverview(this.projectId)
-    },
-    async handleUnlinkRailway() {
-      if (!confirm('¿Desvincular el proyecto de Railway de este proyecto?')) return
-      await this.railwayStore.unlinkProject(this.projectId)
-      await this.fetchOverview(this.projectId)
-    },
-    async openNetlifyDrawer() {
-      this.selectedNetlifySite = null
-      this.netlifySearch = ''
-      this.netlifyDrawerOpen = true
-      if (!this.netlifyStore.connection) {
-        await this.netlifyStore.fetchConnection()
-      }
-      if (this.netlifyStore.isConnected) {
-        await this.netlifyStore.fetchSites()
-      }
-    },
-    async handleLinkNetlify() {
-      if (!this.selectedNetlifySite) return
-      await this.netlifyStore.linkProject(this.projectId, { netlifySiteId: this.selectedNetlifySite.id })
-      this.netlifyDrawerOpen = false
-      await this.fetchOverview(this.projectId)
-    },
-    async handleUnlinkNetlify() {
-      if (!confirm('¿Desvincular el site de Netlify de este proyecto?')) return
-      await this.netlifyStore.unlinkProject(this.projectId)
-      await this.fetchOverview(this.projectId)
-    },
-    async openSupabaseDrawer() {
-      this.selectedSupabaseProject = null
-      this.supabaseSearch = ''
-      this.supabaseDrawerOpen = true
-      if (!this.supabaseStore.connection) {
-        await this.supabaseStore.fetchConnection()
-      }
-      if (this.supabaseStore.isConnected) {
-        await this.supabaseStore.fetchProjects()
-      }
-    },
-    async handleLinkSupabase() {
-      if (!this.selectedSupabaseProject) return
-      await this.supabaseStore.linkProject(this.projectId, {
-        supabaseProjectRef: this.selectedSupabaseProject.ref,
-      })
-      this.supabaseDrawerOpen = false
-      await this.fetchOverview(this.projectId)
-    },
-    async handleUnlinkSupabase() {
-      if (!confirm('¿Desvincular el proyecto de Supabase?')) return
-      await this.supabaseStore.unlinkProject(this.projectId)
-      await this.fetchOverview(this.projectId)
-    },
   },
   async mounted() {
     await this.fetchOverview(this.projectId)
-    await this.railwayStore.fetchConnection()
-    await this.netlifyStore.fetchConnection()
-    await this.supabaseStore.fetchConnection()
     if (this.overview?.project?.publicToken) {
       this.fetchLinkStatus(this.projectId)
     }
@@ -1088,13 +739,6 @@ export default defineComponent({
 .text-error { color: var(--color-error) !important; }
 
 .github-section { margin-bottom: 24px; flex-shrink: 0; }
-.railway-section { margin-bottom: 24px; flex-shrink: 0; }
-
-.railway-linked-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
 
 .link-private-badge {
   font-family: var(--font-mono);

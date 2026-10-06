@@ -65,24 +65,10 @@
           <p>{{ $t('privacy.s3.intro') }}</p>
           <div class="provider-grid">
             <div class="provider-card">
-              <div class="provider-name font-mono">GOOGLE</div>
-              <p>{{ $t('privacy.s3.googleDesc') }}</p>
-              <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" class="provider-link">
-                {{ $t('privacy.s3.googleLink') }} <span class="material-symbols-outlined">open_in_new</span>
-              </a>
-            </div>
-            <div class="provider-card">
               <div class="provider-name font-mono">GITHUB</div>
               <p>{{ $t('privacy.s3.githubDesc') }}</p>
               <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" target="_blank" rel="noopener noreferrer" class="provider-link">
                 {{ $t('privacy.s3.githubLink') }} <span class="material-symbols-outlined">open_in_new</span>
-              </a>
-            </div>
-            <div class="provider-card">
-              <div class="provider-name font-mono">RAILWAY</div>
-              <p>{{ $t('privacy.s3.railwayDesc') }}</p>
-              <a href="https://railway.com/legal/privacy" target="_blank" rel="noopener noreferrer" class="provider-link">
-                {{ $t('privacy.s3.railwayLink') }} <span class="material-symbols-outlined">open_in_new</span>
               </a>
             </div>
             <div class="provider-card">

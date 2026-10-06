@@ -17,10 +17,6 @@ import {
   Subscription,
   SubscriptionSchema,
 } from '../subscriptions/subscriptions.schema';
-import {
-  InfrastructureResource,
-  InfrastructureResourceSchema,
-} from '../infrastructure/infrastructure.schema';
 import { Document as Doc, DocumentSchema } from '../docs/docs.schema';
 import {
   TaskColumn,
@@ -43,7 +39,6 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { GithubStrategy } from './strategies/github.strategy';
-import { GoogleStrategy } from './strategies/google.strategy';
 
 @Module({
   imports: [
@@ -62,10 +57,6 @@ import { GoogleStrategy } from './strategies/google.strategy';
       { name: Deal.name, schema: DealSchema },
       { name: Product.name, schema: ProductSchema },
       { name: Subscription.name, schema: SubscriptionSchema },
-      {
-        name: InfrastructureResource.name,
-        schema: InfrastructureResourceSchema,
-      },
       { name: Doc.name, schema: DocumentSchema },
       { name: TaskColumn.name, schema: TaskColumnSchema },
       { name: TimeEntry.name, schema: TimeEntrySchema },
@@ -75,6 +66,6 @@ import { GoogleStrategy } from './strategies/google.strategy';
     ]),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, GithubStrategy, GoogleStrategy],
+  providers: [AuthService, JwtStrategy, GithubStrategy],
 })
 export class AuthModule {}

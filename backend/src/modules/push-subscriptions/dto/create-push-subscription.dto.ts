@@ -2,7 +2,7 @@ import { IsString, IsUrl, IsOptional } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreatePushSubscriptionDto {
-  @ApiProperty({ example: 'https://fcm.googleapis.com/fcm/send/...' })
+  @ApiProperty({ example: 'https://push-service.example.com/send/...' })
   @IsUrl()
   endpoint: string;
 

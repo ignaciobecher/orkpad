@@ -54,69 +54,6 @@ export class UsersService {
     return this.usersRepository.findByGithubId(githubId);
   }
 
-  async findByGoogleId(googleId: string): Promise<UserDocument | null> {
-    return this.usersRepository.findByGoogleId(googleId);
-  }
-
-  async createGoogleUser(data: {
-    name: string;
-    email: string;
-    googleId: string;
-    avatarUrl?: string;
-    googleEmail: string;
-    workspaceId: string;
-  }): Promise<UserDocument> {
-    return this.usersRepository.create({
-      ...data,
-      emailVerified: true,
-      termsAccepted: true,
-      termsAcceptedAt: new Date(),
-      termsVersion: '1.0.0',
-    });
-  }
-
-  async linkGoogle(
-    userId: string,
-    googleId: string,
-    googleEmail: string,
-    avatarUrl?: string,
-  ): Promise<void> {
-    await this.usersRepository.update(userId, {
-      googleId,
-      googleEmail,
-      avatarUrl,
-    });
-  }
-
-  async updateGoogleTokens(
-    userId: string,
-    accessToken: string,
-    refreshToken?: string,
-  ): Promise<void> {
-    const update: Record<string, any> = { googleAccessToken: accessToken };
-    if (refreshToken) update.googleRefreshToken = refreshToken;
-    await this.usersRepository.update(userId, update);
-  }
-
-  async clearGoogleTokens(userId: string): Promise<void> {
-    await this.usersRepository.update(userId, {
-      googleId: null,
-      googleEmail: null,
-      googleAccessToken: null,
-      googleRefreshToken: null,
-    });
-  }
-
-  async getGoogleTokens(
-    userId: string,
-  ): Promise<{ accessToken: string | null; refreshToken: string | null }> {
-    const user = await this.usersRepository.findByIdWithGoogleTokens(userId);
-    return {
-      accessToken: (user as any)?.googleAccessToken ?? null,
-      refreshToken: (user as any)?.googleRefreshToken ?? null,
-    };
-  }
-
   async create(data: {
     name: string;
     email: string;

@@ -7,24 +7,21 @@ import { Resend } from 'resend';
 import { ConfigService } from '@nestjs/config';
 import { LeadCampaignsRepository } from './lead-campaigns.repository';
 import { LeadsRepository } from '../leads/leads.repository';
-import { GoogleIntegrationService } from '../google-integration/google-integration.service';
-import { GoogleGmailService } from '../google-integration/google-gmail.service';
 import { CreateLeadCampaignDto } from './dto/create-lead-campaign.dto';
 import { UpdateLeadCampaignDto } from './dto/update-lead-campaign.dto';
 
 @Injectable()
 export class LeadCampaignsService {
-  private readonly resend: Resend;
+  private readonly resend: Resend | null;
   private readonly fromEmail: string;
 
   constructor(
     private readonly leadCampaignsRepository: LeadCampaignsRepository,
     private readonly leadsRepository: LeadsRepository,
-    private readonly googleIntegrationService: GoogleIntegrationService,
-    private readonly googleGmailService: GoogleGmailService,
     private readonly configService: ConfigService,
   ) {
-    this.resend = new Resend(configService.get<string>('RESEND_API_KEY'));
+    const apiKey = configService.get<string>('RESEND_API_KEY');
+    this.resend = apiKey ? new Resend(apiKey) : null;
     this.fromEmail =
       configService.get<string>('FROM_EMAIL') ?? 'no-reply@orkpad.com';
   }
@@ -73,7 +70,7 @@ export class LeadCampaignsService {
     return campaign;
   }
 
-  async sendCampaign(workspaceId: string, campaignId: string, userId: string) {
+  async sendCampaign(workspaceId: string, campaignId: string) {
     const campaign = await this.findOne(workspaceId, campaignId);
 
     if (campaign.type !== 'email') {
@@ -96,8 +93,11 @@ export class LeadCampaignsService {
       };
     }
 
-    const googleConnected =
-      await this.googleIntegrationService.isConnected(userId);
+    if (!this.resend) {
+      throw new BadRequestException(
+        'Email provider not configured — set RESEND_API_KEY to send campaigns.',
+      );
+    }
     let sent = 0;
     let skipped = 0;
 
@@ -109,21 +109,12 @@ export class LeadCampaignsService {
       const subject = campaign.template.subject ?? `Mensaje de Orkpad`;
 
       try {
-        if (googleConnected) {
-          await this.googleGmailService.sendEmail(
-            userId,
-            lead.email!,
-            subject,
-            body,
-          );
-        } else {
-          await this.resend.emails.send({
-            from: `Orkpad <${this.fromEmail}>`,
-            to: lead.email!,
-            subject,
-            html: body,
-          });
-        }
+        await this.resend.emails.send({
+          from: `Orkpad <${this.fromEmail}>`,
+          to: lead.email!,
+          subject,
+          html: body,
+        });
 
         await this.leadsRepository.update(
           workspaceId,
@@ -147,7 +138,7 @@ export class LeadCampaignsService {
     return {
       sent,
       skipped,
-      channel: googleConnected ? 'gmail' : 'resend',
+      channel: 'resend',
       total: eligibleLeads.length,
     };
   }
