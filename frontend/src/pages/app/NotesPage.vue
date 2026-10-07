@@ -4,50 +4,18 @@
     <header class="notes-header">
       <div class="notes-header__left">
         <h1 class="page-title">Pizarra</h1>
-        <span class="notes-count">{{ notesStore.total }} notas</span>
+        <button
+          v-if="activeProjectId || activeGeneral"
+          class="change-project-btn"
+          @click="backToProjectPicker"
+        >
+          <span class="material-symbols-outlined">folder</span>
+          {{ activeProjectName || 'Cambiar proyecto' }}
+          <span class="material-symbols-outlined change-project-icon">swap_horiz</span>
+        </button>
+        <span v-else class="notes-count">{{ notesStore.total }} notas</span>
       </div>
       <div class="notes-header__right">
-        <div class="filter-dropdown" :class="{ open: projectOpen }">
-          <button class="filter-btn" @click="toggleProjectMenu" :title="activeProjectName || 'Todos los proyectos'">
-            <span class="material-symbols-outlined">folder</span>
-            {{ activeProjectName || 'Proyectos' }}
-          </button>
-          <div v-if="projectOpen" class="filter-menu project-menu" @click.stop>
-            <div class="project-menu-search">
-              <span class="material-symbols-outlined">search</span>
-              <input
-                v-model="projectSearch"
-                placeholder="Buscar proyecto..."
-                @input="onProjectSearch"
-              />
-            </div>
-            <button
-              :class="['filter-item', { 'filter-item--active': !activeProjectId }]"
-              @click.stop="selectProject('', '')"
-            >
-              Todos los proyectos
-            </button>
-            <div class="project-menu-list" @scroll="onProjectListScroll">
-              <button
-                v-for="p in projectOptions"
-                :key="p._id"
-                :class="['filter-item', { 'filter-item--active': activeProjectId === p._id }]"
-                @click.stop="selectProject(p._id, p.name)"
-              >
-                {{ p.name }}
-              </button>
-              <div v-if="projectLoadingMore" class="filter-item">Cargando más...</div>
-            </div>
-            <button
-              v-if="activeProjectId"
-              class="filter-item filter-item--clear"
-              @click.stop="selectProject('', '')"
-            >
-              Limpiar filtro
-            </button>
-          </div>
-        </div>
-
         <div class="search-wrap">
           <span class="material-symbols-outlined search-icon">search</span>
           <input
@@ -98,6 +66,60 @@
         </div>
       </div>
     </header>
+
+    <!-- Project picker (como Tareas: primero el proyecto) -->
+    <div v-if="!activeProjectId && !activeGeneral" class="project-picker">
+      <div class="project-picker-search">
+        <span class="material-symbols-outlined">search</span>
+        <input
+          type="text"
+          v-model="projectSearch"
+          placeholder="Buscar proyecto por nombre..."
+          @input="onProjectSearch"
+        />
+      </div>
+
+      <div
+        v-if="projectLoading && !projectOptions.length"
+        class="project-picker-state"
+      >
+        <span class="material-symbols-outlined spinning">sync</span>
+        Cargando proyectos...
+      </div>
+
+      <div v-else class="project-cards-grid" @scroll="onProjectListScroll">
+        <button
+          type="button"
+          class="project-card project-card--general"
+          @click="selectGeneral"
+        >
+          <span class="material-symbols-outlined project-card-icon">edit_note</span>
+          <span class="project-card-name">Notas generales</span>
+          <span class="project-card-sub">Sin proyecto</span>
+        </button>
+        <button
+          v-for="project in projectOptions"
+          :key="project._id"
+          type="button"
+          class="project-card"
+          @click="selectProject(project._id, project.name)"
+        >
+          <span class="material-symbols-outlined project-card-icon">folder</span>
+          <span class="project-card-name">{{ project.name }}</span>
+        </button>
+        <div v-if="projectLoadingMore" class="project-picker-state project-picker-state--inline">
+          <span class="material-symbols-outlined spinning">sync</span>
+          Cargando más...
+        </div>
+      </div>
+      <div v-if="!projectLoading && !projectOptions.length" class="project-picker-state">
+        <span class="material-symbols-outlined empty-icon">folder_off</span>
+        <h2>No se encontraron proyectos</h2>
+      </div>
+    </div>
+
+    <template v-else>
+
 
     <!-- Loading -->
     <div v-if="notesStore.loading && !notesStore.items.length" class="notes-loading">
@@ -255,6 +277,8 @@
       </div>
     </template>
 
+    </template>
+
     <!-- Modal -->
     <note-edit-modal
       :is-open="modalOpen"
@@ -309,13 +333,14 @@ export default defineComponent({
     const filterOpen = ref(false)
     const searchQuery = ref('')
     const filters = ref<NoteQueryDto>({})
-    const projectOpen = ref(false)
     const activeProjectId = ref('')
     const activeProjectName = ref('')
+    const activeGeneral = ref(false)
     const projectSearch = ref('')
     const projectOptions = ref<Project[]>([])
     const projectPage = ref(1)
     const projectHasMore = ref(true)
+    const projectLoading = ref(false)
     const projectLoadingMore = ref(false)
     const PROJECT_PAGE_SIZE = 20
 
@@ -330,11 +355,18 @@ export default defineComponent({
           activeProjectId.value = data._id
           activeProjectName.value = data.name
           filters.value.projectId = data._id
+          await notesStore.setFilters({ ...filters.value })
+          return
         } catch {
-          // proyecto inválido: se ignora y se muestra todo
+          // proyecto inválido: se muestra el selector
         }
       }
-      await notesStore.setFilters({ ...filters.value })
+      projectLoading.value = true
+      try {
+        await fetchProjects(true)
+      } finally {
+        projectLoading.value = false
+      }
     })
 
     const currentStatusLabel = computed(() => {
@@ -397,19 +429,33 @@ export default defineComponent({
       }
     }
 
-    function toggleProjectMenu() {
-      projectOpen.value = !projectOpen.value
-      if (projectOpen.value && !projectOptions.value.length) {
-        void fetchProjects(true)
-      }
+    function backToProjectPicker() {
+      activeProjectId.value = ''
+      activeProjectName.value = ''
+      activeGeneral.value = false
+      delete filters.value.projectId
+      delete filters.value.unassigned
+      projectLoading.value = true
+      void fetchProjects(true).finally(() => {
+        projectLoading.value = false
+      })
     }
 
     function selectProject(id: string, name: string) {
       activeProjectId.value = id
       activeProjectName.value = name
-      projectOpen.value = false
-      if (id) filters.value.projectId = id
-      else delete filters.value.projectId
+      activeGeneral.value = false
+      filters.value.projectId = id
+      delete filters.value.unassigned
+      notesStore.setFilters({ ...filters.value })
+    }
+
+    function selectGeneral() {
+      activeProjectId.value = ''
+      activeProjectName.value = 'Notas generales'
+      activeGeneral.value = true
+      delete filters.value.projectId
+      filters.value.unassigned = true
       notesStore.setFilters({ ...filters.value })
     }
 
@@ -471,16 +517,18 @@ export default defineComponent({
       filterOpen,
       searchQuery,
       filters,
-      projectOpen,
       activeProjectId,
       activeProjectName,
+      activeGeneral,
       projectSearch,
       projectOptions,
+      projectLoading,
       projectLoadingMore,
       onProjectSearch,
       onProjectListScroll,
-      toggleProjectMenu,
+      backToProjectPicker,
       selectProject,
+      selectGeneral,
       STATUS_OPTIONS,
       currentStatusLabel,
       plainText,
@@ -642,43 +690,11 @@ export default defineComponent({
   color: var(--color-primary);
 }
 
-.filter-menu.project-menu {
-  min-width: 220px;
-  max-width: 280px;
-}
 
-.project-menu-search {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 12px;
-  border-bottom: 1px solid var(--color-border);
-}
 
-.project-menu-search .material-symbols-outlined {
-  font-size: 14px;
-  color: var(--color-text-muted);
-}
 
-.project-menu-search input {
-  background: none;
-  border: none;
-  outline: none;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--color-text-base);
-  width: 100%;
-}
 
-.project-menu-list {
-  max-height: 240px;
-  overflow-y: auto;
-}
 
-.filter-item--clear {
-  border-top: 1px solid var(--color-border);
-  color: var(--color-warning);
-}
 
 /* New note button */
 .btn-new {
@@ -741,6 +757,282 @@ export default defineComponent({
 
 .view-btn .material-symbols-outlined {
   font-size: 18px;
+}
+
+.project-picker {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  gap: 20px;
+}
+
+.project-picker-search {
+  position: relative;
+  max-width: 360px;
+  flex-shrink: 0;
+}
+
+.project-picker-search span {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 18px;
+  color: var(--color-text-muted);
+}
+
+.project-picker-search input {
+  width: 100%;
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  padding: 10px 12px 10px 40px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--color-text-base);
+  outline: none;
+  box-sizing: border-box;
+}
+
+.project-picker-search input:focus { border-color: var(--color-primary); }
+
+.project-picker-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 48px;
+  color: var(--color-text-muted);
+  text-align: center;
+  flex: 1;
+}
+
+.project-picker-state--inline {
+  flex: none;
+  flex-direction: row;
+  padding: 16px;
+  grid-column: 1 / -1;
+}
+
+.project-picker-state h2 { font-size: 16px; color: var(--color-text-base); margin: 0; }
+
+.project-cards-grid {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+  align-content: start;
+  padding: 6px 6px 24px;
+  margin: -6px -6px 0;
+}
+
+.project-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 20px;
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 0;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.12s;
+}
+
+.project-card:hover {
+  border-color: var(--color-primary);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+  transform: translateY(-2px);
+}
+
+.project-card-icon {
+  font-size: 28px;
+  color: var(--color-primary);
+}
+
+.project-card-name {
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text-base);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+.add-column-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: opacity 0.15s;
+}
+
+.add-column-btn:hover { opacity: 0.85; }
+.add-column-btn .material-symbols-outlined { font-size: 18px; }
+
+/* ── Board view toggle (kanban / list) ── */
+.board-view-toggle {
+  display: flex;
+  border: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+.view-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 34px;
+  background: var(--color-bg-surface-low);
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.view-btn + .view-btn {
+  border-left: 1px solid var(--color-border);
+}
+
+.view-btn:hover {
+  background: var(--color-bg-surface-high);
+  color: var(--color-text-base);
+}
+
+.view-btn--active {
+  background: var(--color-primary);
+  color: white;
+}
+
+.view-btn .material-symbols-outlined {
+  font-size: 18px;
+}
+
+/* ── List view ── */
+.task-list-container {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding-bottom: 24px;
+}
+
+.task-list-group-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.column-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.task-list-group-name {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--color-text-base);
+}
+
+.task-list-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-bottom: none;
+  cursor: pointer;
+}
+
+.task-list-group .task-list-row:last-of-type {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.task-list-row:hover {
+  background: var(--color-bg-surface-low);
+}
+
+.task-list-row.is-done .task-list-title {
+  text-decoration: line-through;
+  color: var(--color-text-disabled);
+}
+
+.task-list-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+  color: var(--color-text-base);
+}
+
+.quick-add-card--list {
+  border: 1px solid var(--color-border);
+  border-top: none;
+  padding: 8px;
+}
+
+
+
+.change-project-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--color-bg-surface-low);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-base);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+.change-project-btn:hover {
+  border-color: var(--color-border-focus);
+}
+
+.change-project-btn .material-symbols-outlined {
+  font-size: 16px;
+}
+
+.change-project-icon {
+  color: var(--color-text-muted);
+}
+
+.project-card--general {
+  border-style: dashed;
+}
+
+.project-card-sub {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
 }
 
 /* Loading / Empty */

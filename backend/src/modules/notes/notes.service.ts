@@ -10,11 +10,12 @@ export class NotesService {
   constructor(private readonly notesRepository: NotesRepository) {}
 
   findAll(workspaceId: string, query: QueryNoteDto) {
-    const { page, limit, search, status, tags, projectId, clientId } = query;
+    const { page, limit, search, status, tags, projectId, clientId, unassigned } = query;
     const filters: Record<string, any> = {};
 
     if (status) filters.status = status;
     if (projectId) filters.projectId = projectId;
+    else if (unassigned) filters.projectId = null;
     if (clientId) filters.clientId = clientId;
     if (tags?.length) filters.tags = { $in: tags };
     if (search) {

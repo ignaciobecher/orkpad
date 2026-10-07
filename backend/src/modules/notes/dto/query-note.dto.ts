@@ -40,6 +40,14 @@ export class QueryNoteDto {
   @IsOptional()
   clientId?: string;
 
+  @ApiPropertyOptional({
+    description: 'Solo notas sin proyecto asignado',
+    default: false,
+  })
+  @Transform(({ value }) => value === true || value === 'true')
+  @IsOptional()
+  unassigned?: boolean;
+
   @ApiPropertyOptional({ default: 1 })
   @Type(() => Number)
   @IsInt()

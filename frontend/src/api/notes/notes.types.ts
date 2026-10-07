@@ -50,6 +50,7 @@ export interface NoteQueryDto {
   tags?: string[]
   projectId?: string
   clientId?: string
+  unassigned?: boolean
   page?: number
   limit?: number
 }
