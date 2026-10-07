@@ -15,16 +15,16 @@ export class Workspace {
   @Prop({ required: true })
   ownerId: string;
 
-  @Prop({ trim: true, maxlength: 80, default: null })
+  @Prop({ type: String, trim: true, maxlength: 80, default: null })
   displayName: string | null;
 
   @Prop({ type: String, default: null })
   logoFileId: string | null;
 
-  @Prop({ trim: true, default: null })
+  @Prop({ type: String, trim: true, default: null })
   primaryColor: string | null;
 
-  @Prop({ default: null })
+  @Prop({ type: String, default: null })
   defaultTheme: 'dark' | 'light' | null;
 
   @Prop({ default: 'active' })
