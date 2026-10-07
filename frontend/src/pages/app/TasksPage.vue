@@ -333,11 +333,17 @@
       <div v-if="columnsStore.columns.length === 0" class="empty-board">
         <span class="material-symbols-outlined empty-icon">view_week</span>
         <h3>Sin columnas</h3>
-        <p>Creá la primera columna para este tablero</p>
-        <button class="add-column-btn" @click="openAddColumn">
-          <span class="material-symbols-outlined">add</span>
-          CREAR COLUMNA
-        </button>
+        <p>Creá la primera columna para este tablero o copialas de otro proyecto</p>
+        <div class="empty-board-actions">
+          <button class="add-column-btn" @click="openAddColumn">
+            <span class="material-symbols-outlined">add</span>
+            CREAR COLUMNA
+          </button>
+          <button class="btn-secondary" @click="openCopyColumns">
+            <span class="material-symbols-outlined">content_copy</span>
+            COPIAR DE OTRO PROYECTO
+          </button>
+        </div>
       </div>
 
       <div
@@ -380,6 +386,42 @@
           <button class="btn-secondary" @click="showColumnModal = false">Cancelar</button>
           <button class="btn-primary" :disabled="columnsStore.loading" @click="saveColumn">
             {{ columnsStore.loading ? 'Guardando...' : 'Guardar' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Copy Columns Modal -->
+    <div v-if="showCopyModal" class="modal-overlay" @click.self="showCopyModal = false">
+      <div class="modal-box">
+        <h3 class="modal-title">Copiar columnas de otro proyecto</h3>
+        <div class="modal-form">
+          <div class="form-group">
+            <label>Buscar proyecto origen</label>
+            <input v-model="copySearch" type="text" placeholder="Nombre del proyecto..." @input="onCopySearch" />
+          </div>
+          <div v-if="copyLoading" class="copy-loading">
+            <span class="material-symbols-outlined spinning">sync</span>
+            Cargando proyectos...
+          </div>
+          <div v-else-if="!copyOptions.length" class="copy-empty">Sin proyectos para copiar</div>
+          <div v-else class="copy-list">
+            <button
+              v-for="p in copyOptions"
+              :key="p._id"
+              type="button"
+              :class="['copy-item', { 'copy-item--active': copySourceId === p._id }]"
+              @click="copySourceId = p._id"
+            >
+              <span class="material-symbols-outlined">folder</span>
+              {{ p.name }}
+            </button>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-secondary" @click="showCopyModal = false">Cancelar</button>
+          <button class="btn-primary" :disabled="!copySourceId || copySaving" @click="confirmCopyColumns">
+            {{ copySaving ? 'Copiando...' : 'Copiar columnas' }}
           </button>
         </div>
       </div>
@@ -650,6 +692,60 @@ export default defineComponent({
             return Promise.resolve()
           })
         )
+      }
+    }
+
+    // ── Copy columns from another project ──
+    const showCopyModal = ref(false)
+    const copySearch = ref('')
+    const copyOptions = ref<Project[]>([])
+    const copyLoading = ref(false)
+    const copySaving = ref(false)
+    const copySourceId = ref('')
+    let copySearchDebounce: ReturnType<typeof setTimeout> | null = null
+
+    const fetchCopyOptions = async () => {
+      copyLoading.value = true
+      try {
+        const { data } = await projectsApi.getAll({
+          search: copySearch.value || undefined,
+          page: 1,
+          limit: PROJECT_PAGE_SIZE,
+        })
+        copyOptions.value = (data.data as Project[]).filter(p => p._id !== activeProjectId.value)
+      } catch {
+        copyOptions.value = []
+      } finally {
+        copyLoading.value = false
+      }
+    }
+
+    const openCopyColumns = () => {
+      copySearch.value = ''
+      copySourceId.value = ''
+      showCopyModal.value = true
+      void fetchCopyOptions()
+    }
+
+    const onCopySearch = () => {
+      if (copySearchDebounce) clearTimeout(copySearchDebounce)
+      copySearchDebounce = setTimeout(() => {
+        void fetchCopyOptions()
+      }, 250)
+    }
+
+    const confirmCopyColumns = async () => {
+      if (!copySourceId.value) return
+      copySaving.value = true
+      try {
+        const { data } = await taskColumnsApi.copy(copySourceId.value, activeProjectId.value)
+        toast.success(`${data.copied} columnas copiadas`)
+        showCopyModal.value = false
+        await loadBoard(activeProjectId.value)
+      } catch (err: any) {
+        toast.error(err.response?.data?.message || 'Error al copiar columnas')
+      } finally {
+        copySaving.value = false
       }
     }
 
@@ -984,6 +1080,16 @@ export default defineComponent({
       openEditColumn,
       saveColumn,
       confirmDeleteColumn,
+      // copy columns
+      showCopyModal,
+      copySearch,
+      copyOptions,
+      copyLoading,
+      copySaving,
+      copySourceId,
+      openCopyColumns,
+      onCopySearch,
+      confirmCopyColumns,
       // column menu
       columnMenuColumn,
       toggleColumnMenu,
@@ -1338,6 +1444,60 @@ export default defineComponent({
   border: 1px solid var(--color-border);
   border-top: none;
   padding: 8px;
+}
+
+/* ── Copy columns modal ── */
+.empty-board-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.copy-loading,
+.copy-empty {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-text-muted);
+  padding: 16px 0;
+}
+
+.copy-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.copy-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-base);
+  font-size: 13px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.copy-item:hover {
+  background: var(--color-bg-surface-low);
+}
+
+.copy-item--active {
+  border-color: var(--color-primary);
+}
+
+.copy-item .material-symbols-outlined {
+  font-size: 18px;
+  color: var(--color-text-muted);
 }
 
 /* ── Board ── */

@@ -21,4 +21,10 @@ export const taskColumnsApi = {
 
   reorder: (ids: string[]) =>
     apiClient.patch(`${BASE}/reorder/bulk`, { ids }),
+
+  copy: (sourceProjectId: string, targetProjectId: string) =>
+    apiClient.post<{ copied: number; columns: TaskColumn[] }>(`${BASE}/copy`, {
+      sourceProjectId,
+      targetProjectId,
+    }),
 }

@@ -20,6 +20,7 @@ import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { WorkspaceId } from '../../common/decorators/workspace-id.decorator';
 import { TaskColumnsService } from './task-columns.service';
 import { CreateTaskColumnDto } from './dto/create-task-column.dto';
+import { CopyTaskColumnsDto } from './dto/copy-task-columns.dto';
 import { UpdateTaskColumnDto } from './dto/update-task-column.dto';
 
 @ApiTags('Task Columns')
@@ -44,6 +45,12 @@ export class TaskColumnsController {
   @ApiOperation({ summary: 'Get a column by ID' })
   findOne(@WorkspaceId() workspaceId: string, @Param('id') id: string) {
     return this.service.findOne(workspaceId, id);
+  }
+
+  @Post('copy')
+  @ApiOperation({ summary: 'Copy all columns from one project to another (must be empty)' })
+  copy(@WorkspaceId() workspaceId: string, @Body() dto: CopyTaskColumnsDto) {
+    return this.service.copy(workspaceId, dto);
   }
 
   @Post()
