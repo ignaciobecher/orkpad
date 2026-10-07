@@ -161,6 +161,13 @@ export class ReportsService {
       const t = tasks.filter((x: any) => x.projectId?.toString() === pid);
       const collected = inv.filter((i: any) => ['paid', 'collected'].includes(i.status)).reduce((s: number, i: any) => s + (i.total ?? 0), 0);
       const done = t.filter((x: any) => x.status === 'done').length;
+      const invoiced = inv.reduce((s: number, i: any) => s + (i.total ?? 0), 0);
+      // Sin tareas, el avance se mide por cobro (cobrado/facturado).
+      const progress = t.length
+        ? Math.round((done / t.length) * 100)
+        : invoiced > 0
+          ? Math.round((collected / invoiced) * 100)
+          : 0;
       return {
         id: pid,
         name: p.name,
@@ -168,11 +175,11 @@ export class ReportsService {
         status: p.status,
         budget: p.budget ?? 0,
         currency: p.currency ?? 'USD',
-        invoiced: inv.reduce((s: number, i: any) => s + (i.total ?? 0), 0),
+        invoiced,
         collected,
         tasksTotal: t.length,
         tasksDone: done,
-        progress: t.length ? Math.round((done / t.length) * 100) : 0,
+        progress,
       };
     });
   }
