@@ -32,7 +32,6 @@ import { ResetPasswordDto } from './dto/reset-password.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { VerifyTotpDto } from './dto/verify-totp.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
-import { UpdateNotificationPreferencesDto } from './dto/update-notification-preferences.dto';
 import { WebAuthnRegisterVerifyDto } from './dto/webauthn-register-verify.dto';
 import { WebAuthnLoginVerifyDto } from './dto/webauthn-login-verify.dto';
 
@@ -258,18 +257,6 @@ export class AuthController {
     @WorkspaceId() workspaceId: string,
   ) {
     return this.authService.exportData(user.userId, workspaceId);
-  }
-
-  @Patch('notification-preferences')
-  @HttpCode(HttpStatus.OK)
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: 'Update notification preferences' })
-  updateNotificationPreferences(
-    @CurrentUser() user: { userId: string },
-    @Body() dto: UpdateNotificationPreferencesDto,
-  ) {
-    return this.authService.updateNotificationPreferences(user.userId, dto);
   }
 
   @Delete('account')

@@ -56,9 +56,6 @@ export const authApi = {
   exportData: () =>
     apiClient.get(`${BASE}/export`),
 
-  updateNotificationPreferences: (prefs: { publicTaskCreated?: boolean }) =>
-    apiClient.patch(`${BASE}/notification-preferences`, prefs),
-
   deleteAccount: () =>
     apiClient.delete(`${BASE}/account`),
 

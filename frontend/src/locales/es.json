@@ -135,7 +135,7 @@
         "desc": "Tus clientes ven el estado de su proyecto sin mandarte WhatsApp."
       },
       "agenda": {
-      "goals": "Objetivos",
+        "goals": "Objetivos",
         "title": "Agenda integrada",
         "desc": "Reuniones, hitos y vencimientos conectados a tus proyectos."
       },
@@ -436,18 +436,8 @@
     "emptyHint": "Creá tu primer proyecto para organizar el trabajo de un cliente.",
     "deleteConfirm": "¿Estás seguro de que deseas eliminar este proyecto?",
     "viewDetail": "Ver detalle",
-    "share": "Compartir seguimiento con cliente",
-    "linkCopied": "¡Enlace copiado al portapapeles!",
-    "linkGenerated": "¡Enlace generado y copiado!",
     "detail": {
       "back": "Proyectos",
-      "publicLink": "ENLACE PÚBLICO",
-      "linkActive": "ACTIVO",
-      "copyLink": "Copiar enlace",
-      "revokeLink": "Revocar enlace",
-      "generateLink": "GENERAR ENLACE",
-      "revokeConfirm": "¿Revocar el enlace público de este proyecto?",
-      "linkCopied": "¡Enlace copiado!",
       "taskTotal": "TOTAL TAREAS",
       "taskDone": "COMPLETADAS",
       "taskInProgress": "EN PROGRESO",
@@ -472,7 +462,12 @@
       "generateInvoices": "Generar {count} facturas",
       "generateConfirm": "¿Generar las facturas de las cuotas? Podrás editarlas o eliminarlas después.",
       "installment": "Cuota",
-      "tabs": { "overview": "Resumen", "tasks": "Tareas", "finance": "Finanzas", "files": "Archivos" },
+      "tabs": {
+        "overview": "Resumen",
+        "tasks": "Tareas",
+        "finance": "Finanzas",
+        "files": "Archivos"
+      },
       "viewTasks": "Ver tareas",
       "viewInvoices": "Ver finanzas",
       "agreed": "Total acordado",
@@ -508,7 +503,10 @@
       "installmentsCount": "Cantidad de cuotas",
       "status": "Estado"
     },
-    "billing": { "single": "Pago total", "installments": "En cuotas" },
+    "billing": {
+      "single": "Pago total",
+      "installments": "En cuotas"
+    },
     "status": {
       "all": "TODOS LOS ESTADOS",
       "active": "ACTIVOS",

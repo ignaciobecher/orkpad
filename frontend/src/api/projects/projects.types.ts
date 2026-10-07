@@ -11,27 +11,11 @@ export interface Project {
   currency?: string
   billingType?: 'single' | 'installments'
   installmentsCount?: number
-  publicToken?: string | null
-  linkVisibility?: 'public' | 'private'
-  linkExpiresAt?: string | null
   createdAt: string
   updatedAt: string
 }
 
-export interface LinkStatus {
-  linkVisibility: 'public' | 'private'
-  publicToken: string | null
-  linkExpiresAt: string | null
-  hasCredential: boolean
-  username: string | null
-  permissions: string[] | null
-}
 
-export interface SetLinkCredentialDto {
-  username: string
-  password: string
-  permissions?: ('view' | 'create-task')[]
-}
 
 export interface CreateProjectDto {
   name: string
@@ -133,31 +117,3 @@ export interface ProjectOverview {
   documents: DocumentSummary[]
 }
 
-export interface PublicInvoiceStats {
-  paid: number
-  pending: number
-  currency: string
-}
-
-export interface PublicTaskStats {
-  total: number
-  done: number
-  inProgress: number
-  todo: number
-  overdue: number
-}
-
-export interface PublicProjectView {
-  name: string
-  description?: string
-  status: string
-  startDate?: string
-  endDate?: string
-  budget?: number
-  currency?: string
-  taskStats: PublicTaskStats
-  invoiceStats: PublicInvoiceStats
-  tasks: TaskSummary[]
-  invoices: InvoiceSummary[]
-  documents: DocumentSummary[]
-}

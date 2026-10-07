@@ -22,13 +22,7 @@ interface AdminSocketData {
   userId: string;
 }
 
-interface ClientSocketData {
-  type: 'client';
-  workspaceId: string;
-  conversationId: string;
-}
-
-type SocketData = AdminSocketData | ClientSocketData;
+type SocketData = AdminSocketData;
 
 interface AuthenticatedSocket extends Socket {
   data: SocketData;
@@ -72,13 +66,10 @@ export class MessagingGateway
       const auth = client.handshake.auth as {
         type?: string;
         token?: string;
-        publicToken?: string;
       };
 
       if (auth.type === 'admin') {
         await this.authenticateAdmin(client, auth.token || '');
-      } else if (auth.type === 'client' && auth.publicToken) {
-        await this.authenticateClient(client, auth.publicToken);
       } else {
         this.logger.warn(
           `Conexión rechazada — falta autenticación: ${client.id}`,
@@ -130,26 +121,6 @@ export class MessagingGateway
     await client.join(`workspace:${payload.workspaceId}`);
   }
 
-  private async authenticateClient(
-    client: AuthenticatedSocket,
-    publicToken: string,
-  ) {
-    const { conversation, workspaceId } =
-      await this.messagingService.getOrCreateConversationForProject(
-        publicToken,
-      );
-
-    const conversationId = (conversation._id as any).toString();
-
-    client.data = {
-      type: 'client',
-      workspaceId,
-      conversationId,
-    };
-
-    await client.join(`conversation:${conversationId}`);
-  }
-
   @SubscribeMessage('admin:send-message')
   async handleAdminMessage(
     @ConnectedSocket() client: AuthenticatedSocket,
@@ -177,39 +148,6 @@ export class MessagingGateway
       });
 
     return message;
-  }
-
-  @SubscribeMessage('client:send-message')
-  async handleClientMessage(
-    @ConnectedSocket() client: AuthenticatedSocket,
-    @MessageBody() payload: { content: string },
-  ) {
-    if (client.data.type !== 'client') throw new WsException('No autorizado');
-
-    const publicToken = (client.handshake.auth as any).publicToken;
-    const dto: CreateMessageDto = { content: payload.content };
-    const result = await this.messagingService.sendClientMessage(
-      publicToken,
-      dto,
-    );
-
-    this.server
-      .to(`conversation:${result.conversationId}`)
-      .emit('new-message', result.message);
-
-    this.server
-      .to(`workspace:${result.workspaceId}`)
-      .emit('new-message', result.message);
-
-    this.server
-      .to(`workspace:${result.workspaceId}`)
-      .emit('conversation-updated', {
-        conversationId: result.conversationId,
-        lastMessageAt: new Date(),
-        unreadDelta: 1,
-      });
-
-    return result.message;
   }
 
   @SubscribeMessage('admin:join-conversation')

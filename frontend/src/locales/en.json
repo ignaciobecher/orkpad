@@ -1,6 +1,12 @@
 {
   "hero": {
-    "chaosFiles": ["clients.xlsx", "invoices_v3_FINAL.xlsx", "projects_2024.notion", "wa_tracking.png", "proposal_bob.gdoc"],
+    "chaosFiles": [
+      "clients.xlsx",
+      "invoices_v3_FINAL.xlsx",
+      "projects_2024.notion",
+      "wa_tracking.png",
+      "proposal_bob.gdoc"
+    ],
     "title": "The open-source app",
     "titleAccent": "for freelancers.",
     "subtitle": "CRM, projects, time tracking and invoicing. Everything together, everything yours. No subscriptions, no lock-in, no BS.",
@@ -13,9 +19,18 @@
       "noVendor": "No vendor lock-in"
     },
     "stats": {
-      "license": { "value": "Apache-2.0", "label": "License" },
-      "community": { "value": "∞", "label": "Contributors welcome" },
-      "setup": { "value": "5 min", "label": "docker compose up" }
+      "license": {
+        "value": "Apache-2.0",
+        "label": "License"
+      },
+      "community": {
+        "value": "∞",
+        "label": "Contributors welcome"
+      },
+      "setup": {
+        "value": "5 min",
+        "label": "docker compose up"
+      }
     },
     "mockup": {
       "revenue": "MONTHLY REVENUE",
@@ -99,7 +114,12 @@
     },
     "visual": {
       "isolation": "DATA OWNERSHIP",
-      "items": ["HTTPS / TLS in transit", "AES-256 at rest", "Self-hosted storage", "Zero third-party access"]
+      "items": [
+        "HTTPS / TLS in transit",
+        "AES-256 at rest",
+        "Self-hosted storage",
+        "Zero third-party access"
+      ]
     }
   },
   "advanced": {
@@ -115,7 +135,7 @@
         "desc": "Your clients see their project status without texting you."
       },
       "agenda": {
-      "goals": "Goals",
+        "goals": "Goals",
         "title": "Integrated agenda",
         "desc": "Meetings, milestones and deadlines connected to your projects."
       },
@@ -419,13 +439,6 @@
     "noClient": "No client",
     "detail": {
       "back": "Projects",
-      "publicLink": "PUBLIC LINK",
-      "linkActive": "ACTIVE",
-      "copyLink": "Copy link",
-      "revokeLink": "Revoke link",
-      "generateLink": "GENERATE LINK",
-      "revokeConfirm": "Revoke the public link for this project?",
-      "linkCopied": "Link copied!",
       "taskTotal": "TOTAL TASKS",
       "taskDone": "COMPLETED",
       "taskInProgress": "IN PROGRESS",
@@ -450,7 +463,12 @@
       "generateInvoices": "Generate {count} invoices",
       "generateConfirm": "Generate the installment invoices? You can edit or delete them afterwards.",
       "installment": "Installment",
-      "tabs": { "overview": "Overview", "tasks": "Tasks", "finance": "Finance", "files": "Files" },
+      "tabs": {
+        "overview": "Overview",
+        "tasks": "Tasks",
+        "finance": "Finance",
+        "files": "Files"
+      },
       "viewTasks": "View tasks",
       "viewInvoices": "View finance",
       "dueDate": "Due date",
@@ -487,7 +505,10 @@
       "installmentsCount": "Installment count",
       "status": "Status"
     },
-    "billing": { "single": "Full payment", "installments": "Installments" },
+    "billing": {
+      "single": "Full payment",
+      "installments": "Installments"
+    },
     "status": {
       "all": "ALL STATUSES",
       "active": "ACTIVE",

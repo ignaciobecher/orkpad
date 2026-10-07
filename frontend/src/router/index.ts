@@ -23,7 +23,6 @@ const DocsPage = () => import('@/pages/app/DocsPage.vue')
 const AgendaPage = () => import('@/pages/app/AgendaPage.vue')
 const SettingsPage = () => import('@/pages/app/SettingsPage.vue')
 const NotificationsPage = () => import('@/pages/NotificationsPage.vue')
-const PublicProjectPage = () => import('@/pages/PublicProjectPage.vue')
 const AdminUsersPage = () => import('@/pages/app/AdminUsersPage.vue')
 const QuotesPage = () => import('@/pages/app/QuotesPage.vue')
 const NotesPage = () => import('@/pages/app/NotesPage.vue')
@@ -118,11 +117,6 @@ const router = createRouter({
         { path: 'planner',        name: 'planner',        component: () => import('@/pages/app/PlannerPage.vue') },
         { path: '',               redirect: { name: 'dashboard' } }
       ]
-    },
-    {
-      path: '/p/:token',
-      name: 'public-project',
-      component: PublicProjectPage,
     },
     {
       path: '/:pathMatch(.*)*',

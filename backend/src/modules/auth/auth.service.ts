@@ -630,18 +630,6 @@ export class AuthService {
     };
   }
 
-  async updateNotificationPreferences(
-    userId: string,
-    prefs: { publicTaskCreated?: boolean },
-  ) {
-    const user = await this.usersService.updateNotificationPreferences(
-      userId,
-      prefs,
-    );
-    if (!user) throw new UnauthorizedException();
-    return { notificationPreferences: user.notificationPreferences };
-  }
-
   async deleteAccount(userId: string) {
     const user = await this.usersService.findById(userId);
     if (!user) throw new UnauthorizedException();

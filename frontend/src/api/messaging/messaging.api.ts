@@ -1,6 +1,4 @@
 import apiClient from '../axios.config'
-import axios from 'axios'
-import { baseURL } from '../axios.config'
 import type {
   Conversation,
   Message,
@@ -11,13 +9,6 @@ import type {
 } from './messaging.types'
 
 const BASE = '/conversations'
-
-// Public client sin autenticación (para el widget del cliente)
-const publicClient = axios.create({
-  baseURL,
-  timeout: 15000,
-  headers: { 'Content-Type': 'application/json' },
-})
 
 export const messagingApi = {
   // ─── Admin endpoints (autenticados) ────────────────────────────────────────
@@ -42,16 +33,4 @@ export const messagingApi = {
     apiClient.patch(`${BASE}/${conversationId}/read`, {}, {
       headers: { 'X-Hide-Global-Toast': 'true' },
     }),
-
-  // ─── Public endpoints (sin autenticación, para el cliente) ─────────────────
-  getOrCreatePublicConversation: (projectToken: string) =>
-    publicClient.get<{ conversation: Conversation; workspaceId: string }>(
-      `/public/conversations/${projectToken}`,
-    ),
-
-  getPublicMessages: (projectToken: string, params?: { page?: number; limit?: number }) =>
-    publicClient.get<PaginatedMessages>(`/public/conversations/${projectToken}/messages`, { params }),
-
-  sendClientMessage: (projectToken: string, dto: CreateMessageDto) =>
-    publicClient.post<Message>(`/public/conversations/${projectToken}/messages`, dto),
 }

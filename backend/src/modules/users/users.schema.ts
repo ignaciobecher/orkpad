@@ -64,14 +64,10 @@ export class User {
   twoFactorSecret?: string | null;
 
   @Prop({
-    type: {
-      publicTaskCreated: { type: Boolean, default: true },
-    },
-    default: () => ({ publicTaskCreated: true }),
+    type: Object,
+    default: {},
   })
-  notificationPreferences: {
-    publicTaskCreated: boolean;
-  };
+  notificationPreferences: Record<string, unknown>;
 
   @Prop({ type: Date, default: null })
   lastLogin?: Date | null;

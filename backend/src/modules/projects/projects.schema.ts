@@ -39,15 +39,6 @@ export class Project extends BaseSchema {
   @Prop({ default: 1, min: 1, max: 60 })
   installmentsCount: number;
 
-  @Prop({ type: String, default: null })
-  publicToken: string | null;
-
-  @Prop({ default: 'public' })
-  linkVisibility: 'public' | 'private';
-
-  @Prop({ type: Date, default: null })
-  linkExpiresAt: Date | null;
-
   @Prop({
     type: [
       {
@@ -75,6 +66,4 @@ export const ProjectSchema = SchemaFactory.createForClass(Project);
 ProjectSchema.index({ workspaceId: 1, status: 1 });
 ProjectSchema.index({ workspaceId: 1, clientId: 1 });
 ProjectSchema.index({ workspaceId: 1, createdAt: -1 });
-ProjectSchema.index({ publicToken: 1 }, { sparse: true });
-ProjectSchema.index({ workspaceId: 1, linkVisibility: 1 });
 ProjectSchema.index({ workspaceId: 1, isDemo: 1 });

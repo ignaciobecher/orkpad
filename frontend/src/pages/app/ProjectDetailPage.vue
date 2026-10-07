@@ -37,147 +37,6 @@
         </template>
       </div>
 
-      <div v-if="overview" class="header-right">
-        <div class="public-link-box">
-          <span class="mono-label">Link de proyecto</span>
-          <div v-if="overview.project.publicToken" class="link-row">
-            <span v-if="linkStatus?.linkVisibility === 'private'" class="link-private-badge">
-              <span class="material-symbols-outlined" style="font-size:12px">lock</span>
-              Privado
-            </span>
-            <span v-else class="link-active-badge">
-              <span class="material-symbols-outlined" style="font-size:12px">public</span>
-              Público
-            </span>
-            <button class="icon-btn" @click="copyPublicLink" title="Copiar link">
-              <span class="material-symbols-outlined">content_copy</span>
-            </button>
-            <button class="icon-btn" @click="openLinkDrawer" title="Configurar link">
-              <span class="material-symbols-outlined">settings</span>
-            </button>
-            <button class="icon-btn icon-btn--danger" @click="handleRevokeLink" title="Revocar link">
-              <span class="material-symbols-outlined">link_off</span>
-            </button>
-          </div>
-          <w-button v-else variant="ghost" @click="handleGenerateLink" :disabled="linkLoading">
-            <span class="material-symbols-outlined mr-1">link</span>
-            Generar link
-          </w-button>
-        </div>
-      </div>
-
-      <!-- Link settings drawer -->
-      <w-drawer v-model="linkDrawerOpen" title="Configuración del link" width="440px">
-        <div class="link-drawer-body" v-if="linkStatus !== null">
-          <!-- Current state summary -->
-          <div class="link-status-row">
-            <span class="mono-label">Estado actual</span>
-            <div style="display:flex;align-items:center;gap:8px;margin-top:6px">
-              <span v-if="linkStatus.linkVisibility === 'private'" class="link-private-badge">
-                <span class="material-symbols-outlined" style="font-size:12px">lock</span>
-                Privado
-              </span>
-              <span v-else class="link-active-badge">
-                <span class="material-symbols-outlined" style="font-size:12px">public</span>
-                Público
-              </span>
-              <code class="link-url-preview" @click="copyPublicLink" title="Copiar">
-                /p/{{ linkStatus.publicToken?.substring(0, 12) }}…
-                <span class="material-symbols-outlined" style="font-size:11px;vertical-align:middle">content_copy</span>
-              </code>
-            </div>
-          </div>
-
-          <div class="link-divider" />
-
-          <!-- Set private credentials -->
-          <div class="link-section">
-            <h3 class="link-section-title">
-              <span class="material-symbols-outlined" style="font-size:16px">lock</span>
-              Acceso privado
-            </h3>
-            <p class="link-section-desc">
-              Protege el link con usuario y contraseña. Solo quienes tengan las credenciales podrán ver el proyecto.
-            </p>
-
-            <div v-if="linkStatus.hasCredential" class="credential-current">
-              <span class="mono-label">Usuario activo:</span>
-              <code class="cred-username">{{ linkStatus.username }}</code>
-              <div style="display:flex;gap:8px;margin-top:12px">
-                <w-button variant="ghost" size="sm" @click="showRotateConfirm = true" :disabled="credLoading">
-                  <span class="material-symbols-outlined mr-1">refresh</span>
-                  Rotar contraseña
-                </w-button>
-                <w-button variant="ghost" size="sm" style="color:var(--color-error)" @click="handleRemoveCredential" :disabled="credLoading">
-                  <span class="material-symbols-outlined mr-1">lock_open</span>
-                  Hacer público
-                </w-button>
-              </div>
-            </div>
-
-            <div v-if="showRotateConfirm" class="rotate-confirm-box">
-              <p style="font-size:13px;margin:0 0 12px">Se generará una nueva contraseña aleatoria. Cópiala ahora — no se mostrará de nuevo.</p>
-              <div v-if="rotatedPassword" class="rotated-password-box">
-                <code>{{ rotatedPassword }}</code>
-                <button class="icon-btn" @click="copyRotatedPassword" title="Copiar">
-                  <span class="material-symbols-outlined">content_copy</span>
-                </button>
-              </div>
-              <div style="display:flex;gap:8px" v-if="!rotatedPassword">
-                <w-button variant="ghost" size="sm" @click="showRotateConfirm = false">Cancelar</w-button>
-                <w-button variant="primary" size="sm" @click="handleRotateCredential" :disabled="credLoading">Confirmar rotación</w-button>
-              </div>
-              <w-button v-else variant="ghost" size="sm" @click="showRotateConfirm = false; rotatedPassword = ''">Cerrar</w-button>
-            </div>
-
-            <div v-if="!linkStatus.hasCredential" class="credential-form">
-              <div class="form-field">
-                <label>Usuario</label>
-                <input
-                  v-model="credForm.username"
-                  type="text"
-                  placeholder="cliente"
-                  autocomplete="off"
-                  :class="{ 'input-invalid': credUsernameTouched && !credForm.username }"
-                  @blur="credUsernameTouched = true"
-                />
-                <span v-if="credUsernameTouched && !credForm.username" class="w-input-error">
-                  El usuario es obligatorio
-                </span>
-              </div>
-              <div class="form-field">
-                <label>Contraseña</label>
-                <div class="password-input-row">
-                  <input
-                    v-model="credForm.password"
-                    :type="showPassword ? 'text' : 'password'"
-                    placeholder="mín. 8 caracteres"
-                    autocomplete="new-password"
-                    :class="{ 'input-invalid': credPasswordTouched && credForm.password.length > 0 && credForm.password.length < 8 }"
-                    @blur="credPasswordTouched = true"
-                  />
-                  <button class="icon-btn" @click="showPassword = !showPassword" type="button">
-                    <span class="material-symbols-outlined">{{ showPassword ? 'visibility_off' : 'visibility' }}</span>
-                  </button>
-                </div>
-                <span v-if="credPasswordTouched && credForm.password.length > 0 && credForm.password.length < 8" class="w-input-error">
-                  Faltan {{ 8 - credForm.password.length }} caracteres
-                </span>
-                <span v-else-if="credPasswordTouched && !credForm.password" class="w-input-error">
-                  La contraseña es obligatoria
-                </span>
-              </div>
-              <w-button variant="primary" size="sm" @click="handleSetCredential" :disabled="credLoading || !credForm.username || credForm.password.length < 8" style="margin-top:4px">
-                <span class="material-symbols-outlined mr-1">lock</span>
-                Activar acceso privado
-              </w-button>
-            </div>
-          </div>
-        </div>
-        <div v-else class="link-drawer-body" style="display:flex;justify-content:center;padding:40px">
-          <span class="material-symbols-outlined loading-icon">progress_activity</span>
-        </div>
-      </w-drawer>
     </header>
 
     <div v-if="loading && !overview" class="loading-state">
@@ -476,15 +335,6 @@ export default defineComponent({
   components: { WButton, WCard, WTable, WBadge, WKpiCard, WDrawer, ProjectFinanceGrid },
   data() {
     return {
-      linkLoading: false,
-      linkDrawerOpen: false,
-      credLoading: false,
-      credForm: { username: '', password: '' },
-      credUsernameTouched: false,
-      credPasswordTouched: false,
-      showPassword: false,
-      showRotateConfirm: false,
-      rotatedPassword: '',
       repoDrawerOpen: false,
       repoSearch: '',
       selectedRepo: null as GithubRepo | null,
@@ -494,7 +344,7 @@ export default defineComponent({
     }
   },
   computed: {
-    ...mapState(useProjectsStore, ['overview', 'loading', 'linkStatus', 'linkStatusLoading']),
+    ...mapState(useProjectsStore, ['overview', 'loading']),
     projectId(): string {
       return this.$route.params.id as string
     },
@@ -573,13 +423,7 @@ export default defineComponent({
   methods: {
     ...mapActions(useProjectsStore, [
       'fetchOverview',
-      'generatePublicLink',
-      'revokePublicLink',
       'generateInvoices',
-      'fetchLinkStatus',
-      'setLinkCredential',
-      'removeLinkCredential',
-      'rotateLinkCredential',
     ]),
     formatDate,
     formatMoney(amount: number | undefined, currency?: string) {
@@ -622,67 +466,6 @@ export default defineComponent({
       if (!dueDate) return false
       return new Date(dueDate) < new Date()
     },
-    async handleGenerateLink() {
-      this.linkLoading = true
-      try {
-        await this.generatePublicLink(this.projectId)
-      } finally {
-        this.linkLoading = false
-      }
-    },
-    async handleRevokeLink() {
-      if (!confirm(this.$t('projects.detail.revokeConfirm'))) return
-      await this.revokePublicLink(this.projectId)
-    },
-    copyPublicLink() {
-      const token = this.overview?.project?.publicToken
-      if (!token) return
-      const url = `${window.location.origin}/p/${token}`
-      navigator.clipboard.writeText(url)
-      useToast().success(this.$t('projects.detail.linkCopied'))
-    },
-    async openLinkDrawer() {
-      this.showRotateConfirm = false
-      this.rotatedPassword = ''
-      this.credForm = { username: '', password: '' }
-      this.credUsernameTouched = false
-      this.credPasswordTouched = false
-      this.linkDrawerOpen = true
-      await this.fetchLinkStatus(this.projectId)
-    },
-    async handleSetCredential() {
-      if (!this.credForm.username || this.credForm.password.length < 8) return
-      this.credLoading = true
-      try {
-        await this.setLinkCredential(this.projectId, this.credForm)
-        this.credForm = { username: '', password: '' }
-        this.credUsernameTouched = false
-        this.credPasswordTouched = false
-      } finally {
-        this.credLoading = false
-      }
-    },
-    async handleRemoveCredential() {
-      if (!confirm('¿Hacer el link público nuevamente? Cualquiera con el link podrá acceder sin contraseña.')) return
-      this.credLoading = true
-      try {
-        await this.removeLinkCredential(this.projectId)
-      } finally {
-        this.credLoading = false
-      }
-    },
-    async handleRotateCredential() {
-      this.credLoading = true
-      try {
-        this.rotatedPassword = await this.rotateLinkCredential(this.projectId)
-      } finally {
-        this.credLoading = false
-      }
-    },
-    copyRotatedPassword() {
-      navigator.clipboard.writeText(this.rotatedPassword)
-      useToast().success('Contraseña copiada')
-    },
     async openRepoDrawer() {
       this.selectedRepo = null
       this.repoSearch = ''
@@ -721,9 +504,6 @@ export default defineComponent({
   },
   async mounted() {
     await this.fetchOverview(this.projectId)
-    if (this.overview?.project?.publicToken) {
-      this.fetchLinkStatus(this.projectId)
-    }
   },
 })
 </script>
@@ -809,17 +589,6 @@ export default defineComponent({
 }
 .project-dates .material-symbols-outlined { font-size: 14px; font-family: 'Material Symbols Outlined'; }
 
-.header-right { flex-shrink: 0; }
-
-.public-link-box {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 8px;
-  border: 1px solid var(--color-border);
-  padding: 12px 16px;
-  background: var(--color-bg-surface);
-}
 
 .mono-label {
   font-family: var(--font-mono);
@@ -829,20 +598,7 @@ export default defineComponent({
   color: var(--color-text-muted);
 }
 
-.link-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
 
-.link-active-badge {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  text-transform: uppercase;
-  color: var(--color-success);
-  border: 1px solid var(--color-success);
-  padding: 2px 8px;
-}
 
 .icon-btn {
   background: none;
@@ -1044,154 +800,19 @@ export default defineComponent({
 
 .github-section { margin-bottom: 24px; flex-shrink: 0; }
 
-.link-private-badge {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  text-transform: uppercase;
-  color: var(--color-warning);
-  border: 1px solid var(--color-warning);
-  padding: 2px 8px;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-}
 
-.link-drawer-body {
-  padding: 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
 
-.link-status-row { display: flex; flex-direction: column; }
 
-.link-url-preview {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  background: var(--color-bg-base);
-  border: 1px solid var(--color-border);
-  padding: 2px 8px;
-  border-radius: 4px;
-  cursor: pointer;
-  color: var(--color-text-muted);
-}
-.link-url-preview:hover { color: var(--color-text-base); border-color: var(--color-primary); }
 
-.link-divider {
-  border: none;
-  border-top: 1px solid var(--color-border);
-}
 
-.link-section { display: flex; flex-direction: column; gap: 12px; }
 
-.link-section-title {
-  font-size: 14px;
-  font-weight: 600;
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
 
-.link-section-desc {
-  font-size: 13px;
-  color: var(--color-text-muted);
-  margin: 0;
-  line-height: 1.5;
-}
 
-.credential-current {
-  background: var(--color-bg-base);
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  padding: 14px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
 
-.cred-username {
-  font-family: var(--font-mono);
-  font-size: 14px;
-  font-weight: 600;
-}
 
-.credential-form {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
 
-.form-field {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
 
-.form-field label {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--color-text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
 
-.form-field input {
-  background: var(--color-bg-base);
-  border: 1px solid var(--color-border);
-  border-radius: 6px;
-  padding: 10px 12px;
-  color: var(--color-text-base);
-  font-family: inherit;
-  font-size: 14px;
-  outline: none;
-  width: 100%;
-  box-sizing: border-box;
-}
-.form-field input:focus { border-color: var(--color-primary); }
-.form-field input.input-invalid { border-color: var(--color-error); }
-
-.w-input-error {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  color: var(--color-error);
-  text-transform: uppercase;
-}
-
-.password-input-row {
-  display: flex;
-  align-items: center;
-  position: relative;
-}
-.password-input-row input { padding-right: 40px; }
-.password-input-row .icon-btn {
-  position: absolute;
-  right: 8px;
-}
-
-.rotate-confirm-box {
-  background: var(--color-bg-base);
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  padding: 14px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.rotated-password-box {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: var(--color-bg-surface);
-  border: 1px solid var(--color-success);
-  border-radius: 6px;
-  padding: 10px 12px;
-  font-family: var(--font-mono);
-  font-size: 16px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-}
 
 .github-connect-row {
   display: flex;
@@ -1332,8 +953,6 @@ export default defineComponent({
 @media (max-width: 768px) {
   .project-detail { padding: 16px; }
   .page-header { flex-direction: column; }
-  .header-right { width: 100%; }
-  .public-link-box { align-items: stretch; }
   .kpi-strip { grid-template-columns: repeat(2, 1fr); }
 }
 </style>

@@ -6,16 +6,9 @@ import { NotificationsModule } from '../notifications/notifications.module';
 import { UsersModule } from '../users/users.module';
 import { InvoicesModule } from '../invoices/invoices.module';
 import { ProjectsController } from './projects.controller';
-import { ProjectsPublicController } from './projects-public.controller';
 import { ProjectsService } from './projects.service';
 import { ProjectsRepository } from './projects.repository';
-import { ProjectLinkCredentialService } from './project-link-credential.service';
-import { ProjectLinkCredentialRepository } from './project-link-credential.repository';
 import { Project, ProjectSchema } from './projects.schema';
-import {
-  ProjectLinkCredential,
-  ProjectLinkCredentialSchema,
-} from './project-link-credential.schema';
 import { Task, TaskSchema } from '../tasks/tasks.schema';
 import { Invoice, InvoiceSchema } from '../invoices/invoices.schema';
 import {
@@ -33,20 +26,17 @@ import { Document, DocumentSchema } from '../docs/docs.schema';
     forwardRef(() => InvoicesModule),
     MongooseModule.forFeature([
       { name: Project.name, schema: ProjectSchema },
-      { name: ProjectLinkCredential.name, schema: ProjectLinkCredentialSchema },
       { name: Task.name, schema: TaskSchema },
       { name: Invoice.name, schema: InvoiceSchema },
       { name: TimeEntry.name, schema: TimeEntrySchema },
       { name: Document.name, schema: DocumentSchema },
     ]),
   ],
-  controllers: [ProjectsController, ProjectsPublicController],
+  controllers: [ProjectsController],
   providers: [
     ProjectsService,
     ProjectsRepository,
-    ProjectLinkCredentialService,
-    ProjectLinkCredentialRepository,
   ],
-  exports: [ProjectsService, ProjectLinkCredentialService],
+  exports: [ProjectsService],
 })
 export class ProjectsModule {}

@@ -116,24 +116,6 @@
           </div>
 
           <div class="setting-divider"></div>
-
-          <div class="setting-row">
-            <div class="setting-info">
-              <p class="setting-label">Tarea agregada por cliente</p>
-              <p class="setting-description">Notificación cuando un cliente añade una tarea desde el enlace público del proyecto.</p>
-            </div>
-            <div class="setting-actions">
-              <label class="toggle-switch">
-                <input
-                  type="checkbox"
-                  :checked="notifPrefs.publicTaskCreated"
-                  :disabled="prefsLoading"
-                  @change="handlePrefChange('publicTaskCreated', ($event.target as HTMLInputElement).checked)"
-                />
-                <span class="toggle-slider"></span>
-              </label>
-            </div>
-          </div>
         </div>
       </w-card>
 
@@ -373,8 +355,6 @@ export default defineComponent({
       showDeleteDrawer: false,
       deleteConfirmText: '',
       deleteLoading: false,
-      notifPrefs: { publicTaskCreated: true },
-      prefsLoading: false,
       webauthnCredentials: [] as WebAuthnCredentialInfo[],
       showBiometricDrawer: false,
       biometricDeviceName: '',
@@ -394,7 +374,6 @@ export default defineComponent({
         if (u) {
           this.form.name = u.name ?? ''
           this.form.phone = u.phone ?? ''
-          this.notifPrefs.publicTaskCreated = u.notificationPreferences?.publicTaskCreated ?? true
         }
       },
     },
@@ -416,19 +395,6 @@ export default defineComponent({
 
     async handleDisablePush() {
       await this.pushUnsubscribe()
-    },
-
-    async handlePrefChange(key: string, value: boolean) {
-      this.prefsLoading = true
-      try {
-        await authApi.updateNotificationPreferences({ [key]: value })
-        ;(this.notifPrefs as any)[key] = value
-        await this.fetchMe()
-      } catch {
-        showToast('No se pudo actualizar la preferencia.', 'error')
-      } finally {
-        this.prefsLoading = false
-      }
     },
 
     async handleChangePassword() {

@@ -6,9 +6,7 @@ export interface User {
   emailVerified: boolean
   phone?: string
   twoFactorEnabled: boolean
-  notificationPreferences?: {
-    publicTaskCreated: boolean
-  }
+  notificationPreferences?: Record<string, boolean>
   onboardingCompleted?: boolean
 }
 

@@ -46,8 +46,7 @@ src/
 │   │   ├── ProjectDetailPage.vue
 │   │   ├── ProjectsPage.vue
 │   │   └── ...
-│   ├── auth/             # Login, register, OAuth callbacks
-│   └── PublicProjectPage.vue   # Unauthenticated client-facing project view
+│   └── auth/             # Login, register, OAuth callbacks
 ├── plugins/              # Vue plugin setup (Vuetify, i18n, router)
 ├── router/
 │   ├── index.ts          # Route definitions
@@ -74,11 +73,6 @@ src/
 - Request interceptor: strips empty params
 - Response interceptor: auto-refresh JWT on 401; shows global toast on POST/PATCH/PUT/DELETE (suppressed with `X-Hide-Global-Toast` header)
 
-**`publicClient`** — an unauthenticated Axios instance created per-module (e.g., in `projects.api.ts`):
-- Same base URL, no credentials
-- Used for public endpoints like `/public/projects/:token`
-- When a private link access token exists (stored in `sessionStorage`), it is passed as `Authorization: Bearer` in the individual call, not in the instance headers
-
 ### Convention
 
 Every API module exports a plain object:
@@ -86,10 +80,6 @@ Every API module exports a plain object:
 // src/api/projects/projects.api.ts
 export const projectsApi = {
   getAll: (params?) => apiClient.get<PaginatedResponse<Project>>(BASE, { params }),
-  getPublicView: (token, accessToken?) =>
-    publicClient.get<PublicProjectView>(`/public/projects/${token}`, {
-      headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : {},
-    }),
   // …
 }
 ```
@@ -184,18 +174,6 @@ export default defineComponent({
 ```
 
 Avoid `<script setup>` — the codebase uses Options API uniformly for consistency.
-
----
-
-## Public Project View
-
-See [`docs/features/PROJECT_PUBLIC_LINK.md`](../features/PROJECT_PUBLIC_LINK.md) for the full feature documentation.
-
-The page at `src/pages/PublicProjectPage.vue` handles three states:
-- **Authenticated** (`project !== null`) → full dashboard
-- **Requires auth** (`requiresAuth === true`) → login screen (private links)
-- **Expired** (`linkExpired === true`) → expiry message
-- **Loading / error** → spinner or "invalid link" screen
 
 ---
 

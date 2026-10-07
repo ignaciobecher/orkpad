@@ -41,9 +41,6 @@
               <button class="action-btn" @click.stop="openEditModal(item)">
                 <span class="material-symbols-outlined">edit</span>
               </button>
-              <button class="action-btn" @click.stop="handleShare(item)" :title="$t('projects.share')">
-                <span class="material-symbols-outlined" :class="{ 'text-primary': item.publicToken }">share</span>
-              </button>
               <button class="action-btn text-error" @click.stop="confirmDelete(item)">
                 <span class="material-symbols-outlined">delete</span>
               </button>
@@ -75,7 +72,6 @@ import WTable from '@/components/ui/WTable.vue'
 import WCard from '@/components/ui/WCard.vue'
 import WBadge from '@/components/ui/WBadge.vue'
 import WCrudModal from '@/components/ui/WCrudModal.vue'
-import { useToast } from '@/composables/useToast'
 import { loadClientOptionById, loadClientOptions } from '@/utils/remote-entity-options'
 import { formatDate } from '@/utils/date'
 
@@ -140,7 +136,7 @@ export default defineComponent({
     }
   },
   methods: {
-    ...mapActions(useProjectsStore, ['fetchAll', 'setFilters', 'create', 'update', 'remove', 'generatePublicLink', 'revokePublicLink']),
+    ...mapActions(useProjectsStore, ['fetchAll', 'setFilters', 'create', 'update', 'remove']),
     async loadRelationLabels() {
       const ids = [...new Set(this.items.map(item => item.clientId).filter(Boolean))]
       await Promise.all(ids.map(async (id) => {
@@ -189,19 +185,6 @@ export default defineComponent({
         this.showCrudModal = false
       } catch {
         // error toast is shown by the store
-      }
-    },
-    async handleShare(item: any) {
-      const toast = useToast()
-      if (item.publicToken) {
-        const url = `${window.location.origin}/p/${item.publicToken}`
-        await navigator.clipboard.writeText(url)
-        toast.success(this.$t('projects.linkCopied'))
-      } else {
-        const token = await this.generatePublicLink(item._id)
-        const url = `${window.location.origin}/p/${token}`
-        await navigator.clipboard.writeText(url)
-        toast.success(this.$t('projects.linkGenerated'))
       }
     },
     getStatusColor(status: string) {

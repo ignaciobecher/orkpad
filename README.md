@@ -10,7 +10,7 @@ This is a **monorepo** with two applications:
 
 | Directory  | Description                                         | Stack |
 | ---------- | --------------------------------------------------- | ----- |
-| `frontend/` | Web app (dashboard, client portal, PWA)               | Vue 3, Vite, Vuetify, Tailwind, Pinia, vue-i18n |
+| `frontend/` | Web app (dashboard, PWA)               | Vue 3, Vite, Vuetify, Tailwind, Pinia, vue-i18n |
 | `backend/`  | Multi-tenant REST + realtime API                    | NestJS, MongoDB (Mongoose), Socket.IO, JWT |
 
 - **Multi-tenant**: each workspace is isolated; data never leaks between workspaces.

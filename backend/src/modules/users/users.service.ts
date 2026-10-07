@@ -189,15 +189,6 @@ export class UsersService {
     });
   }
 
-  async updateNotificationPreferences(
-    userId: string,
-    prefs: { publicTaskCreated?: boolean },
-  ): Promise<UserDocument | null> {
-    return this.usersRepository.update(userId, {
-      notificationPreferences: prefs,
-    } as any);
-  }
-
   async deleteUser(userId: string): Promise<void> {
     await this.usersRepository.deleteById(userId);
   }
