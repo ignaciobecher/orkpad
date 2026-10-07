@@ -30,7 +30,7 @@ cp .env.example .env
 npm run start:dev
 ```
 
-The API and Swagger will be available at `http://localhost:3000` (`/docs`).
+The API and Swagger will be available at `http://localhost:3000` (`/api`).
 
 ### 3. Run the frontend
 

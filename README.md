@@ -1,5 +1,9 @@
 # Orkpad
 
+[![CI](https://github.com/ignaciobecher/orkpad/actions/workflows/ci.yml/badge.svg)](https://github.com/ignaciobecher/orkpad/actions/workflows/ci.yml)
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](./LICENSE)
+![Self-hosted](https://img.shields.io/badge/self--hosted-docker-2496ED)
+
 **Orkpad** is an open-source app for freelancers and small agencies. It replaces the broken Excel, the outdated Notion, and the scattered WhatsApp reminders. CRM, projects, time tracking, and billing — in one self-hostable place, under your control.
 
 This is a **monorepo** with two applications:
@@ -12,6 +16,12 @@ This is a **monorepo** with two applications:
 - **Multi-tenant**: each workspace is isolated; data never leaks between workspaces.
 - **Self-hostable**: run it on your own infrastructure.
 - **License**: [Apache-2.0](./LICENSE).
+
+## Screenshots
+
+| Onboarding checklist | Project detail with billing plan |
+|---|---|
+| ![Dashboard with setup checklist](docs/screenshots/dashboard.png) | ![Project detail with installments](docs/screenshots/project-detail.png) |
 
 ## Requirements
 
@@ -223,7 +233,7 @@ orkpad/
   backend/    # NestJS API
 ```
 
-Each application has its own `README.md`, `.env.example`, and conventions. See [`frontend/README.md`](frontend/README.md) and [`backend/README.md`](backend/README.md).
+Each application has its own `README.md`, `.env.example`, and conventions. See [`frontend/README.md`](frontend/README.md) and [`backend/README.md`](backend/README.md). Changes are tracked in [`CHANGELOG.md`](CHANGELOG.md).
 
 ## Contributing
 
