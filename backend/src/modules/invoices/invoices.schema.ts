@@ -89,5 +89,20 @@ InvoiceSchema.index({ workspaceId: 1, status: 1 });
 InvoiceSchema.index({ workspaceId: 1, clientId: 1 });
 InvoiceSchema.index({ workspaceId: 1, dueDate: 1 });
 InvoiceSchema.index({ workspaceId: 1, createdAt: -1 });
-InvoiceSchema.index({ workspaceId: 1, number: 1 }, { unique: true });
+// Invoice numbers are unique per project (e.g. "Cuota 1" may exist in many
+// projects). Standalone invoices without project keep workspace-level
+// uniqueness through the second index.
+InvoiceSchema.index(
+  { workspaceId: 1, projectId: 1, number: 1 },
+  { unique: true, partialFilterExpression: { projectId: { $ne: null } } },
+);
+InvoiceSchema.index(
+  { workspaceId: 1, number: 1 },
+  {
+    unique: true,
+    partialFilterExpression: {
+      $or: [{ projectId: null }, { projectId: { $exists: false } }],
+    },
+  },
+);
 InvoiceSchema.index({ workspaceId: 1, projectId: 1 });

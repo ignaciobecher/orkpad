@@ -359,7 +359,7 @@ export default defineComponent({
       }
     }
 
-    return { rows, savingIds, adding, draft, methodNames, isCollected, saveRow, onStatusChange, markPaid, addRowAuto, addRowManual, saveDraft, removeRow }
+    return { rows, savingIds, adding, draft, methodNames, isCollected, saveRow, onStatusChange, markPaid, addRowAuto, addRowManual, saveDraft, removeRow, autoNumber }
   },
 })
 </script>
