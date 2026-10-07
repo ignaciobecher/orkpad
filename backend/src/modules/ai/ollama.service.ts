@@ -57,7 +57,8 @@ export class OllamaService {
     const res = await fetch(`${baseUrl}/api/chat`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ model, messages, temperature, stream: true }),
+      // num_predict acota el largo: en CPU cada token cuesta segundos.
+      body: JSON.stringify({ model, messages, temperature, stream: true, options: { num_predict: 500 } }),
       signal: AbortSignal.timeout(300000),
     });
     if (!res.ok || !res.body) {
