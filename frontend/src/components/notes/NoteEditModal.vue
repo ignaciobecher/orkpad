@@ -212,6 +212,7 @@ export default defineComponent({
   props: {
     isOpen: { type: Boolean, default: false },
     note: { type: Object as PropType<Note | null>, default: null },
+    defaultProjectId: { type: String, default: '' },
   },
 
   emits: ['close', 'saved'],
@@ -252,6 +253,9 @@ export default defineComponent({
             editor.value?.commands.setContent(props.note.content || '')
           } else {
             form.value = emptyForm()
+            if (props.defaultProjectId) {
+              form.value.projectId = props.defaultProjectId
+            }
             editor.value?.commands.setContent('')
           }
         }

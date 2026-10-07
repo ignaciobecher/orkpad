@@ -23,6 +23,23 @@
         <span class="material-symbols-outlined">view_column</span>
         NUEVA COLUMNA
       </button>
+
+      <div v-if="activeProjectId" class="board-view-toggle" role="group" aria-label="Vista del tablero">
+        <button
+          :class="['view-btn', { 'view-btn--active': boardView === 'kanban' }]"
+          title="Vista kanban"
+          @click="setBoardView('kanban')"
+        >
+          <span class="material-symbols-outlined">view_kanban</span>
+        </button>
+        <button
+          :class="['view-btn', { 'view-btn--active': boardView === 'list' }]"
+          title="Vista lista"
+          @click="setBoardView('list')"
+        >
+          <span class="material-symbols-outlined">view_list</span>
+        </button>
+      </div>
     </header>
 
     <div v-if="!activeProjectId" class="project-picker">
@@ -74,6 +91,72 @@
     <div v-else-if="columnsStore.loading" class="kanban-loading">
       <span class="material-symbols-outlined spinning">sync</span>
       Cargando tablero...
+    </div>
+
+    <div v-else-if="boardView === 'list'" class="task-list-container">
+      <div
+        v-for="column in columnsStore.columns"
+        :key="column._id"
+        class="task-list-group"
+      >
+        <div class="task-list-group-header">
+          <span class="column-dot" :style="{ background: column.color }"></span>
+          <span class="task-list-group-name">{{ column.name }}</span>
+          <span class="column-count">{{ columnsData[column._id]?.length || 0 }}</span>
+          <button class="col-btn" title="Agregar tarea" @click="startQuickAdd(column._id)">
+            <span class="material-symbols-outlined">add</span>
+          </button>
+        </div>
+        <div
+          v-for="task in (columnsData[column._id] || [])"
+          :key="task._id"
+          :class="['task-list-row', { 'is-done': task.status === 'done' }]"
+          @click="openViewTask(task, column._id)"
+        >
+          <button
+            class="card-complete-btn"
+            :class="{ 'is-done': task.status === 'done' }"
+            :title="task.status === 'done' ? 'Desmarcar completada' : 'Marcar como completada'"
+            @click.stop="toggleCompleteTask(task)"
+          >
+            <span class="material-symbols-outlined">
+              {{ task.status === 'done' ? 'check_circle' : 'radio_button_unchecked' }}
+            </span>
+          </button>
+          <span class="task-list-title">{{ task.title }}</span>
+          <span
+            v-for="(label, lIdx) in (task.labels || []).slice(0, 2)"
+            :key="lIdx"
+            class="card-label-mini"
+            :style="{ backgroundColor: label.color, color: getLabelTextColor(label.color) }"
+          >{{ label.name }}</span>
+          <span class="card-priority" :class="`priority-${task.priority}`">{{ task.priority }}</span>
+          <span v-if="task.dueDate" class="card-due" :class="getDueDateClass(task)">
+            <span class="material-symbols-outlined">schedule</span>
+            {{ formatDate(task.dueDate) }}
+          </span>
+          <button class="card-action-btn" title="Eliminar" @click.stop="confirmDeleteTask(task)">
+            <span class="material-symbols-outlined">delete</span>
+          </button>
+        </div>
+        <div v-if="quickAddColumnId === column._id" class="quick-add-card quick-add-card--list">
+          <textarea
+            ref="quickAddInputRef"
+            v-model="quickAddTitle"
+            class="quick-add-input"
+            placeholder="Ingresá el título de la tarea..."
+            rows="2"
+            @keydown.enter.prevent="confirmQuickAdd"
+            @keydown.esc="cancelQuickAdd"
+          ></textarea>
+          <div class="quick-add-actions">
+            <button class="btn-primary" @click="confirmQuickAdd">Agregar tarjeta</button>
+            <button class="col-btn" @click="cancelQuickAdd">
+              <span class="material-symbols-outlined">close</span>
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div v-else class="kanban-board-container">
@@ -428,6 +511,14 @@ export default defineComponent({
     const activeProjectId = ref('')
     const activeProjectName = ref('')
     const columnsData = ref<Record<string, Task[]>>({})
+    const boardView = ref<'kanban' | 'list'>(
+      (localStorage.getItem('tasks_board_view') as 'kanban' | 'list' | null) || 'kanban',
+    )
+
+    function setBoardView(view: 'kanban' | 'list') {
+      boardView.value = view
+      localStorage.setItem('tasks_board_view', view)
+    }
 
     // ── Project picker (cards) ──
     const projectSearch = ref('')
@@ -869,6 +960,8 @@ export default defineComponent({
       tasksStore,
       columnsData,
       COLUMN_COLORS,
+      boardView,
+      setBoardView,
       onProjectChange,
       onColumnReorder,
       onTaskMove,
@@ -1136,6 +1229,116 @@ export default defineComponent({
 
 .add-column-btn:hover { opacity: 0.85; }
 .add-column-btn .material-symbols-outlined { font-size: 18px; }
+
+/* ── Board view toggle (kanban / list) ── */
+.board-view-toggle {
+  display: flex;
+  border: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+.view-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 34px;
+  background: var(--color-bg-surface-low);
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.view-btn + .view-btn {
+  border-left: 1px solid var(--color-border);
+}
+
+.view-btn:hover {
+  background: var(--color-bg-surface-high);
+  color: var(--color-text-base);
+}
+
+.view-btn--active {
+  background: var(--color-primary);
+  color: white;
+}
+
+.view-btn .material-symbols-outlined {
+  font-size: 18px;
+}
+
+/* ── List view ── */
+.task-list-container {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding-bottom: 24px;
+}
+
+.task-list-group-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.column-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.task-list-group-name {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--color-text-base);
+}
+
+.task-list-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-bottom: none;
+  cursor: pointer;
+}
+
+.task-list-group .task-list-row:last-of-type {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.task-list-row:hover {
+  background: var(--color-bg-surface-low);
+}
+
+.task-list-row.is-done .task-list-title {
+  text-decoration: line-through;
+  color: var(--color-text-disabled);
+}
+
+.task-list-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+  color: var(--color-text-base);
+}
+
+.quick-add-card--list {
+  border: 1px solid var(--color-border);
+  border-top: none;
+  padding: 8px;
+}
 
 /* ── Board ── */
 .kanban-board-container {

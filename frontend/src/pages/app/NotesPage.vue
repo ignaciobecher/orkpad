@@ -7,6 +7,47 @@
         <span class="notes-count">{{ notesStore.total }} notas</span>
       </div>
       <div class="notes-header__right">
+        <div class="filter-dropdown" :class="{ open: projectOpen }">
+          <button class="filter-btn" @click="toggleProjectMenu" :title="activeProjectName || 'Todos los proyectos'">
+            <span class="material-symbols-outlined">folder</span>
+            {{ activeProjectName || 'Proyectos' }}
+          </button>
+          <div v-if="projectOpen" class="filter-menu project-menu" @click.stop>
+            <div class="project-menu-search">
+              <span class="material-symbols-outlined">search</span>
+              <input
+                v-model="projectSearch"
+                placeholder="Buscar proyecto..."
+                @input="onProjectSearch"
+              />
+            </div>
+            <button
+              :class="['filter-item', { 'filter-item--active': !activeProjectId }]"
+              @click.stop="selectProject('', '')"
+            >
+              Todos los proyectos
+            </button>
+            <div class="project-menu-list" @scroll="onProjectListScroll">
+              <button
+                v-for="p in projectOptions"
+                :key="p._id"
+                :class="['filter-item', { 'filter-item--active': activeProjectId === p._id }]"
+                @click.stop="selectProject(p._id, p.name)"
+              >
+                {{ p.name }}
+              </button>
+              <div v-if="projectLoadingMore" class="filter-item">Cargando más...</div>
+            </div>
+            <button
+              v-if="activeProjectId"
+              class="filter-item filter-item--clear"
+              @click.stop="selectProject('', '')"
+            >
+              Limpiar filtro
+            </button>
+          </div>
+        </div>
+
         <div class="search-wrap">
           <span class="material-symbols-outlined search-icon">search</span>
           <input
@@ -67,7 +108,7 @@
     <!-- Empty state -->
     <div v-else-if="!notesStore.items.length" class="notes-empty">
       <span class="material-symbols-outlined notes-empty__icon">edit_note</span>
-      <p class="notes-empty__title">La pizarra está vacía</p>
+      <p class="notes-empty__title">{{ activeProjectId ? 'Sin notas en este proyecto' : 'La pizarra está vacía' }}</p>
       <p class="notes-empty__sub">Anotá ideas, bugs, pendientes o lo que sea</p>
       <button class="btn-new" @click="openCreate">
         <span class="material-symbols-outlined">add</span>
@@ -218,6 +259,7 @@
     <note-edit-modal
       :is-open="modalOpen"
       :note="editingNote"
+      :default-project-id="activeProjectId"
       @close="modalOpen = false"
       @saved="handleSaved"
     />
@@ -237,7 +279,10 @@
 
 <script lang="ts">
 import { defineComponent, ref, onMounted, computed } from 'vue'
+import { useRoute } from 'vue-router'
 import { useNotesStore } from '@/stores/notes.store'
+import { projectsApi } from '@/api/projects/projects.api'
+import type { Project } from '@/api/projects/projects.types'
 import NoteCard from '@/components/notes/NoteCard.vue'
 import NoteEditModal from '@/components/notes/NoteEditModal.vue'
 import WConfirmModal from '@/components/ui/WConfirmModal.vue'
@@ -264,10 +309,33 @@ export default defineComponent({
     const filterOpen = ref(false)
     const searchQuery = ref('')
     const filters = ref<NoteQueryDto>({})
+    const projectOpen = ref(false)
+    const activeProjectId = ref('')
+    const activeProjectName = ref('')
+    const projectSearch = ref('')
+    const projectOptions = ref<Project[]>([])
+    const projectPage = ref(1)
+    const projectHasMore = ref(true)
+    const projectLoadingMore = ref(false)
+    const PROJECT_PAGE_SIZE = 20
 
     let searchTimeout: ReturnType<typeof setTimeout>
+    let projectSearchTimeout: ReturnType<typeof setTimeout>
 
-    onMounted(() => notesStore.fetchAll())
+    onMounted(async () => {
+      const routeProjectId = useRoute().query.projectId as string | undefined
+      if (routeProjectId) {
+        try {
+          const { data } = await projectsApi.getById(routeProjectId)
+          activeProjectId.value = data._id
+          activeProjectName.value = data.name
+          filters.value.projectId = data._id
+        } catch {
+          // proyecto inválido: se ignora y se muestra todo
+        }
+      }
+      await notesStore.setFilters({ ...filters.value })
+    })
 
     const currentStatusLabel = computed(() => {
       const opt = STATUS_OPTIONS.find(o => o.value === filters.value.status)
@@ -289,6 +357,59 @@ export default defineComponent({
     function setStatus(value: 'active' | 'done' | undefined) {
       filters.value.status = value
       filterOpen.value = false
+      notesStore.setFilters({ ...filters.value })
+    }
+
+    async function fetchProjects(reset: boolean) {
+      if (reset) {
+        projectPage.value = 1
+        projectHasMore.value = true
+      }
+      if (!projectHasMore.value) return
+      projectLoadingMore.value = true
+      try {
+        const { data } = await projectsApi.getAll({
+          search: projectSearch.value || undefined,
+          page: projectPage.value,
+          limit: PROJECT_PAGE_SIZE,
+        } as any)
+        projectOptions.value = reset ? data.data : [...projectOptions.value, ...data.data]
+        projectHasMore.value = data.data.length >= PROJECT_PAGE_SIZE
+        projectPage.value += 1
+      } catch {
+        if (reset) projectOptions.value = []
+      } finally {
+        projectLoadingMore.value = false
+      }
+    }
+
+    function onProjectSearch() {
+      clearTimeout(projectSearchTimeout)
+      projectSearchTimeout = setTimeout(() => {
+        void fetchProjects(true)
+      }, 250)
+    }
+
+    function onProjectListScroll(e: Event) {
+      const el = e.target as HTMLElement
+      if (el.scrollTop + el.clientHeight >= el.scrollHeight - 40 && !projectLoadingMore.value) {
+        void fetchProjects(false)
+      }
+    }
+
+    function toggleProjectMenu() {
+      projectOpen.value = !projectOpen.value
+      if (projectOpen.value && !projectOptions.value.length) {
+        void fetchProjects(true)
+      }
+    }
+
+    function selectProject(id: string, name: string) {
+      activeProjectId.value = id
+      activeProjectName.value = name
+      projectOpen.value = false
+      if (id) filters.value.projectId = id
+      else delete filters.value.projectId
       notesStore.setFilters({ ...filters.value })
     }
 
@@ -350,6 +471,16 @@ export default defineComponent({
       filterOpen,
       searchQuery,
       filters,
+      projectOpen,
+      activeProjectId,
+      activeProjectName,
+      projectSearch,
+      projectOptions,
+      projectLoadingMore,
+      onProjectSearch,
+      onProjectListScroll,
+      toggleProjectMenu,
+      selectProject,
       STATUS_OPTIONS,
       currentStatusLabel,
       plainText,
@@ -509,6 +640,44 @@ export default defineComponent({
 
 .filter-item--active {
   color: var(--color-primary);
+}
+
+.filter-menu.project-menu {
+  min-width: 220px;
+  max-width: 280px;
+}
+
+.project-menu-search {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.project-menu-search .material-symbols-outlined {
+  font-size: 14px;
+  color: var(--color-text-muted);
+}
+
+.project-menu-search input {
+  background: none;
+  border: none;
+  outline: none;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-text-base);
+  width: 100%;
+}
+
+.project-menu-list {
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.filter-item--clear {
+  border-top: 1px solid var(--color-border);
+  color: var(--color-warning);
 }
 
 /* New note button */
