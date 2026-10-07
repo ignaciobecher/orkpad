@@ -186,6 +186,12 @@ export default defineComponent({
           ],
         },
         {
+          label: this.$t('sidebar.sections.ai', 'ASISTENTE IA'),
+          items: [
+            { text: this.$t('sidebar.items.assistant', 'Asistente'), to: '/app/assistant', icon: 'smart_toy' },
+          ],
+        },
+        {
           label: this.$t('sidebar.sections.operations'),
           items: [
             {

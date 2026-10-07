@@ -335,7 +335,8 @@
       "finance": "FINANZAS",
       "operations": "OPERACIONES",
       "knowledge": "ARCHIVOS",
-      "reports": "REPORTES"
+      "reports": "REPORTES",
+      "ai": "ASISTENTE IA"
     },
     "items": {
       "dashboard": "Dashboard",
@@ -350,7 +351,8 @@
       "agenda": "Agenda",
       "settings": "Configuración",
       "logout": "Cerrar sesión",
-      "reports": "Reportes"
+      "reports": "Reportes",
+      "assistant": "Asistente"
     },
     "logout_confirm": {
       "title": "Confirmar Cierre de Sesión",
@@ -678,6 +680,23 @@
       "themeLight": "Claro",
       "saved": "Marca actualizada.",
       "saveError": "No se pudo guardar la marca."
+    },
+    "ai": {
+      "title": "ASISTENTE IA",
+      "description": "Chat con tus datos usando un modelo local (Ollama). Nada sale de tu servidor.",
+      "enabled": "Asistente activado",
+      "baseUrl": "URL de Ollama",
+      "chatModel": "Modelo de chat",
+      "embedModel": "Modelo de embeddings",
+      "temperature": "Temperatura",
+      "systemPrompt": "Prompt del sistema",
+      "systemPromptPh": "Vacío = prompt por defecto",
+      "indexLabel": "Indexar para buscar",
+      "indexStats": "{chunks} partes indexadas",
+      "test": "Probar conexión",
+      "testing": "Probando...",
+      "reindex": "Reindexar todo",
+      "indexing": "Indexando..."
     }
   },
   "agenda": {

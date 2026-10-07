@@ -27,6 +27,7 @@ import { NotesModule } from './modules/notes/notes.module';
 import { PaymentMethodsModule } from './modules/payment-methods/payment-methods.module';
 import { StorageModule } from './modules/storage/storage.module';
 import { ReportsModule } from './modules/reports/reports.module';
+import { AiModule } from './modules/ai/ai.module';
 import { PlannerBlocksModule } from './modules/planner-blocks/planner-blocks.module';
 import { PlannerTasksModule } from './modules/planner-tasks/planner-tasks.module';
 import { PlannerTemplatesModule } from './modules/planner-templates/planner-templates.module';
@@ -101,6 +102,7 @@ import { OnboardingModule } from './modules/onboarding/onboarding.module';
     PaymentMethodsModule,
     StorageModule,
     ReportsModule,
+    AiModule,
     PlannerBlocksModule,
     PlannerTasksModule,
     PlannerTemplatesModule,

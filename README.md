@@ -15,6 +15,7 @@ This is a **monorepo** with two applications:
 
 - **Multi-tenant**: each workspace is isolated; data never leaks between workspaces.
 - **Self-hostable**: run it on your own infrastructure.
+- **Local AI assistant**: chat with your data using self-hosted Ollama models (RAG over notes, docs, tasks, projects and invoices). See [docs/AI_SETUP.md](./docs/AI_SETUP.md).
 - **License**: [Apache-2.0](./LICENSE).
 
 ## Screenshots

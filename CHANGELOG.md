@@ -6,6 +6,10 @@ All notable changes to this project are documented here. Format follows
 ## [Unreleased]
 
 ### Added
+- AI assistant with local Ollama models: chat section with history,
+  RAG over notes/docs/tasks/projects/invoices with cited sources,
+  per-workspace AI settings (models, temperature, indexed types) and
+  one-click reindex. New `ai_*` collections and `docs/AI_SETUP.md`.
 - Project billing plans (`single` / `installments`) with one-click installment
   invoice generation (`POST /projects/:id/generate-invoices`).
 - Project detail reworked as lazy tabs (Resumen, Tareas, Finanzas, Archivos,

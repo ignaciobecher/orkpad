@@ -100,6 +100,7 @@ const router = createRouter({
         { path: 'projects/:id/github', name: 'project-github', component: () => import('@/pages/app/ProjectGithubPage.vue') },
         { path: 'tasks',          name: 'tasks',          component: TasksPage },
         { path: 'finance',        name: 'finance',        component: FinancePage },
+        { path: 'assistant',      name: 'assistant',      component: () => import('@/pages/app/AssistantPage.vue') },
         { path: 'reports',        name: 'reports',        component: () => import('@/pages/app/ReportsPage.vue') },
         { path: 'subscriptions',  name: 'subscriptions',  component: SubscriptionsPage },
         { path: 'subscriptions/:id', name: 'subscription-detail', component: () => import('@/pages/app/SubscriptionDetailPage.vue') },

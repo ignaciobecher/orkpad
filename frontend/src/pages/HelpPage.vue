@@ -172,40 +172,6 @@
           </section>
 
           <!-- Messaging -->
-          <section id="messaging" class="article-section">
-            <h2>MENSAJERÍA</h2>
-            <p>
-              CHATEÁ EN TIEMPO REAL CON TUS CLIENTES SIN SALIR DE ORKPAD. UNA VISTA DE DOS PANELES:
-              TUS CONVERSACIONES A LA IZQUIERDA Y EL CHAT ACTIVO A LA DERECHA.
-            </p>
-
-            <div class="info-box info">
-              <span class="material-symbols-outlined">chat</span>
-              <p>
-                VÉS EL ESTADO EN LÍNEA/DESCONECTADO DE CADA CLIENTE, EL CONTADOR DE MENSAJES NO
-                LEÍDOS Y EL DOBLE CHECK DE LECTURA. DESDE EL CHAT PODÉS IR DIRECTO A LA FICHA DEL
-                CLIENTE.
-              </p>
-            </div>
-
-            <div class="tutorial-box">
-              <h4>
-                <span class="material-symbols-outlined">play_circle</span> TUTORIAL: INICIAR UNA
-                CONVERSACIÓN
-              </h4>
-              <ol>
-                <li>VE A <strong>MENSAJES</strong> EN EL MENÚ LATERAL (SECCIÓN CLIENTES).</li>
-                <li>HACÉ CLIC EN EL ÍCONO DE <strong>LÁPIZ</strong> ("NUEVA CONVERSACIÓN").</li>
-                <li>ELEGÍ EL CLIENTE CON QUIEN QUERÉS HABLAR.</li>
-                <li>
-                  ESCRIBÍ TU MENSAJE Y PRESIONÁ <strong>ENTER</strong> PARA ENVIAR (SHIFT+ENTER PARA
-                  SALTO DE LÍNEA).
-                </li>
-              </ol>
-            </div>
-          </section>
-
-          <!-- Projects & Tasks -->
           <section id="projects" class="article-section">
             <h2>PROYECTOS Y TAREAS (KANBAN)</h2>
             <p>
@@ -676,6 +642,35 @@
           </section>
 
           <!-- Settings -->
+          <section id="assistant" class="article-section">
+            <h2>ASISTENTE IA</h2>
+            <p>
+              PREGUNTALE A ORKPAD POR TUS PROYECTOS, CUOTAS, TAREAS Y DOCUMENTACIÓN. USA UN
+              MODELO LOCAL (OLLAMA): NADA SALE DE TU SERVIDOR.
+            </p>
+
+            <div class="tutorial-box">
+              <h4>
+                <span class="material-symbols-outlined">play_circle</span> TUTORIAL: PRIMERA PREGUNTA
+              </h4>
+              <ol>
+                <li>ABRÍ <strong>ASISTENTE IA</strong> EN EL MENÚ LATERAL.</li>
+                <li>ELEGÍ UN PROYECTO O DEJÁ "TODO EL WORKSPACE".</li>
+                <li>ESCRIBÍ TU PREGUNTA, POR EJEMPLO "¿QUÉ FALTA COBRAR ESTE MES?".</li>
+                <li>LAS RESPUESTAS CITAN LAS FUENTES [1], [2]... USADAS.</li>
+              </ol>
+            </div>
+
+            <div class="info-box info">
+              <span class="material-symbols-outlined">settings</span>
+              <p>
+                CONFIGURALO EN <strong>CONFIGURACIÓN → ASISTENTE IA</strong>: URL DE OLLAMA,
+                MODELO DE CHAT Y DE EMBEDDINGS, QUÉ TIPOS DE DATOS INDEXA Y BOTÓN
+                <strong>REINDEXAR TODO</strong> DESPUÉS DE CARGAR DOCUMENTACIÓN.
+              </p>
+            </div>
+          </section>
+
           <section id="settings" class="article-section">
             <h2>CONFIGURACIÓN DEL SISTEMA</h2>
             <p>PERSONALIZA TU EXPERIENCIA EN ORKPAD.</p>
@@ -725,7 +720,6 @@ export default defineComponent({
         title: 'MÓDULOS CORE',
         items: [
           { id: 'crm', label: 'CLIENTES (CRM)', icon: 'group' },
-          { id: 'messaging', label: 'MENSAJERÍA', icon: 'chat' },
           { id: 'projects', label: 'PROYECTOS Y TAREAS', icon: 'assignment' },
         ],
       },
@@ -767,7 +761,10 @@ export default defineComponent({
       },
       {
         title: 'SISTEMA',
-        items: [{ id: 'settings', label: 'CONFIGURACIÓN', icon: 'settings' }],
+        items: [
+          { id: 'assistant', label: 'ASISTENTE IA', icon: 'smart_toy' },
+          { id: 'settings', label: 'CONFIGURACIÓN', icon: 'settings' },
+        ],
       },
     ]
 

@@ -335,7 +335,8 @@
       "finance": "FINANCE",
       "operations": "OPERATIONS",
       "knowledge": "FILES",
-      "reports": "REPORTS"
+      "reports": "REPORTS",
+      "ai": "AI ASSISTANT"
     },
     "items": {
       "dashboard": "Dashboard",
@@ -350,7 +351,8 @@
       "agenda": "Agenda",
       "settings": "Settings",
       "logout": "Logout",
-      "reports": "Reports"
+      "reports": "Reports",
+      "assistant": "Assistant"
     },
     "logout_confirm": {
       "title": "Confirm Logout",
@@ -680,6 +682,23 @@
       "themeLight": "Light",
       "saved": "Branding updated.",
       "saveError": "Could not save branding."
+    },
+    "ai": {
+      "title": "AI ASSISTANT",
+      "description": "Chat with your data using a local model (Ollama). Nothing leaves your server.",
+      "enabled": "Assistant enabled",
+      "baseUrl": "Ollama URL",
+      "chatModel": "Chat model",
+      "embedModel": "Embeddings model",
+      "temperature": "Temperature",
+      "systemPrompt": "System prompt",
+      "systemPromptPh": "Empty = default prompt",
+      "indexLabel": "Index for search",
+      "indexStats": "{chunks} indexed chunks",
+      "test": "Test connection",
+      "testing": "Testing...",
+      "reindex": "Reindex all",
+      "indexing": "Indexing..."
     }
   },
   "agenda": {
