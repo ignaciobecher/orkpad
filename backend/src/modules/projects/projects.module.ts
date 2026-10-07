@@ -1,9 +1,10 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ClientsModule } from '../clients/clients.module';
 import { NotificationsModule } from '../notifications/notifications.module';
 import { UsersModule } from '../users/users.module';
+import { InvoicesModule } from '../invoices/invoices.module';
 import { ProjectsController } from './projects.controller';
 import { ProjectsPublicController } from './projects-public.controller';
 import { ProjectsService } from './projects.service';
@@ -17,11 +18,6 @@ import {
 } from './project-link-credential.schema';
 import { Task, TaskSchema } from '../tasks/tasks.schema';
 import { Invoice, InvoiceSchema } from '../invoices/invoices.schema';
-import { Quote, QuoteSchema } from '../quotes/quotes.schema';
-import {
-  Subscription,
-  SubscriptionSchema,
-} from '../subscriptions/subscriptions.schema';
 import {
   TimeEntry,
   TimeEntrySchema,
@@ -34,13 +30,12 @@ import { Document, DocumentSchema } from '../docs/docs.schema';
     ClientsModule,
     NotificationsModule,
     UsersModule,
+    forwardRef(() => InvoicesModule),
     MongooseModule.forFeature([
       { name: Project.name, schema: ProjectSchema },
       { name: ProjectLinkCredential.name, schema: ProjectLinkCredentialSchema },
       { name: Task.name, schema: TaskSchema },
       { name: Invoice.name, schema: InvoiceSchema },
-      { name: Quote.name, schema: QuoteSchema },
-      { name: Subscription.name, schema: SubscriptionSchema },
       { name: TimeEntry.name, schema: TimeEntrySchema },
       { name: Document.name, schema: DocumentSchema },
     ]),

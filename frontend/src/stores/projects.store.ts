@@ -116,6 +116,16 @@ export const useProjectsStore = defineStore('projects', {
         throw err
       }
     },
+    async generateInvoices(id: string) {
+      try {
+        const { data } = await projectsApi.generateInvoices(id)
+        useToast().success(`${data.generated} facturas generadas`)
+        await this.fetchOverview(id)
+      } catch (err: any) {
+        useToast().error(err.response?.data?.message || 'Error al generar facturas')
+        throw err
+      }
+    },
     async revokePublicLink(id: string) {
       try {
         await projectsApi.revokePublicLink(id)

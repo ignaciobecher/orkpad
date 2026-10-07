@@ -83,18 +83,6 @@ export interface InvoiceStats {
   overdue: number
 }
 
-export interface QuoteStats {
-  total: number
-  quoted: number
-  accepted: number
-}
-
-export interface SubscriptionStats {
-  total: number
-  active: number
-  monthlyRecurring: number
-}
-
 export interface TimeStats {
   totalMinutes: number
   billableMinutes: number
@@ -110,6 +98,8 @@ export interface InvoiceSummary {
   dueDate?: string
   issueDate?: string
   createdAt?: string
+  installmentNumber?: number | null
+  installmentCount?: number | null
 }
 
 export interface DocumentSummary {
@@ -120,38 +110,14 @@ export interface DocumentSummary {
   updatedAt?: string
 }
 
-export interface QuoteSummary {
-  _id: string
-  title: string
-  number?: string
-  status: string
-  total: number
-  currency: string
-  createdAt?: string
-}
-
-export interface SubscriptionSummary {
-  _id: string
-  planName: string
-  price: number
-  currency: string
-  billingCycle: string
-  status: string
-  nextBillingDate?: string
-}
-
 export interface ProjectOverview {
   project: Project
   taskStats: TaskStats
   invoiceStats: InvoiceStats
-  quoteStats: QuoteStats
-  subscriptionStats: SubscriptionStats
   timeStats: TimeStats
   recentTasks: TaskSummary[]
   pendingTasks: TaskSummary[]
   invoices: InvoiceSummary[]
-  quotes: QuoteSummary[]
-  subscriptions: SubscriptionSummary[]
   documents: DocumentSummary[]
 }
 

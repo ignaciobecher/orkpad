@@ -1,6 +1,7 @@
 export interface Subscription {
   _id: string
-  clientId: string
+  clientId?: string | null
+  type?: 'income' | 'expense'
   planName: string
   price: number
   currency: string
@@ -40,7 +41,8 @@ export interface UpdateSubscriptionPaymentDto extends Partial<CreateSubscription
 }
 
 export interface CreateSubscriptionDto {
-  clientId: string
+  clientId?: string
+  type?: 'income' | 'expense'
   planName: string
   nextBillingDate: string
   price?: number
@@ -56,6 +58,7 @@ export interface SubscriptionQueryDto {
   limit?: number
   search?: string
   clientId?: string
+  type?: 'income' | 'expense'
   status?: 'active' | 'past_due' | 'canceled'
   billingCycle?: 'monthly' | 'yearly'
 }

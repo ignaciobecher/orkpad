@@ -14,7 +14,8 @@ export const useSubscriptionsStore = defineStore('subscriptionsStore', {
       page: 1,
       limit: 20,
       search: '',
-      status: ''
+      status: '',
+      type: ''
     } as unknown as SubscriptionQueryDto
   }),
   actions: {

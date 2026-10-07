@@ -6,11 +6,11 @@ export type SubscriptionDocument = HydratedDocument<Subscription>;
 
 @Schema({ collection: 'subscriptions', timestamps: true })
 export class Subscription extends BaseSchema {
-  @Prop({ required: true })
-  clientId: string;
+  @Prop({ type: String, required: false, default: null })
+  clientId?: string | null;
 
-  @Prop()
-  productId: string;
+  @Prop({ default: 'income' })
+  type: 'income' | 'expense';
 
   @Prop({ required: true })
   planName: string;

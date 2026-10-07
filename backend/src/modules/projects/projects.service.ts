@@ -1,14 +1,18 @@
 import crypto from 'crypto';
 import {
   BadRequestException,
+  ConflictException,
+  Inject,
   Injectable,
   NotFoundException,
+  forwardRef,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { ClientsService } from '../clients/clients.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { UsersService } from '../users/users.service';
+import { InvoicesService } from '../invoices/invoices.service';
 import { ProjectsRepository } from './projects.repository';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
@@ -16,11 +20,6 @@ import { QueryProjectDto } from './dto/query-project.dto';
 import { Project, ProjectDocument } from './projects.schema';
 import { Task, TaskDocument } from '../tasks/tasks.schema';
 import { Invoice, InvoiceDocument } from '../invoices/invoices.schema';
-import { Quote, QuoteDocument } from '../quotes/quotes.schema';
-import {
-  Subscription,
-  SubscriptionDocument,
-} from '../subscriptions/subscriptions.schema';
 import {
   TimeEntry,
   TimeEntryDocument,
@@ -34,14 +33,13 @@ export class ProjectsService {
     private readonly clientsService: ClientsService,
     private readonly notificationsService: NotificationsService,
     private readonly usersService: UsersService,
+    @Inject(forwardRef(() => InvoicesService))
+    private readonly invoicesService: InvoicesService,
     @InjectModel(Project.name)
     private readonly projectModel: Model<ProjectDocument>,
     @InjectModel(Task.name) private readonly taskModel: Model<TaskDocument>,
     @InjectModel(Invoice.name)
     private readonly invoiceModel: Model<InvoiceDocument>,
-    @InjectModel(Quote.name) private readonly quoteModel: Model<QuoteDocument>,
-    @InjectModel(Subscription.name)
-    private readonly subscriptionModel: Model<SubscriptionDocument>,
     @InjectModel(TimeEntry.name)
     private readonly timeEntryModel: Model<TimeEntryDocument>,
     @InjectModel(DocModel.name)
@@ -103,44 +101,31 @@ export class ProjectsService {
     const project = await this.projectsRepository.findOne(workspaceId, id);
     if (!project) throw new NotFoundException(`Project ${id} not found`);
 
-    const [tasks, invoices, documents, quotes, subscriptions, timeEntries] =
-      await Promise.all([
-        this.taskModel
-          .find({ workspaceId, projectId: id, isDeleted: false })
-          .sort({ createdAt: -1 })
-          .lean()
-          .exec(),
-        this.invoiceModel
-          .find({ workspaceId, projectId: id, isDeleted: false })
-          .sort({ createdAt: -1 })
-          .lean()
-          .exec(),
-        this.documentModel
-          .find({ workspaceId, projectId: id, isDeleted: false })
-          .sort({ createdAt: -1 })
-          .lean()
-          .exec(),
-        this.quoteModel
-          .find({ workspaceId, projectId: id, isDeleted: false })
-          .sort({ createdAt: -1 })
-          .lean()
-          .exec(),
-        // Retainers/cuotas belong to the client — surface them on every
-        // project of that client so totals stay linked.
-        this.subscriptionModel
-          .find({
-            workspaceId,
-            clientId: (project as any).clientId,
-            isDeleted: false,
-          })
-          .sort({ createdAt: -1 })
-          .lean()
-          .exec(),
-        this.timeEntryModel
-          .find({ workspaceId, projectId: id, isDeleted: false })
-          .lean()
-          .exec(),
-      ]);
+    // Lists are capped so the detail view stays fast as data grows;
+    // totals always cover the full dataset.
+    const [tasks, invoices, documents, timeEntries] = await Promise.all([
+      this.taskModel
+        .find({ workspaceId, projectId: id, isDeleted: false })
+        .sort({ createdAt: -1 })
+        .lean()
+        .exec(),
+      this.invoiceModel
+        .find({ workspaceId, projectId: id, isDeleted: false })
+        .sort({ createdAt: -1 })
+        .limit(25)
+        .lean()
+        .exec(),
+      this.documentModel
+        .find({ workspaceId, projectId: id, isDeleted: false })
+        .sort({ createdAt: -1 })
+        .limit(25)
+        .lean()
+        .exec(),
+      this.timeEntryModel
+        .find({ workspaceId, projectId: id, isDeleted: false })
+        .lean()
+        .exec(),
+    ]);
 
     const now = new Date();
 
@@ -172,31 +157,6 @@ export class ProjectsService {
         .reduce((sum, i) => sum + (i.total ?? 0), 0),
     };
 
-    const quoteStats = {
-      total: quotes.length,
-      quoted: quotes
-        .filter((q) => q.status === 'sent' || q.status === 'accepted')
-        .reduce((sum, q) => sum + (q.total ?? 0), 0),
-      accepted: quotes
-        .filter((q) => q.status === 'accepted')
-        .reduce((sum, q) => sum + (q.total ?? 0), 0),
-    };
-
-    const activeSubscriptions = subscriptions.filter(
-      (s) => s.status === 'active',
-    );
-    const subscriptionStats = {
-      total: subscriptions.length,
-      active: activeSubscriptions.length,
-      // Normalized monthly recurring revenue across billing cycles.
-      monthlyRecurring: activeSubscriptions.reduce(
-        (sum, s) =>
-          sum +
-          (s.price ?? 0) * (s.billingCycle === 'yearly' ? 1 / 12 : 1),
-        0,
-      ),
-    };
-
     const billableEntries = timeEntries.filter((t) => t.billable);
     const timeStats = {
       totalMinutes: timeEntries.reduce((sum, t) => sum + (t.duration ?? 0), 0),
@@ -214,18 +174,91 @@ export class ProjectsService {
       project,
       taskStats,
       invoiceStats,
-      quoteStats,
-      subscriptionStats,
       timeStats,
       recentTasks: tasks.slice(0, 5),
       pendingTasks: tasks
         .filter((t) => t.status !== 'done' && t.status !== 'cancelled')
         .slice(0, 10),
       invoices,
-      quotes,
-      subscriptions,
       documents,
     };
+  }
+
+  async generateInvoices(workspaceId: string, id: string) {
+    const project = await this.projectsRepository.findOne(workspaceId, id);
+    if (!project) throw new NotFoundException(`Project ${id} not found`);
+
+    if ((project as any).billingType !== 'installments') {
+      throw new BadRequestException(
+        'El proyecto no está configurado en cuotas (billingType debe ser installments).',
+      );
+    }
+    const count = (project as any).installmentsCount ?? 0;
+    if (count < 2 || count > 60) {
+      throw new BadRequestException(
+        'Configurá entre 2 y 60 cuotas en el proyecto antes de generar las facturas.',
+      );
+    }
+    if (!((project as any).budget > 0)) {
+      throw new BadRequestException(
+        'El proyecto necesita un presupuesto mayor a 0 para generar las cuotas.',
+      );
+    }
+
+    const alreadyGenerated = await this.invoiceModel.countDocuments({
+      workspaceId,
+      projectId: id,
+      isDeleted: false,
+      installmentCount: { $ne: null },
+    } as any);
+    if (alreadyGenerated > 0) {
+      throw new ConflictException(
+        'Este proyecto ya tiene facturas de cuotas generadas.',
+      );
+    }
+
+    const budget = (project as any).budget as number;
+    const currency = (project as any).currency ?? 'USD';
+    const baseDate = (project as any).startDate
+      ? new Date((project as any).startDate)
+      : new Date();
+    const year = new Date().getFullYear();
+    const shortId = (project._id as any).toString().slice(-6).toUpperCase();
+
+    // Equal split in cents so rounding never loses money; last quota absorbs the remainder.
+    const totalCents = Math.round(budget * 100);
+    const perCents = Math.floor(totalCents / count);
+
+    const created: unknown[] = [];
+    for (let i = 1; i <= count; i++) {
+      const cents = i === count ? totalCents - perCents * (count - 1) : perCents;
+      const amount = cents / 100;
+      const dueDate = new Date(baseDate);
+      dueDate.setMonth(dueDate.getMonth() + (i - 1));
+      const invoice = await this.invoicesService.create(workspaceId, {
+        number: `C${year}-${shortId}-${i}/${count}`,
+        clientId: (project as any).clientId,
+        projectId: id,
+        type: 'income',
+        status: 'pending',
+        issueDate: new Date().toISOString(),
+        dueDate: dueDate.toISOString(),
+        currency,
+        items: [
+          {
+            description: `Cuota ${i}/${count} — ${(project as any).name}`,
+            quantity: 1,
+            unitPrice: amount,
+            amount,
+          },
+        ],
+        installmentNumber: i,
+        installmentCount: count,
+      } as any);
+      created.push(invoice);
+    }
+
+    return { generated: created.length, invoices: created };
   }
 
   async generatePublicLink(

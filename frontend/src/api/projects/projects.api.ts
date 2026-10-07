@@ -39,6 +39,9 @@ export const projectsApi = {
   getOverview: (id: string) =>
     apiClient.get<ProjectOverview>(`${BASE}/${id}/overview`),
 
+  generateInvoices: (id: string) =>
+    apiClient.post<{ generated: number }>(`${BASE}/${id}/generate-invoices`),
+
   generatePublicLink: (id: string) =>
     apiClient.post<{ publicToken: string }>(`${BASE}/${id}/public-link`),
 

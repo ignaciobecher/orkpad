@@ -30,6 +30,12 @@ export class Project extends BaseSchema {
   @Prop({ default: 'USD', trim: true, uppercase: true })
   currency: string;
 
+  @Prop({ default: 'single' })
+  billingType: 'single' | 'installments';
+
+  @Prop({ default: 1, min: 1, max: 60 })
+  installmentsCount: number;
+
   @Prop({ type: String, default: null })
   publicToken: string | null;
 

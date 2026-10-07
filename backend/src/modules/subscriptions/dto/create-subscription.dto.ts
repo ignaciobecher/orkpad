@@ -10,9 +10,15 @@ import {
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateSubscriptionDto {
-  @ApiProperty({ example: '64b1f2c3d4e5f6a7b8c9d0e1' })
+  @ApiPropertyOptional({ example: '64b1f2c3d4e5f6a7b8c9d0e1' })
   @IsString()
-  clientId: string;
+  @IsOptional()
+  clientId?: string;
+
+  @ApiPropertyOptional({ enum: ['income', 'expense'], default: 'income' })
+  @IsIn(['income', 'expense'])
+  @IsOptional()
+  type?: 'income' | 'expense';
 
   @ApiProperty({ example: 'Pro Plan' })
   @IsString()

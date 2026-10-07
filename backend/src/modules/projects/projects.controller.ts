@@ -74,6 +74,19 @@ export class ProjectsController {
     return this.projectsService.remove(workspaceId, id);
   }
 
+  @Post(':id/generate-invoices')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary:
+      'Generate installment invoices (cuotas) from the project billing plan',
+  })
+  generateInvoices(
+    @WorkspaceId() workspaceId: string,
+    @Param('id') id: string,
+  ) {
+    return this.projectsService.generateInvoices(workspaceId, id);
+  }
+
   @Post(':id/public-link')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({

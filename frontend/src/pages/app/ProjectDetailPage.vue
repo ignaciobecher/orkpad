@@ -10,6 +10,10 @@
           <div class="project-title-row">
             <h1 class="page-title">{{ overview.project.name }}</h1>
             <w-badge :color="getStatusColor(overview.project.status)">{{ overview.project.status }}</w-badge>
+            <w-badge v-if="overview.project.billingType === 'installments'" color="var(--color-primary)">
+              {{ $t('projects.detail.billingInInstallments', { count: overview.project.installmentsCount }) }}
+            </w-badge>
+            <w-badge v-else color="var(--color-text-muted)">{{ $t('projects.detail.billingSingle') }}</w-badge>
           </div>
           <p v-if="overview.project.description" class="project-meta">{{ overview.project.description }}</p>
           <div class="project-dates">
@@ -183,80 +187,71 @@
         <w-kpi-card :title="$t('projects.detail.taskInProgress')" :value="overview.taskStats.inProgress" />
         <w-kpi-card :title="$t('projects.detail.taskOverdue')" :value="overview.taskStats.overdue" />
         <w-kpi-card :title="$t('projects.detail.hoursLogged')" :value="formatHours(overview.timeStats.totalMinutes)" />
-        <w-kpi-card :title="$t('projects.detail.quoted')" :value="formatMoney(overview.quoteStats.quoted, overview.project.currency)" />
         <w-kpi-card :title="$t('projects.detail.invoicePaid')" :value="formatMoney(overview.invoiceStats.paid, overview.project.currency)" />
         <w-kpi-card :title="$t('projects.detail.invoicePending')" :value="formatMoney(overview.invoiceStats.pending, overview.project.currency)" />
         <w-kpi-card :title="$t('projects.detail.invoiceOverdue')" :value="formatMoney(overview.invoiceStats.overdue, overview.project.currency)" />
-        <w-kpi-card :title="$t('projects.detail.activeRetainers')" :value="overview.subscriptionStats.active" />
       </section>
 
-      <!-- GitHub Section -->
-      <section class="github-section">
-        <div class="section-header" style="margin-bottom: 12px;">
-          <span class="material-symbols-outlined" style="font-size:16px;color:var(--color-text-muted)">commit</span>
-          <h2 class="section-title">GitHub</h2>
-          <span v-if="connectedRepos.length" class="section-count">{{ connectedRepos.length }}</span>
-          <w-button variant="ghost" style="margin-left:auto" @click="openRepoDrawer">
-            <span class="material-symbols-outlined mr-1">add_link</span>
-            Conectar repo
-          </w-button>
-        </div>
+      <!-- Detail tabs -->
+      <div class="detail-tabs">
+        <button
+          v-for="tab in detailTabs"
+          :key="tab.id"
+          class="detail-tab"
+          :class="{ active: activeTab === tab.id }"
+          @click="activeTab = tab.id"
+        >
+          <span class="material-symbols-outlined">{{ tab.icon }}</span>
+          {{ tab.label }}
+          <span v-if="tab.count !== null && tab.count !== undefined" class="detail-tab-count">{{ tab.count }}</span>
+        </button>
+      </div>
 
-        <w-card>
-          <div v-if="!connectedRepos.length" class="github-hint">Sin repositorios vinculados</div>
-          <div v-for="repo in connectedRepos" :key="`${repo.owner}/${repo.repo}`" class="github-connected-row">
-            <span class="material-symbols-outlined" style="font-size:16px;color:var(--color-text-muted)">commit</span>
-            <a :href="repo.htmlUrl" target="_blank" class="github-repo-link">{{ repo.owner }}/{{ repo.repo }}</a>
-            <div style="display:flex;gap:6px;margin-left:auto">
-              <w-button variant="ghost" @click="$router.push({ name: 'project-github', params: { id: projectId }, query: { owner: repo.owner, repo: repo.repo } })">
-                <span class="material-symbols-outlined mr-1">open_in_new</span>
-                Ver actividad
-              </w-button>
-              <w-button variant="ghost" @click="handleDisconnectRepo(repo)" :disabled="githubStore.loading">
-                Desconectar
-              </w-button>
-            </div>
+      <!-- TAB: RESUMEN -->
+      <div v-if="activeTab === 'resumen'" class="detail-grid">
+        <section class="detail-section">
+          <div class="section-header">
+            <h2 class="section-title">{{ $t('projects.detail.pendingTasks') }}</h2>
+            <span class="section-count">{{ overview.pendingTasks.length }}</span>
           </div>
-        </w-card>
-      </section>
+          <w-card class="no-padding">
+            <w-table :headers="taskHeaders" :items="overview.pendingTasks.slice(0, 5)" :empty-message="$t('projects.detail.noTasks')">
+              <template #item-status="{ item }">
+                <w-badge :color="getTaskStatusColor(item.status)">{{ item.status }}</w-badge>
+              </template>
+              <template #item-priority="{ item }">
+                <w-badge :color="getPriorityColor(item.priority)">{{ item.priority }}</w-badge>
+              </template>
+              <template #item-dueDate="{ item }">
+                <span :class="{ 'text-error': isOverdue(item.dueDate) }">{{ item.dueDate ? formatDate(item.dueDate) : '—' }}</span>
+              </template>
+            </w-table>
+          </w-card>
+        </section>
 
-      <!-- Repo selector drawer -->
-      <w-drawer v-model="repoDrawerOpen" title="Conectar repositorio GitHub" width="420px">
-        <div class="repo-drawer-body">
-          <div class="repo-search-box">
-            <span class="material-symbols-outlined">search</span>
-            <input
-              v-model="repoSearch"
-              type="text"
-              placeholder="Buscar repositorio..."
-              class="repo-search-input"
-            />
+        <section class="detail-section">
+          <div class="section-header">
+            <h2 class="section-title">{{ $t('projects.detail.recentInvoices') }}</h2>
+            <span class="section-count">{{ overview.invoiceStats.total }}</span>
           </div>
-          <div v-if="githubStore.reposLoading" class="feed-empty">Cargando repositorios...</div>
-          <div v-else-if="!githubStore.repos.length" class="feed-empty">No se encontraron repositorios. Asegurate de haber iniciado sesión con GitHub.</div>
-          <div v-else-if="!filteredRepos.length" class="feed-empty">Sin resultados para "{{ repoSearch }}"</div>
-          <div
-            v-for="repo in filteredRepos"
-            :key="repo.fullName"
-            class="repo-item"
-            :class="{ selected: selectedRepo?.fullName === repo.fullName }"
-            @click="selectedRepo = repo"
-          >
-            <span class="material-symbols-outlined" style="font-size:16px">{{ repo.private ? 'lock' : 'public' }}</span>
-            <span class="repo-item-name">{{ repo.fullName }}</span>
-          </div>
-        </div>
-        <template #footer>
-          <div style="display:flex;gap:8px;justify-content:flex-end;padding:16px">
-            <w-button variant="ghost" @click="repoDrawerOpen = false">Cancelar</w-button>
-            <w-button variant="primary" :disabled="!selectedRepo || githubStore.loading" @click="handleConnectRepo">
-              Conectar
-            </w-button>
-          </div>
-        </template>
-      </w-drawer>
+          <w-card class="no-padding">
+            <w-table :headers="invoiceHeaders" :items="overview.invoices.slice(0, 5)" :empty-message="$t('projects.detail.noInvoices')">
+              <template #item-status="{ item }">
+                <w-badge :color="getInvoiceStatusColor(item.status)">{{ item.status }}</w-badge>
+              </template>
+              <template #item-total="{ item }">
+                {{ formatMoney(item.total, item.currency) }}
+              </template>
+              <template #item-dueDate="{ item }">
+                {{ item.dueDate ? formatDate(item.dueDate) : '—' }}
+              </template>
+            </w-table>
+          </w-card>
+        </section>
+      </div>
 
-      <div class="detail-grid">
+      <!-- TAB: TAREAS -->
+      <div v-if="activeTab === 'tareas'" class="detail-grid">
         <section class="detail-section">
           <div class="section-header">
             <h2 class="section-title">{{ $t('projects.detail.pendingTasks') }}</h2>
@@ -299,11 +294,40 @@
             </w-table>
           </w-card>
         </section>
+      </div>
+
+      <!-- TAB: FINANZAS -->
+      <div v-if="activeTab === 'finanzas'" class="detail-grid">
+        <section class="detail-section full-width">
+          <w-card>
+            <div class="billing-row">
+              <div class="billing-info">
+                <span class="mono-label">{{ $t('projects.detail.billingPlan') }}</span>
+                <div class="billing-type">{{ billingLabel }}</div>
+                <div v-if="isInstallments" class="billing-progress-text">
+                  {{ $t('projects.detail.billedOfBudget', { billed: formatMoney(invoicedTotal, overview.project.currency), budget: formatMoney(overview.project.budget, overview.project.currency), pct: budgetProgress }) }}
+                </div>
+                <div v-if="isInstallments && overview.project.budget > 0" class="billing-progress-track">
+                  <div class="billing-progress-fill" :style="{ width: Math.min(budgetProgress, 100) + '%' }"></div>
+                </div>
+              </div>
+              <w-button
+                v-if="canGenerateInvoices"
+                variant="primary"
+                :loading="generatingInvoices"
+                @click="handleGenerateInvoices"
+              >
+                <span class="material-symbols-outlined mr-1">receipt_long</span>
+                {{ $t('projects.detail.generateInvoices', { count: overview.project.installmentsCount }) }}
+              </w-button>
+            </div>
+          </w-card>
+        </section>
 
         <section class="detail-section full-width">
           <div class="section-header">
             <h2 class="section-title">{{ $t('projects.detail.invoices') }}</h2>
-            <span class="section-count">{{ overview.invoices.length }}</span>
+            <span class="section-count">{{ overview.invoiceStats.total }}</span>
             <router-link to="/app/finance" class="section-link">
               {{ $t('projects.detail.viewInvoices') }}
               <span class="material-symbols-outlined">arrow_forward</span>
@@ -314,6 +338,12 @@
               <template #item-status="{ item }">
                 <w-badge :color="getInvoiceStatusColor(item.status)">{{ item.status }}</w-badge>
               </template>
+              <template #item-installment="{ item }">
+                <w-badge v-if="item.installmentCount" color="var(--color-primary)">
+                  {{ item.installmentNumber }}/{{ item.installmentCount }}
+                </w-badge>
+                <span v-else class="text-muted">—</span>
+              </template>
               <template #item-total="{ item }">
                 {{ formatMoney(item.total, item.currency) }}
               </template>
@@ -323,53 +353,11 @@
             </w-table>
           </w-card>
         </section>
+      </div>
 
+      <!-- TAB: ARCHIVOS -->
+      <div v-if="activeTab === 'archivos'" class="detail-grid">
         <section class="detail-section full-width">
-          <div class="section-header">
-            <h2 class="section-title">{{ $t('projects.detail.quotes') }}</h2>
-            <span class="section-count">{{ overview.quotes.length }}</span>
-            <router-link to="/app/quotes" class="section-link">
-              {{ $t('projects.detail.viewQuotes') }}
-              <span class="material-symbols-outlined">arrow_forward</span>
-            </router-link>
-          </div>
-          <w-card class="no-padding">
-            <w-table :headers="quoteHeaders" :items="overview.quotes" :empty-message="$t('projects.detail.noQuotes')">
-              <template #item-status="{ item }">
-                <w-badge :color="getQuoteStatusColor(item.status)">{{ item.status }}</w-badge>
-              </template>
-              <template #item-total="{ item }">
-                {{ formatMoney(item.total, item.currency) }}
-              </template>
-            </w-table>
-          </w-card>
-        </section>
-
-        <section class="detail-section full-width">
-          <div class="section-header">
-            <h2 class="section-title">{{ $t('projects.detail.retainers') }}</h2>
-            <span class="section-count">{{ overview.subscriptions.length }}</span>
-            <router-link to="/app/subscriptions" class="section-link">
-              {{ $t('projects.detail.viewSubscriptions') }}
-              <span class="material-symbols-outlined">arrow_forward</span>
-            </router-link>
-          </div>
-          <w-card class="no-padding">
-            <w-table :headers="subscriptionHeaders" :items="overview.subscriptions" :empty-message="$t('projects.detail.noSubscriptions')">
-              <template #item-status="{ item }">
-                <w-badge :color="getSubscriptionStatusColor(item.status)">{{ item.status }}</w-badge>
-              </template>
-              <template #item-price="{ item }">
-                {{ formatMoney(item.price, item.currency) }}
-              </template>
-              <template #item-nextBillingDate="{ item }">
-                {{ item.nextBillingDate ? formatDate(item.nextBillingDate) : '—' }}
-              </template>
-            </w-table>
-          </w-card>
-        </section>
-
-        <section v-if="overview.documents && overview.documents.length > 0" class="detail-section full-width">
           <div class="section-header">
             <h2 class="section-title">{{ $t('projects.detail.documents') }}</h2>
             <span class="section-count">{{ overview.documents.length }}</span>
@@ -384,6 +372,74 @@
             </w-table>
           </w-card>
         </section>
+      </div>
+
+      <!-- TAB: GITHUB -->
+      <div v-if="activeTab === 'github'">
+        <section class="github-section">
+          <div class="section-header" style="margin-bottom: 12px;">
+            <span class="material-symbols-outlined" style="font-size:16px;color:var(--color-text-muted)">commit</span>
+            <h2 class="section-title">GitHub</h2>
+            <span v-if="connectedRepos.length" class="section-count">{{ connectedRepos.length }}</span>
+            <w-button variant="ghost" style="margin-left:auto" @click="openRepoDrawer">
+              <span class="material-symbols-outlined mr-1">add_link</span>
+              Conectar repo
+            </w-button>
+          </div>
+
+          <w-card>
+            <div v-if="!connectedRepos.length" class="github-hint">Sin repositorios vinculados</div>
+            <div v-for="repo in connectedRepos" :key="`${repo.owner}/${repo.repo}`" class="github-connected-row">
+              <span class="material-symbols-outlined" style="font-size:16px;color:var(--color-text-muted)">commit</span>
+              <a :href="repo.htmlUrl" target="_blank" class="github-repo-link">{{ repo.owner }}/{{ repo.repo }}</a>
+              <div style="display:flex;gap:6px;margin-left:auto">
+                <w-button variant="ghost" @click="$router.push({ name: 'project-github', params: { id: projectId }, query: { owner: repo.owner, repo: repo.repo } })">
+                  <span class="material-symbols-outlined mr-1">open_in_new</span>
+                  Ver actividad
+                </w-button>
+                <w-button variant="ghost" @click="handleDisconnectRepo(repo)" :disabled="githubStore.loading">
+                  Desconectar
+                </w-button>
+              </div>
+            </div>
+          </w-card>
+        </section>
+
+        <!-- Repo selector drawer -->
+        <w-drawer v-model="repoDrawerOpen" title="Conectar repositorio GitHub" width="420px">
+          <div class="repo-drawer-body">
+            <div class="repo-search-box">
+              <span class="material-symbols-outlined">search</span>
+              <input
+                v-model="repoSearch"
+                type="text"
+                placeholder="Buscar repositorio..."
+                class="repo-search-input"
+              />
+            </div>
+            <div v-if="githubStore.reposLoading" class="feed-empty">Cargando repositorios...</div>
+            <div v-else-if="!githubStore.repos.length" class="feed-empty">No se encontraron repositorios. Asegurate de haber iniciado sesión con GitHub.</div>
+            <div v-else-if="!filteredRepos.length" class="feed-empty">Sin resultados para "{{ repoSearch }}"</div>
+            <div
+              v-for="repo in filteredRepos"
+              :key="repo.fullName"
+              class="repo-item"
+              :class="{ selected: selectedRepo?.fullName === repo.fullName }"
+              @click="selectedRepo = repo"
+            >
+              <span class="material-symbols-outlined" style="font-size:16px">{{ repo.private ? 'lock' : 'public' }}</span>
+              <span class="repo-item-name">{{ repo.fullName }}</span>
+            </div>
+          </div>
+          <template #footer>
+            <div style="display:flex;gap:8px;justify-content:flex-end;padding:16px">
+              <w-button variant="ghost" @click="repoDrawerOpen = false">Cancelar</w-button>
+              <w-button variant="primary" :disabled="!selectedRepo || githubStore.loading" @click="handleConnectRepo">
+                Conectar
+              </w-button>
+            </div>
+          </template>
+        </w-drawer>
       </div>
     </template>
   </div>
@@ -422,12 +478,52 @@ export default defineComponent({
       repoSearch: '',
       selectedRepo: null as GithubRepo | null,
       githubStore: useGithubStore(),
+      activeTab: 'resumen',
+      generatingInvoices: false,
     }
   },
   computed: {
     ...mapState(useProjectsStore, ['overview', 'loading', 'linkStatus', 'linkStatusLoading']),
     projectId(): string {
       return this.$route.params.id as string
+    },
+    detailTabs() {
+      const stats = this.overview?.invoiceStats
+      return [
+        { id: 'resumen', label: this.$t('projects.detail.tabs.overview'), icon: 'dashboard', count: null },
+        { id: 'tareas', label: this.$t('projects.detail.tabs.tasks'), icon: 'task_alt', count: this.overview?.pendingTasks.length ?? null },
+        { id: 'finanzas', label: this.$t('projects.detail.tabs.finance'), icon: 'payments', count: stats?.total ?? null },
+        { id: 'archivos', label: this.$t('projects.detail.tabs.files'), icon: 'description', count: this.overview?.documents.length ?? null },
+        { id: 'github', label: 'GitHub', icon: 'commit', count: this.connectedRepos.length || null },
+      ]
+    },
+    isInstallments(): boolean {
+      return (this.overview?.project as any)?.billingType === 'installments'
+    },
+    billingLabel(): string {
+      if (!this.isInstallments) return this.$t('projects.detail.billingSingle')
+      const count = (this.overview?.project as any)?.installmentsCount ?? 0
+      return this.$t('projects.detail.billingInInstallments', { count })
+    },
+    invoicedTotal(): number {
+      const s = this.overview?.invoiceStats
+      if (!s) return 0
+      return (s.paid ?? 0) + (s.pending ?? 0) + (s.overdue ?? 0)
+    },
+    budgetProgress(): number {
+      const budget = (this.overview?.project as any)?.budget ?? 0
+      if (!budget || budget <= 0) return 0
+      return Math.round((this.invoicedTotal / budget) * 100)
+    },
+    hasInstallmentInvoices(): boolean {
+      return (this.overview?.invoices ?? []).some((i: any) => i.installmentCount)
+    },
+    canGenerateInvoices(): boolean {
+      const project = this.overview?.project as any
+      if (!project || project.billingType !== 'installments') return false
+      if (!(project.installmentsCount >= 2)) return false
+      if (!(project.budget > 0)) return false
+      return !this.hasInstallmentInvoices
     },
     connectedRepos(): { owner: string; repo: string; defaultBranch: string; htmlUrl: string }[] {
       return (this.overview?.project as any)?.githubRepos ?? []
@@ -450,6 +546,7 @@ export default defineComponent({
     invoiceHeaders() {
       return [
         { key: 'number', label: this.$t('finance.fields.number').toUpperCase() },
+        { key: 'installment', label: this.$t('projects.detail.installment').toUpperCase() },
         { key: 'status', label: this.$t('projects.fields.status').toUpperCase() },
         { key: 'total', label: this.$t('finance.fields.total') },
         { key: 'dueDate', label: this.$t('finance.fields.dueDate').toUpperCase() },
@@ -461,28 +558,13 @@ export default defineComponent({
         { key: 'tags', label: this.$t('docs.fields.tags').toUpperCase() },
       ]
     },
-    quoteHeaders() {
-      return [
-        { key: 'number', label: this.$t('finance.fields.number').toUpperCase() },
-        { key: 'title', label: this.$t('docs.fields.title').toUpperCase() },
-        { key: 'status', label: this.$t('projects.fields.status').toUpperCase() },
-        { key: 'total', label: this.$t('finance.fields.total') },
-      ]
-    },
-    subscriptionHeaders() {
-      return [
-        { key: 'planName', label: this.$t('subscriptions.fields.plan').toUpperCase() },
-        { key: 'status', label: this.$t('projects.fields.status').toUpperCase() },
-        { key: 'price', label: this.$t('subscriptions.fields.price').toUpperCase() },
-        { key: 'nextBillingDate', label: this.$t('subscriptions.fields.nextBilling').toUpperCase() },
-      ]
-    },
   },
   methods: {
     ...mapActions(useProjectsStore, [
       'fetchOverview',
       'generatePublicLink',
       'revokePublicLink',
+      'generateInvoices',
       'fetchLinkStatus',
       'setLinkCredential',
       'removeLinkCredential',
@@ -523,17 +605,6 @@ export default defineComponent({
       if (status === 'paid' || status === 'collected') return 'var(--color-success)'
       if (status === 'overdue') return 'var(--color-error)'
       if (status === 'sent' || status === 'pending') return 'var(--color-warning)'
-      return 'var(--color-text-muted)'
-    },
-    getQuoteStatusColor(status: string) {
-      if (status === 'accepted') return 'var(--color-success)'
-      if (status === 'sent') return 'var(--color-primary)'
-      if (status === 'rejected' || status === 'expired') return 'var(--color-error)'
-      return 'var(--color-text-muted)'
-    },
-    getSubscriptionStatusColor(status: string) {
-      if (status === 'active') return 'var(--color-success)'
-      if (status === 'past_due') return 'var(--color-warning)'
       return 'var(--color-text-muted)'
     },
     isOverdue(dueDate?: string) {
@@ -621,6 +692,15 @@ export default defineComponent({
         this.githubStore.fetchCommits(this.projectId),
         this.githubStore.fetchPullRequests(this.projectId),
       ])
+    },
+    async handleGenerateInvoices() {
+      if (!confirm(this.$t('projects.detail.generateConfirm'))) return
+      this.generatingInvoices = true
+      try {
+        await this.generateInvoices(this.projectId)
+      } finally {
+        this.generatingInvoices = false
+      }
     },
     async handleDisconnectRepo(repo: { owner: string; repo: string }) {
       if (!confirm(`¿Desconectar ${repo.owner}/${repo.repo} de este proyecto?`)) return
@@ -792,6 +872,100 @@ export default defineComponent({
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 24px;
+}
+
+.detail-tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: 24px;
+  overflow-x: auto;
+}
+
+.detail-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  padding: 10px 16px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.detail-tab:hover {
+  color: var(--color-text-base);
+}
+
+.detail-tab.active {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+}
+
+.detail-tab .material-symbols-outlined {
+  font-size: 16px;
+}
+
+.detail-tab-count {
+  font-size: 10px;
+  padding: 1px 7px;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  color: var(--color-text-muted);
+}
+
+.detail-tab.active .detail-tab-count {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.billing-row {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.billing-info {
+  flex: 1;
+  min-width: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.billing-type {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text-base);
+}
+
+.billing-progress-text {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.billing-progress-track {
+  height: 6px;
+  background: var(--color-border);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.billing-progress-fill {
+  height: 100%;
+  background: var(--color-primary);
+  border-radius: 999px;
+  transition: width 0.3s ease;
 }
 
 .detail-section { display: flex; flex-direction: column; gap: 12px; }

@@ -2,6 +2,7 @@ import {
   IsString,
   IsOptional,
   MaxLength,
+  Max,
   IsIn,
   IsDateString,
   IsInt,
@@ -55,6 +56,25 @@ export class CreateProjectDto {
   @IsString()
   @IsOptional()
   currency?: string;
+
+  @ApiPropertyOptional({
+    enum: ['single', 'installments'],
+    default: 'single',
+    description: 'How the project budget is billed: full payment or installments (cuotas)',
+  })
+  @IsIn(['single', 'installments'])
+  @IsOptional()
+  billingType?: 'single' | 'installments';
+
+  @ApiPropertyOptional({
+    example: 3,
+    description: 'Number of installments when billingType is installments (cuotas)',
+  })
+  @IsInt()
+  @Min(1)
+  @Max(60)
+  @IsOptional()
+  installmentsCount?: number;
 
   @ApiPropertyOptional({
     example: '2026-12-31T23:59:59Z',

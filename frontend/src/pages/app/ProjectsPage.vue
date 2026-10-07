@@ -107,6 +107,11 @@ export default defineComponent({
         { name: 'endDate', label: this.$t('projects.fields.end'), type: 'date' },
         { name: 'budget', label: this.$t('projects.fields.budget'), type: 'number' },
         { name: 'currency', label: this.$t('projects.fields.currency'), type: 'text' },
+        { name: 'billingType', label: this.$t('projects.fields.billingType'), type: 'select', options: [
+          { label: this.$t('projects.billing.single'), value: 'single' },
+          { label: this.$t('projects.billing.installments'), value: 'installments' }
+        ]},
+        { name: 'installmentsCount', label: this.$t('projects.fields.installmentsCount'), type: 'number' },
         { name: 'status', label: this.$t('projects.fields.status'), type: 'select', options: [
           { label: this.$t('projects.status.active'), value: 'active' },
           { label: this.$t('projects.status.completed'), value: 'completed' },

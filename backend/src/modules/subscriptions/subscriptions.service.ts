@@ -19,9 +19,10 @@ export class SubscriptionsService {
   ) {}
 
   async findAll(workspaceId: string, query: QuerySubscriptionDto) {
-    const { search, clientId, status, page, limit } = query;
+    const { search, clientId, type, status, page, limit } = query;
     const filters: Record<string, any> = {};
     if (clientId) filters.clientId = clientId;
+    if (type) filters.type = type;
     if (status) filters.status = status;
     if (search) filters.planName = { $regex: search, $options: 'i' };
     const result = await this.repository.findAll(workspaceId, filters, {
@@ -51,13 +52,18 @@ export class SubscriptionsService {
   }
 
   async create(workspaceId: string, dto: CreateSubscriptionDto) {
-    await this.validateClient(workspaceId, dto.clientId);
+    await this.validateClient(workspaceId, dto.clientId, dto.type);
     return this.repository.create(workspaceId, dto);
   }
 
   async update(workspaceId: string, id: string, dto: UpdateSubscriptionDto) {
-    if (dto.clientId !== undefined) {
-      await this.validateClient(workspaceId, dto.clientId);
+    if (dto.clientId !== undefined || dto.type !== undefined) {
+      const current = await this.findOne(workspaceId, id);
+      await this.validateClient(
+        workspaceId,
+        dto.clientId ?? current.clientId,
+        dto.type ?? current.type,
+      );
     }
     const item = await this.repository.update(workspaceId, id, dto);
     if (!item) throw new NotFoundException(`Subscription ${id} not found`);
@@ -78,7 +84,18 @@ export class SubscriptionsService {
     );
   }
 
-  private async validateClient(workspaceId: string, clientId: string) {
+  private async validateClient(
+    workspaceId: string,
+    clientId: string | undefined | null,
+    type?: 'income' | 'expense',
+  ) {
+    // Recurring expenses (servers, SaaS) have no client. Income retainers do.
+    if (type === 'expense' && !clientId) return;
+    if (!clientId) {
+      throw new BadRequestException(
+        'clientId must reference an existing client in the workspace',
+      );
+    }
     const client = await this.clientsService
       .findOne(workspaceId, clientId)
       .catch(() => null);

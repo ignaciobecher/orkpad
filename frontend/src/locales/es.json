@@ -343,7 +343,7 @@
       "tasks": "Tareas",
       "finance": "Finanzas",
       "timeTracking": "Time Tracking",
-      "subscriptions": "Suscripciones",
+      "subscriptions": "Recurrentes",
       "integrations": "Integraciones",
       "docs": "Documentación",
       "agenda": "Agenda",
@@ -462,17 +462,18 @@
       "documents": "DOCUMENTOS",
       "noDocuments": "Sin documentos",
       "hoursLogged": "HORAS REGISTRADAS",
-      "quoted": "PRESUPUESTADO",
       "invoiceOverdue": "FACTURADO VENCIDO",
-      "activeRetainers": "CUOTAS ACTIVAS",
-      "quotes": "PRESUPUESTOS",
-      "noQuotes": "Sin presupuestos",
-      "retainers": "CUOTAS DEL CLIENTE",
-      "noSubscriptions": "Sin cuotas",
+      "recentInvoices": "FACTURAS RECIENTES",
+      "billingPlan": "Plan de cobro",
+      "billingSingle": "Pago total",
+      "billingInInstallments": "En {count} cuotas",
+      "billedOfBudget": "{billed} facturado de {budget} ({pct}%)",
+      "generateInvoices": "Generar {count} facturas",
+      "generateConfirm": "¿Generar las facturas de las cuotas? Podrás editarlas o eliminarlas después.",
+      "installment": "Cuota",
+      "tabs": { "overview": "Resumen", "tasks": "Tareas", "finance": "Finanzas", "files": "Archivos" },
       "viewTasks": "Ver tareas",
-      "viewInvoices": "Ver finanzas",
-      "viewQuotes": "Ver presupuestos",
-      "viewSubscriptions": "Ver suscripciones"
+      "viewInvoices": "Ver finanzas"
     },
     "fields": {
       "name": "Nombre",
@@ -484,8 +485,11 @@
       "end": "Fin",
       "budget": "Presupuesto",
       "currency": "Moneda",
+      "billingType": "Tipo de cobro",
+      "installmentsCount": "Cantidad de cuotas",
       "status": "Estado"
     },
+    "billing": { "single": "Pago total", "installments": "En cuotas" },
     "status": {
       "all": "TODOS LOS ESTADOS",
       "active": "ACTIVOS",
@@ -677,7 +681,7 @@
     }
   },
   "subscriptions": {
-    "title": "Suscripciones",
+    "title": "Recurrentes",
     "searchPlaceholder": "BUSCAR...",
     "new": "NUEVA",
     "noRecords": "No se encontraron registros.",

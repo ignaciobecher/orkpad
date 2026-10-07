@@ -323,7 +323,7 @@
       "tasks": "Tasks",
       "finance": "Finance",
       "timeTracking": "Time Tracking",
-      "subscriptions": "Subscriptions",
+      "subscriptions": "Recurring",
       "integrations": "Integrations",
       "docs": "Documentation",
       "agenda": "Agenda",
@@ -440,17 +440,18 @@
       "documents": "DOCUMENTS",
       "noDocuments": "No documents",
       "hoursLogged": "HOURS LOGGED",
-      "quoted": "QUOTED",
       "invoiceOverdue": "OVERDUE INVOICES",
-      "activeRetainers": "ACTIVE RETAINERS",
-      "quotes": "QUOTES",
-      "noQuotes": "No quotes",
-      "retainers": "CLIENT RETAINERS",
-      "noSubscriptions": "No retainers",
+      "recentInvoices": "RECENT INVOICES",
+      "billingPlan": "Billing plan",
+      "billingSingle": "Full payment",
+      "billingInInstallments": "{count} installments",
+      "billedOfBudget": "{billed} invoiced of {budget} ({pct}%)",
+      "generateInvoices": "Generate {count} invoices",
+      "generateConfirm": "Generate the installment invoices? You can edit or delete them afterwards.",
+      "installment": "Installment",
+      "tabs": { "overview": "Overview", "tasks": "Tasks", "finance": "Finance", "files": "Files" },
       "viewTasks": "View tasks",
-      "viewInvoices": "View finance",
-      "viewQuotes": "View quotes",
-      "viewSubscriptions": "View subscriptions"
+      "viewInvoices": "View finance"
     },
     "fields": {
       "name": "Name",
@@ -462,8 +463,11 @@
       "end": "End",
       "budget": "Budget",
       "currency": "Currency",
+      "billingType": "Billing type",
+      "installmentsCount": "Installment count",
       "status": "Status"
     },
+    "billing": { "single": "Full payment", "installments": "Installments" },
     "status": {
       "all": "ALL STATUSES",
       "active": "ACTIVE",
@@ -655,7 +659,7 @@
     }
   },
   "subscriptions": {
-    "title": "Subscriptions",
+    "title": "Recurring",
     "searchPlaceholder": "SEARCH...",
     "new": "NEW",
     "noRecords": "No records found.",

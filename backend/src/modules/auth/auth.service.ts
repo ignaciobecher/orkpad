@@ -713,7 +713,10 @@ export class AuthService {
           isDeleted: false,
         } as any),
         this.quoteModel.countDocuments(base as any),
-        this.subscriptionModel.countDocuments(base as any),
+        this.subscriptionModel.countDocuments({
+          ...base,
+          type: { $ne: 'expense' },
+        } as any),
         Promise.all([
           this.clientModel.countDocuments({ workspaceId, isDemo: true, isDeleted: false } as any),
           this.projectModel.countDocuments({ workspaceId, isDemo: true, isDeleted: false } as any),

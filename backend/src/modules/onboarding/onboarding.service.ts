@@ -28,11 +28,11 @@ export class OnboardingService {
         route: '/app/projects',
       },
       {
-        id: 'invoicing',
-        title: 'Facturas y presupuestos con PDF',
+        id: 'finance',
+        title: 'Finanzas, presupuestos y cuotas',
         description:
-          'Generá presupuestos, convertilos en facturas y exportá PDFs listos para enviar.',
-        icon: 'description',
+          'Cotizá, facturá y llevá las cuotas recurrentes de cada cliente, con los totales vinculados a cada proyecto.',
+        icon: 'payments',
         route: '/app/finance',
       },
       {
@@ -42,21 +42,6 @@ export class OnboardingService {
           'Registrá horas por proyecto con un timer o carga manual, y facturalas con precisión.',
         icon: 'schedule',
         route: '/app/time-tracking',
-      },
-      {
-        id: 'finance',
-        title: 'Finanzas y cuotas',
-        description:
-          'Presupuestos, facturas y cuotas recurrentes vinculados a cada proyecto, con totales siempre a la vista.',
-        icon: 'payments',
-        route: '/app/finance',
-      },
-      {
-        id: 'messaging',
-        title: 'Mensajería',
-        description: 'Conversá con tus clientes sin salir de la plataforma.',
-        icon: 'chat',
-        route: '/app/messaging',
       },
     ],
   };

@@ -69,6 +69,12 @@ export class Invoice extends BaseSchema {
 
   @Prop({ trim: true })
   notes: string;
+
+  @Prop({ type: Number, required: false, default: null })
+  installmentNumber?: number | null;
+
+  @Prop({ type: Number, required: false, default: null })
+  installmentCount?: number | null;
 }
 
 export const InvoiceSchema = SchemaFactory.createForClass(Invoice);
@@ -78,3 +84,4 @@ InvoiceSchema.index({ workspaceId: 1, clientId: 1 });
 InvoiceSchema.index({ workspaceId: 1, dueDate: 1 });
 InvoiceSchema.index({ workspaceId: 1, createdAt: -1 });
 InvoiceSchema.index({ workspaceId: 1, number: 1 }, { unique: true });
+InvoiceSchema.index({ workspaceId: 1, projectId: 1 });

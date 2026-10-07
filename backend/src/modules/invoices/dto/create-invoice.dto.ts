@@ -59,6 +59,22 @@ export class CreateInvoiceDto {
   projectId?: string;
 
   @ApiPropertyOptional({
+    description: 'Installment number within the project billing plan (cuota N)',
+  })
+  @IsInt()
+  @Min(1)
+  @IsOptional()
+  installmentNumber?: number;
+
+  @ApiPropertyOptional({
+    description: 'Total installments of the project billing plan (cuotas M)',
+  })
+  @IsInt()
+  @Min(1)
+  @IsOptional()
+  installmentCount?: number;
+
+  @ApiPropertyOptional({
     enum: [
       'draft',
       'pending',

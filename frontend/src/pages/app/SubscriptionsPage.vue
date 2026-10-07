@@ -2,12 +2,17 @@
   <div class="subscriptions-page">
     <header class="page-header">
       <div class="header-left">
-        <h1 class="page-title">Subscriptions</h1>
+        <h1 class="page-title">{{ $t('subscriptions.title') }}</h1>
         <div class="header-filters">
           <div class="search-box">
             <span class="material-symbols-outlined">search</span>
             <input type="text" v-model="filters.search" placeholder="BUSCAR..." @input="handleSearch" />
           </div>
+          <select v-model="filters.type" class="filter-select" @change="handleSearch">
+            <option value="">Todo tipo</option>
+            <option value="income">Ingresos</option>
+            <option value="expense">Egresos</option>
+          </select>
         </div>
       </div>
       <div class="header-right">
@@ -28,6 +33,11 @@
           row-clickable
           @row-click="goToDetail"
         >
+          <template #item-type="{ item }">
+            <w-badge :color="item.type === 'expense' ? 'var(--color-warning)' : 'var(--color-success)'">
+              {{ item.type === 'expense' ? 'Egreso' : 'Ingreso' }}
+            </w-badge>
+          </template>
           <template #item-clientId="{ item }">
             <span>{{ getClientLabel(item.clientId) }}</span>
           </template>
@@ -67,7 +77,7 @@
       </w-card>
 
       <div v-if="!loading && items.length === 0" class="empty-cta">
-        <p class="empty-cta-text">Cargá tu primera cuota recurrente para no perder de vista ningún cobro.</p>
+        <p class="empty-cta-text">Cargá tu primer recurrente: cuotas de clientes o pagos como servidores.</p>
         <w-button variant="primary" @click="openNewModal">
           <span class="material-symbols-outlined mr-2">add</span>
           NUEVO
@@ -101,6 +111,7 @@ export default defineComponent({
     return {
       headers: [
         { key: 'planName', label: 'PLAN' },
+        { key: 'type', label: 'TIPO' },
         { key: 'clientId', label: 'CLIENTE' },
         { key: 'status', label: 'ESTADO' },
         { key: 'billingCycle', label: 'CICLO' },
@@ -113,11 +124,14 @@ export default defineComponent({
       crudData: {} as any,
       clientLabels: {} as Record<string, string>,
       crudSchema: [
+        { name: 'type', label: 'Tipo', type: 'select', required: true, options: [
+          { label: 'Ingreso (cuota de cliente)', value: 'income' },
+          { label: 'Egreso (servidor, SaaS)', value: 'expense' }
+        ]},
         {
           name: 'clientId',
-          label: 'Cliente',
+          label: 'Cliente (solo ingresos)',
           type: 'remote-select',
-          required: true,
           searchPlaceholder: 'Buscar cliente por nombre o email...',
           loadOptions: loadClientOptions,
           loadOptionByValue: loadClientOptionById
@@ -185,7 +199,7 @@ export default defineComponent({
       this.$router.push({ name: 'subscription-detail', params: { id: item._id } })
     },
     openNewModal() {
-      this.crudData = {}
+      this.crudData = { type: 'income' }
       this.showCrudModal = true
     },
     openEditModal(item: any) {
@@ -228,6 +242,7 @@ export default defineComponent({
 .search-box { position: relative; width: 280px; }
 .search-box span { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 18px; color: var(--color-text-muted); }
 .search-box input { width: 100%; background-color: var(--color-bg-surface); border: 1px solid var(--color-border); padding: 8px 12px 8px 36px; font-family: var(--font-mono); font-size: 11px; color: var(--color-text-base); outline: none; }
+.filter-select { background-color: var(--color-bg-surface); border: 1px solid var(--color-border); padding: 8px 12px; font-family: var(--font-mono); font-size: 11px; color: var(--color-text-base); outline: none; }
 
 .page-content { flex-grow: 1; min-width: 0; display: flex; flex-direction: column; }
 

@@ -230,6 +230,15 @@
               </div>
             </div>
 
+            <div class="info-box tip">
+              <span class="material-symbols-outlined">payments</span>
+              <p>
+                <strong>PLAN DE COBRO:</strong> AL CREAR O EDITAR UN PROYECTO ELEGÍ ENTRE PAGO
+                TOTAL O EN CUOTAS. CON CUOTAS, LA PESTAÑA FINANZAS DEL PROYECTO TE PERMITE
+                GENERAR LAS FACTURAS AUTOMÁTICAMENTE (MONTOS IGUALES, VENCIMIENTOS MENSUALES).
+              </p>
+            </div>
+
             <div class="tutorial-box">
               <h4>
                 <span class="material-symbols-outlined">play_circle</span> TUTORIAL: GESTIÓN DE
@@ -394,10 +403,12 @@
 
           <!-- Client Subscriptions -->
           <section id="client-subscriptions" class="article-section">
-            <h2>SUSCRIPCIONES DE CLIENTES</h2>
+            <h2>PAGOS RECURRENTES</h2>
             <p>
-              LLEVÁ EL CONTROL DE TUS INGRESOS RECURRENTES. CADA SUSCRIPCIÓN LIGA UN CLIENTE
-              CON UN PLAN, CICLO DE FACTURACIÓN, PRECIO Y PRÓXIMA FECHA DE COBRO.
+              LLEVÁ EL CONTROL DE TUS INGRESOS Y EGRESOS RECURRENTES. CADA REGISTRO TIENE UN
+              PLAN, CICLO DE FACTURACIÓN, PRECIO Y PRÓXIMA FECHA DE COBRO O PAGO. LOS INGRESOS
+              SE LIGAN A UN CLIENTE (CUOTAS); LOS EGRESOS SIRVEN PARA SERVIDORES, SAAS Y OTROS
+              COSTOS FIJOS.
             </p>
 
             <div class="info-box tip">
@@ -417,7 +428,7 @@
                 <li>
                   VE A <strong>SUSCRIPCIONES</strong> EN EL MENÚ LATERAL (SECCIÓN OPERACIONES).
                 </li>
-                <li>SELECCIONÁ EL CLIENTE.</li>
+                <li>SELECCIONÁ EL TIPO (INGRESO O EGRESO) Y, SI ES INGRESO, EL CLIENTE.</li>
                 <li>DEFINÍ EL PRECIO Y EL CICLO (MENSUAL O ANUAL).</li>
                 <li>ORKPAD TE AVISARÁ CUANDO SE ACERQUE LA PRÓXIMA FECHA DE FACTURACIÓN.</li>
               </ol>

@@ -10,6 +10,9 @@
         <template v-if="subscription">
           <div class="title-row">
             <h1 class="page-title">{{ subscription.planName }}</h1>
+            <w-badge :color="subscription.type === 'expense' ? 'var(--color-warning)' : 'var(--color-success)'">
+              {{ subscription.type === 'expense' ? 'Egreso' : 'Ingreso' }}
+            </w-badge>
             <w-badge :color="getStatusColor(subscription.status)">{{ getStatusLabel(subscription.status) }}</w-badge>
           </div>
           <div class="subtitle-row">
@@ -195,7 +198,7 @@ export default defineComponent({
     const subscriptionId = computed(() => route.params.id as string)
     const subscription = ref<Subscription | null>(null)
     const payments = ref<SubscriptionPayment[]>([])
-    const clientName = ref('')
+    const clientName = ref('Sin cliente')
     const pageLoading = ref(false)
     const paymentsLoading = ref(false)
     const actionLoading = ref<string | null>(null)
@@ -347,8 +350,12 @@ export default defineComponent({
     ]
 
     const subscriptionSchema = [
+      { name: 'type', label: 'Tipo', type: 'select', required: true, options: [
+        { label: 'Ingreso (cuota de cliente)', value: 'income' },
+        { label: 'Egreso (servidor, SaaS)', value: 'expense' },
+      ]},
       {
-        name: 'clientId', label: 'Cliente', type: 'remote-select', required: true,
+        name: 'clientId', label: 'Cliente (solo ingresos)', type: 'remote-select',
         searchPlaceholder: 'Buscar cliente...', loadOptions: loadClientOptions, loadOptionByValue: loadClientOptionById,
       },
       { name: 'planName', label: 'Plan', type: 'text', required: true },
