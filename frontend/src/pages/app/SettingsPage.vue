@@ -140,6 +140,73 @@
       <!-- My Data -->
       <w-card>
         <div class="settings-section">
+          <h3 class="section-title">{{ $t('settings.paymentMethods.title') }}</h3>
+          <p class="setting-description">{{ $t('settings.paymentMethods.description') }}</p>
+
+          <div v-if="paymentMethodsStore.loading" class="loading-state">
+            <span class="material-symbols-outlined spinning">sync</span>
+            Cargando...
+          </div>
+
+          <ul v-else class="pm-list">
+            <li
+              v-for="m in paymentMethodsStore.items"
+              :key="m._id"
+              class="pm-row"
+              :class="{ 'pm-row--inactive': !m.active }"
+            >
+              <template v-if="editingMethodId === m._id">
+                <input
+                  v-model="editingMethodName"
+                  type="text"
+                  class="pm-input"
+                  @keyup.enter="saveRename(m)"
+                />
+                <div class="pm-row-actions">
+                  <button class="action-btn" :title="$t('common.save')" @click="saveRename(m)">
+                    <span class="material-symbols-outlined">check</span>
+                  </button>
+                  <button class="action-btn" :title="$t('common.cancel')" @click="cancelRename">
+                    <span class="material-symbols-outlined">close</span>
+                  </button>
+                </div>
+              </template>
+              <template v-else>
+                <span class="pm-name">{{ m.name }}</span>
+                <w-badge v-if="!m.active" color="var(--color-text-muted)">
+                  {{ $t('settings.paymentMethods.inactive') }}
+                </w-badge>
+                <div class="pm-row-actions">
+                  <button class="action-btn" :title="$t('common.edit')" @click="startRename(m)">
+                    <span class="material-symbols-outlined">edit</span>
+                  </button>
+                  <button
+                    class="action-btn"
+                    :title="m.active ? $t('settings.paymentMethods.disable') : $t('settings.paymentMethods.enable')"
+                    @click="toggleMethod(m)"
+                  >
+                    <span class="material-symbols-outlined">{{ m.active ? 'visibility_off' : 'visibility' }}</span>
+                  </button>
+                  <button class="action-btn action-btn--danger" :title="$t('common.delete')" @click="deleteMethod(m)">
+                    <span class="material-symbols-outlined">delete</span>
+                  </button>
+                </div>
+              </template>
+            </li>
+          </ul>
+
+          <div class="pm-add">
+            <w-input :label="$t('settings.paymentMethods.newPlaceholder')" v-model="newMethodName" @keyup.enter="addPaymentMethod" />
+            <w-button variant="primary" :loading="pmLoading" :disabled="!newMethodName.trim()" @click="addPaymentMethod">
+              {{ $t('settings.paymentMethods.add') }}
+            </w-button>
+          </div>
+        </div>
+      </w-card>
+
+      <!-- My Data -->
+      <w-card>
+        <div class="settings-section">
           <h3 class="section-title">{{ $t('settings.myData') }}</h3>
           <div class="setting-row">
             <div class="setting-info">
@@ -246,6 +313,7 @@ import { useAuthStore } from '@/stores/auth.store'
 import { authApi } from '@/api/auth/auth.api'
 import { showToast } from '@/composables/useToast'
 import { usePushNotifications } from '@/composables/usePushNotifications'
+import { usePaymentMethodsStore } from '@/stores/payment-methods.store'
 import { useWebAuthn } from '@/composables/useWebAuthn'
 import type { WebAuthnCredentialInfo } from '@/api/auth/auth.types'
 import WButton from '@/components/ui/WButton.vue'
@@ -271,6 +339,7 @@ export default defineComponent({
       removeCredential,
     } = useWebAuthn()
     return {
+      paymentMethodsStore: usePaymentMethodsStore(),
       pushSupported: isSupported,
       pushSubscribed: isSubscribed,
       pushLoading: loading,
@@ -309,6 +378,10 @@ export default defineComponent({
       webauthnCredentials: [] as WebAuthnCredentialInfo[],
       showBiometricDrawer: false,
       biometricDeviceName: '',
+      newMethodName: '',
+      editingMethodId: null as string | null,
+      editingMethodName: '',
+      pmLoading: false,
     }
   },
   computed: {
@@ -332,6 +405,7 @@ export default defineComponent({
     if (this.webauthnPlatformAvailable) {
       await this.loadWebAuthnCredentials()
     }
+    await this.paymentMethodsStore.fetchAll()
   },
   methods: {
     ...mapActions(useAuthStore, ['fetchMe', 'logout']),
@@ -445,6 +519,56 @@ export default defineComponent({
         showToast('No se pudo exportar los datos.', 'error')
       } finally {
         this.exportLoading = false
+      }
+    },
+
+    async addPaymentMethod() {
+      const name = this.newMethodName.trim()
+      if (!name || this.pmLoading) return
+      this.pmLoading = true
+      try {
+        await this.paymentMethodsStore.create(name)
+        this.newMethodName = ''
+      } catch {
+        showToast('No se pudo crear el método de pago.', 'error')
+      } finally {
+        this.pmLoading = false
+      }
+    },
+
+    startRename(item: { _id: string; name: string }) {
+      this.editingMethodId = item._id
+      this.editingMethodName = item.name
+    },
+
+    cancelRename() {
+      this.editingMethodId = null
+      this.editingMethodName = ''
+    },
+
+    async saveRename(item: { _id: string }) {
+      try {
+        await this.paymentMethodsStore.rename(item as any, this.editingMethodName)
+        this.cancelRename()
+      } catch {
+        showToast('No se pudo renombrar.', 'error')
+      }
+    },
+
+    async toggleMethod(item: any) {
+      try {
+        await this.paymentMethodsStore.toggleActive(item)
+      } catch {
+        showToast('No se pudo actualizar.', 'error')
+      }
+    },
+
+    async deleteMethod(item: { _id: string; name: string }) {
+      if (!confirm(`¿Eliminar "${item.name}"? Las facturas existentes conservan el nombre como texto.`)) return
+      try {
+        await this.paymentMethodsStore.remove(item._id)
+      } catch {
+        showToast('No se pudo eliminar.', 'error')
       }
     },
 
@@ -754,5 +878,81 @@ export default defineComponent({
 .toggle-switch input:disabled + .toggle-slider {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.pm-list {
+  list-style: none;
+  padding: 0;
+  margin: 16px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pm-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border);
+}
+
+.pm-row--inactive {
+  opacity: 0.55;
+}
+
+.pm-name {
+  flex: 1;
+  font-size: 14px;
+  color: var(--color-text-base);
+}
+
+.pm-input {
+  flex: 1;
+  background: var(--color-bg-surface-high);
+  border: 1px solid var(--color-primary);
+  color: var(--color-text-base);
+  font-size: 14px;
+  padding: 6px 10px;
+  outline: none;
+  min-width: 0;
+}
+
+.pm-row-actions {
+  display: flex;
+  gap: 2px;
+  margin-left: auto;
+}
+
+.pm-add {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.pm-add > *:first-child {
+  flex: 1;
+}
+
+.action-btn {
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  display: inline-flex;
+  padding: 4px;
+}
+
+.action-btn:hover {
+  color: var(--color-text-base);
+}
+
+.action-btn--danger:hover {
+  color: var(--color-error);
+}
+
+.action-btn .material-symbols-outlined {
+  font-size: 18px;
 }
 </style>

@@ -93,6 +93,7 @@
 import { defineComponent } from 'vue'
 import { mapState, mapActions } from 'pinia'
 import { useSubscriptionsStore } from '@/stores/subscriptions.store'
+import { CURRENCIES } from '@/constants/currencies'
 import WButton from '@/components/ui/WButton.vue'
 import WTable from '@/components/ui/WTable.vue'
 import WCard from '@/components/ui/WCard.vue'
@@ -139,7 +140,7 @@ export default defineComponent({
         { name: 'planName', label: 'Plan', type: 'text', required: true },
         { name: 'nextBillingDate', label: 'Próxima factura', type: 'date', required: true },
         { name: 'price', label: 'Precio', type: 'number', centsField: true },
-        { name: 'currency', label: 'Moneda', type: 'text' },
+        { name: 'currency', label: 'Moneda', type: 'select', options: CURRENCIES.map((c) => ({ label: c.code, value: c.code })) },
         { name: 'billingCycle', label: 'Ciclo', type: 'select', options: [
           { label: 'Mensual', value: 'monthly' },
           { label: 'Anual', value: 'yearly' }

@@ -11,6 +11,7 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { CURRENCIES } from '../../../common/constants/currencies';
 
 export class QuoteLineItemDto {
   @ApiProperty({ example: 'Web design' })
@@ -163,8 +164,8 @@ export class CreateQuoteDto {
   @IsOptional()
   discountPercent?: number;
 
-  @ApiPropertyOptional({ default: 'USD' })
-  @IsString()
+  @ApiPropertyOptional({ enum: CURRENCIES, default: 'USD' })
+  @IsIn(CURRENCIES as unknown as string[])
   @IsOptional()
   currency?: string;
 

@@ -165,14 +165,7 @@
                   <div class="form-field">
                     <label class="field-label">Moneda</label>
                     <select v-model="form.currency" class="field-input">
-                      <option value="USD">USD</option>
-                      <option value="EUR">EUR</option>
-                      <option value="ARS">ARS</option>
-                      <option value="BRL">BRL</option>
-                      <option value="CLP">CLP</option>
-                      <option value="MXN">MXN</option>
-                      <option value="COP">COP</option>
-                      <option value="UYU">UYU</option>
+                      <option v-for="c in currencyOptions" :key="c.code" :value="c.code">{{ c.code }}</option>
                     </select>
                   </div>
                   <div class="form-field full-width">
@@ -380,6 +373,7 @@ import { defineComponent } from 'vue'
 import { mapState, mapActions } from 'pinia'
 import { useQuotesStore } from '@/stores/quotes.store'
 import { formatCurrency } from '@/utils/currency'
+import { CURRENCIES } from '@/constants/currencies'
 import { loadClientOptions, loadProjectOptions } from '@/utils/remote-entity-options'
 import WButton from '@/components/ui/WButton.vue'
 import WTable from '@/components/ui/WTable.vue'
@@ -439,6 +433,9 @@ export default defineComponent({
   },
   computed: {
     ...mapState(useQuotesStore, ['items', 'loading', 'total', 'totalAccepted', 'totalPending', 'filters']),
+    currencyOptions() {
+      return CURRENCIES
+    },
     headers() {
       return [
         { key: 'title', label: 'TÍTULO' },

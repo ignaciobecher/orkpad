@@ -2,11 +2,13 @@ import {
   IsString,
   IsOptional,
   IsInt,
+  IsIn,
   IsDateString,
   MaxLength,
   Min,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { CURRENCIES } from '../../../common/constants/currencies';
 
 export class CreateSubscriptionPaymentDto {
   @ApiProperty({ example: 'Abril 2026' })
@@ -24,8 +26,8 @@ export class CreateSubscriptionPaymentDto {
   @IsOptional()
   amount?: number;
 
-  @ApiPropertyOptional({ example: 'USD' })
-  @IsString()
+  @ApiPropertyOptional({ enum: CURRENCIES, default: 'USD' })
+  @IsIn(CURRENCIES as unknown as string[])
   @IsOptional()
   currency?: string;
 

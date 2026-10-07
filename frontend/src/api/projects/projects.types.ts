@@ -6,8 +6,11 @@ export interface Project {
   status: 'active' | 'on-hold' | 'completed' | 'archived'
   startDate?: string
   endDate?: string
+  actualEndDate?: string | null
   budget?: number
   currency?: string
+  billingType?: 'single' | 'installments'
+  installmentsCount?: number
   publicToken?: string | null
   linkVisibility?: 'public' | 'private'
   linkExpiresAt?: string | null
@@ -39,6 +42,8 @@ export interface CreateProjectDto {
   endDate?: string
   budget?: number
   currency?: string
+  billingType?: 'single' | 'installments'
+  installmentsCount?: number
 }
 
 export interface UpdateProjectDto extends Partial<CreateProjectDto> {
@@ -78,9 +83,13 @@ export interface TaskStats {
 
 export interface InvoiceStats {
   total: number
+  agreed: number
   paid: number
   pending: number
   overdue: number
+  installmentsTotal: number
+  installmentsPending: number
+  nextDueDate: string | null
 }
 
 export interface TimeStats {
@@ -100,6 +109,9 @@ export interface InvoiceSummary {
   createdAt?: string
   installmentNumber?: number | null
   installmentCount?: number | null
+  paidDate?: string | null
+  paymentMethod?: string
+  notes?: string
 }
 
 export interface DocumentSummary {

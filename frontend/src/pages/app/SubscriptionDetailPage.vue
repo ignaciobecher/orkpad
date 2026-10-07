@@ -175,6 +175,7 @@ import { useToast } from '@/composables/useToast'
 import { subscriptionsApi } from '@/api/subscriptions/subscriptions.api'
 import { subscriptionPaymentsApi } from '@/api/subscriptions/subscription-payments.api'
 import { useSubscriptionsStore } from '@/stores/subscriptions.store'
+import { CURRENCIES } from '@/constants/currencies'
 import type { Subscription, SubscriptionPayment } from '@/api/subscriptions/subscriptions.types'
 import WButton from '@/components/ui/WButton.vue'
 import WBadge from '@/components/ui/WBadge.vue'
@@ -345,7 +346,7 @@ export default defineComponent({
       { name: 'periodLabel', label: 'Período', type: 'text', required: true, placeholder: 'ej. Mayo 2026' },
       { name: 'dueDate', label: 'Fecha de vencimiento', type: 'date', required: true },
       { name: 'amount', label: 'Monto', type: 'number', centsField: true },
-      { name: 'currency', label: 'Moneda', type: 'text' },
+      { name: 'currency', label: 'Moneda', type: 'select', options: CURRENCIES.map((c) => ({ label: c.code, value: c.code })) },
       { name: 'notes', label: 'Notas', type: 'text' },
     ]
 
@@ -361,7 +362,7 @@ export default defineComponent({
       { name: 'planName', label: 'Plan', type: 'text', required: true },
       { name: 'nextBillingDate', label: 'Próxima factura', type: 'date', required: true },
       { name: 'price', label: 'Precio', type: 'number', centsField: true },
-      { name: 'currency', label: 'Moneda', type: 'text' },
+      { name: 'currency', label: 'Moneda', type: 'select', options: CURRENCIES.map((c) => ({ label: c.code, value: c.code })) },
       { name: 'billingCycle', label: 'Ciclo', type: 'select', options: [
         { label: 'Mensual', value: 'monthly' }, { label: 'Anual', value: 'yearly' },
       ]},

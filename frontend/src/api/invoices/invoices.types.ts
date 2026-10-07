@@ -21,6 +21,10 @@ export interface Invoice {
   total: number
   currency: string
   notes?: string
+  paidDate?: string | null
+  paymentMethod?: string
+  installmentNumber?: number | null
+  installmentCount?: number | null
   createdAt: string
   updatedAt: string
 }
@@ -38,6 +42,10 @@ export interface CreateInvoiceDto {
   total?: number
   currency?: string
   notes?: string
+  paidDate?: string
+  paymentMethod?: string
+  installmentNumber?: number
+  installmentCount?: number
 }
 
 export interface UpdateInvoiceDto extends Partial<CreateInvoiceDto> {}

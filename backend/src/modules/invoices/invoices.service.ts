@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   Inject,
   Injectable,
   NotFoundException,
@@ -61,12 +62,19 @@ export class InvoicesService {
     const total = hasItems ? computed.total : (dto.total ?? 0);
     const subtotal = hasItems ? computed.subtotal : (dto.total ?? 0);
 
-    return this.invoicesRepository.create(workspaceId, {
-      ...dto,
-      subtotal,
-      taxAmount: hasItems ? computed.taxAmount : 0,
-      total,
-    });
+    try {
+      return await this.invoicesRepository.create(workspaceId, {
+        ...dto,
+        subtotal,
+        taxAmount: hasItems ? computed.taxAmount : 0,
+        total,
+      });
+    } catch (err: any) {
+      if (err?.code === 11000) {
+        throw new ConflictException('Ya existe una factura con ese número.');
+      }
+      throw err;
+    }
   }
 
   async update(workspaceId: string, id: string, dto: UpdateInvoiceDto) {
@@ -91,10 +99,18 @@ export class InvoicesService {
       extra.taxAmount = 0;
     }
 
-    const invoice = await this.invoicesRepository.update(workspaceId, id, {
-      ...dto,
-      ...extra,
-    });
+    let invoice;
+    try {
+      invoice = await this.invoicesRepository.update(workspaceId, id, {
+        ...dto,
+        ...extra,
+      });
+    } catch (err: any) {
+      if (err?.code === 11000) {
+        throw new ConflictException('Ya existe una factura con ese número.');
+      }
+      throw err;
+    }
     if (!invoice) throw new NotFoundException(`Invoice ${id} not found`);
     return invoice;
   }

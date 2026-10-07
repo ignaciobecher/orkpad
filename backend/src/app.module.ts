@@ -24,6 +24,7 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { QuotesModule } from './modules/quotes/quotes.module';
 import { GithubIntegrationModule } from './modules/github-integration/github-integration.module';
 import { NotesModule } from './modules/notes/notes.module';
+import { PaymentMethodsModule } from './modules/payment-methods/payment-methods.module';
 import { MessagingModule } from './modules/messaging/messaging.module';
 import { SupportModule } from './modules/support/support.module';
 import { PlannerBlocksModule } from './modules/planner-blocks/planner-blocks.module';
@@ -96,6 +97,7 @@ import { OnboardingModule } from './modules/onboarding/onboarding.module';
     QuotesModule,
     GithubIntegrationModule,
     NotesModule,
+    PaymentMethodsModule,
     MessagingModule,
     SupportModule,
     PlannerBlocksModule,

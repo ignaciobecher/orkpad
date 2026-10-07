@@ -24,6 +24,9 @@ export class Project extends BaseSchema {
   @Prop({ type: Date })
   endDate: Date;
 
+  @Prop({ type: Date, default: null })
+  actualEndDate?: Date | null;
+
   @Prop({ default: 0 })
   budget: number;
 

@@ -12,6 +12,7 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { CURRENCIES } from '../../../common/constants/currencies';
 
 class InvoiceItemDto {
   @ApiProperty()
@@ -136,8 +137,8 @@ export class CreateInvoiceDto {
   @IsOptional()
   taxRate?: number;
 
-  @ApiPropertyOptional({ example: 'USD' })
-  @IsString()
+  @ApiPropertyOptional({ enum: CURRENCIES, default: 'USD' })
+  @IsIn(CURRENCIES as unknown as string[])
   @IsOptional()
   currency?: string;
 
@@ -145,4 +146,17 @@ export class CreateInvoiceDto {
   @IsString()
   @IsOptional()
   notes?: string;
+
+  @ApiPropertyOptional({
+    example: '2026-10-04',
+    description: 'Actual collection date (fecha de cobro real)',
+  })
+  @IsDateString()
+  @IsOptional()
+  paidDate?: string;
+
+  @ApiPropertyOptional({ example: 'Transferencia' })
+  @IsString()
+  @IsOptional()
+  paymentMethod?: string;
 }

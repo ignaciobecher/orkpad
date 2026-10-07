@@ -11,6 +11,7 @@ import {
   IsBoolean,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { CURRENCIES } from '../../../common/constants/currencies';
 
 export class CreateProjectDto {
   @ApiProperty({ example: 'Website Redesign' })
@@ -52,8 +53,8 @@ export class CreateProjectDto {
   @IsOptional()
   budget?: number;
 
-  @ApiPropertyOptional({ example: 'USD' })
-  @IsString()
+  @ApiPropertyOptional({ enum: CURRENCIES, default: 'USD' })
+  @IsIn(CURRENCIES as unknown as string[])
   @IsOptional()
   currency?: string;
 

@@ -69,6 +69,7 @@
 import { defineComponent } from 'vue'
 import { mapState, mapActions } from 'pinia'
 import { useProjectsStore } from '@/stores/projects.store'
+import { CURRENCIES } from '@/constants/currencies'
 import WButton from '@/components/ui/WButton.vue'
 import WTable from '@/components/ui/WTable.vue'
 import WCard from '@/components/ui/WCard.vue'
@@ -106,7 +107,7 @@ export default defineComponent({
         { name: 'startDate', label: this.$t('projects.fields.start'), type: 'date' },
         { name: 'endDate', label: this.$t('projects.fields.end'), type: 'date' },
         { name: 'budget', label: this.$t('projects.fields.budget'), type: 'number' },
-        { name: 'currency', label: this.$t('projects.fields.currency'), type: 'text' },
+        { name: 'currency', label: this.$t('projects.fields.currency'), type: 'select', options: CURRENCIES.map((c) => ({ label: c.code, value: c.code })) },
         { name: 'billingType', label: this.$t('projects.fields.billingType'), type: 'select', options: [
           { label: this.$t('projects.billing.single'), value: 'single' },
           { label: this.$t('projects.billing.installments'), value: 'installments' }

@@ -114,6 +114,8 @@
 import { defineComponent } from 'vue'
 import { mapState, mapActions, mapWritableState } from 'pinia'
 import { useInvoicesStore } from '@/stores/invoices.store'
+import { usePaymentMethodsStore } from '@/stores/payment-methods.store'
+import { CURRENCIES } from '@/constants/currencies'
 import { formatCurrency } from '@/utils/currency'
 import { formatDate } from '@/utils/date'
 import WButton from '@/components/ui/WButton.vue'
@@ -140,6 +142,7 @@ export default defineComponent({
   },
   computed: {
     ...mapState(useInvoicesStore, ['items', 'loading', 'totalIncome', 'totalExpense', 'balance']),
+    ...mapState(usePaymentMethodsStore, { paymentMethodNames: 'activeNames' }),
     ...mapWritableState(useInvoicesStore, ['filters']),
     crudSchema() {
       return [
@@ -175,7 +178,10 @@ export default defineComponent({
           loadOptionByValue: loadProjectOptionById
         },
         { name: 'total', label: this.$t('finance.fields.total'), type: 'number', required: true },
-        { name: 'currency', label: this.$t('finance.fields.currency'), type: 'text' },
+        { name: 'currency', label: this.$t('finance.fields.currency'), type: 'select', options: CURRENCIES.map((c) => ({ label: c.code, value: c.code })) },
+        { name: 'dueDate', label: this.$t('finance.fields.dueDate'), type: 'date' },
+        { name: 'paidDate', label: this.$t('finance.fields.paidDate'), type: 'date' },
+        { name: 'paymentMethod', label: this.$t('finance.fields.paymentMethod'), type: 'select', options: [{ label: '—', value: '' }, ...this.paymentMethodNames.map((n: string) => ({ label: n, value: n }))] },
         { name: 'notes', label: this.$t('finance.fields.notes'), type: 'textarea' },
         { name: 'status', label: this.$t('finance.fields.status'), type: 'select', options: [
           { label: this.$t('finance.status.draft'), value: 'draft' },
@@ -282,6 +288,22 @@ export default defineComponent({
   },
   mounted() {
     this.refreshPage()
+    usePaymentMethodsStore().fetchAll()
+    // Deep link from a project (?new=1&projectId=&clientId=): open the create
+    // modal with the project pre-selected so the invoice is born linked.
+    if (this.$route.query.new) {
+      const { new: _dropped, projectId, clientId, ...rest } = this.$route.query
+      this.crudData = {
+        type: 'income',
+        status: 'pending',
+        issueDate: new Date().toISOString().split('T')[0],
+        currency: 'USD',
+        ...(projectId ? { projectId: projectId as string } : {}),
+        ...(clientId ? { clientId: clientId as string } : {}),
+      }
+      this.showCrudModal = true
+      this.$router.replace({ query: rest })
+    }
   }
 })
 </script>

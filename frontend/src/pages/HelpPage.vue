@@ -742,7 +742,7 @@ export default defineComponent({
         items: [
           { id: 'finance', label: 'FINANZAS', icon: 'account_balance_wallet' },
           { id: 'quotes', label: 'PRESUPUESTOS', icon: 'request_quote' },
-          { id: 'client-subscriptions', label: 'SUSCRIPCIONES DE CLIENTES', icon: 'rebase_edit' },
+          { id: 'client-subscriptions', label: 'PAGOS RECURRENTES', icon: 'rebase_edit' },
         ],
       },
       {

@@ -25,6 +25,10 @@
               <span class="material-symbols-outlined">event</span>
               {{ formatDate(overview.project.endDate) }}
             </span>
+            <span v-if="overview.project.actualEndDate">
+              <span class="material-symbols-outlined">event_available</span>
+              Fin real: {{ formatDate(overview.project.actualEndDate) }}
+            </span>
             <span v-if="overview.project.budget">
               <span class="material-symbols-outlined">payments</span>
               {{ formatMoney(overview.project.budget, overview.project.currency) }}
@@ -235,9 +239,15 @@
             <span class="section-count">{{ overview.invoiceStats.total }}</span>
           </div>
           <w-card class="no-padding">
-            <w-table :headers="invoiceHeaders" :items="overview.invoices.slice(0, 5)" :empty-message="$t('projects.detail.noInvoices')">
+            <w-table :headers="invoiceMiniHeaders" :items="overview.invoices.slice(0, 5)" :empty-message="$t('projects.detail.noInvoices')">
               <template #item-status="{ item }">
                 <w-badge :color="getInvoiceStatusColor(item.status)">{{ item.status }}</w-badge>
+              </template>
+              <template #item-installment="{ item }">
+                <w-badge v-if="item.installmentCount" color="var(--color-primary)">
+                  {{ item.installmentNumber }}/{{ item.installmentCount }}
+                </w-badge>
+                <span v-else class="text-muted">—</span>
               </template>
               <template #item-total="{ item }">
                 {{ formatMoney(item.total, item.currency) }}
@@ -325,6 +335,18 @@
         </section>
 
         <section class="detail-section full-width">
+          <div class="finance-summary-cards">
+            <w-kpi-card :title="$t('projects.detail.agreed')" :value="formatMoney(overview.invoiceStats.agreed, overview.project.currency)" />
+            <w-kpi-card :title="$t('projects.detail.collected')" :value="formatMoney(overview.invoiceStats.paid, overview.project.currency)" />
+            <w-kpi-card :title="$t('projects.detail.pending')" :value="formatMoney(overview.invoiceStats.pending + overview.invoiceStats.overdue, overview.project.currency)" />
+            <w-kpi-card :title="$t('projects.detail.collectedPct')" :value="collectedPct + '%' " />
+            <w-kpi-card :title="$t('projects.detail.installmentsCount')" :value="overview.invoiceStats.installmentsTotal" />
+            <w-kpi-card :title="$t('projects.detail.installmentsPending')" :value="overview.invoiceStats.installmentsPending" />
+            <w-kpi-card :title="$t('projects.detail.nextDue')" :value="overview.invoiceStats.nextDueDate ? formatDate(overview.invoiceStats.nextDueDate) : '—'" />
+          </div>
+        </section>
+
+        <section class="detail-section full-width">
           <div class="section-header">
             <h2 class="section-title">{{ $t('projects.detail.invoices') }}</h2>
             <span class="section-count">{{ overview.invoiceStats.total }}</span>
@@ -333,25 +355,13 @@
               <span class="material-symbols-outlined">arrow_forward</span>
             </router-link>
           </div>
-          <w-card class="no-padding">
-            <w-table :headers="invoiceHeaders" :items="overview.invoices" :empty-message="$t('projects.detail.noInvoices')">
-              <template #item-status="{ item }">
-                <w-badge :color="getInvoiceStatusColor(item.status)">{{ item.status }}</w-badge>
-              </template>
-              <template #item-installment="{ item }">
-                <w-badge v-if="item.installmentCount" color="var(--color-primary)">
-                  {{ item.installmentNumber }}/{{ item.installmentCount }}
-                </w-badge>
-                <span v-else class="text-muted">—</span>
-              </template>
-              <template #item-total="{ item }">
-                {{ formatMoney(item.total, item.currency) }}
-              </template>
-              <template #item-dueDate="{ item }">
-                {{ item.dueDate ? formatDate(item.dueDate) : '—' }}
-              </template>
-            </w-table>
-          </w-card>
+          <project-finance-grid
+            :project-id="projectId"
+            :client-id="overview.project.clientId"
+            :currency="overview.project.currency"
+            :invoices="overview.invoices"
+            @changed="fetchOverview(projectId)"
+          />
         </section>
       </div>
 
@@ -458,11 +468,12 @@ import WTable from '@/components/ui/WTable.vue'
 import WBadge from '@/components/ui/WBadge.vue'
 import WKpiCard from '@/components/ui/WKpiCard.vue'
 import WDrawer from '@/components/ui/WDrawer.vue'
+import ProjectFinanceGrid from '@/components/projects/ProjectFinanceGrid.vue'
 import type { GithubRepo } from '@/api/github/github.api'
 
 export default defineComponent({
   name: 'ProjectDetailPage',
-  components: { WButton, WCard, WTable, WBadge, WKpiCard, WDrawer },
+  components: { WButton, WCard, WTable, WBadge, WKpiCard, WDrawer, ProjectFinanceGrid },
   data() {
     return {
       linkLoading: false,
@@ -510,6 +521,11 @@ export default defineComponent({
       if (!s) return 0
       return (s.paid ?? 0) + (s.pending ?? 0) + (s.overdue ?? 0)
     },
+    collectedPct(): number {
+      const s = this.overview?.invoiceStats
+      if (!s || !s.agreed || s.agreed <= 0) return 0
+      return Math.round(((s.paid ?? 0) / s.agreed) * 100)
+    },
     budgetProgress(): number {
       const budget = (this.overview?.project as any)?.budget ?? 0
       if (!budget || budget <= 0) return 0
@@ -543,7 +559,7 @@ export default defineComponent({
         { key: 'dueDate', label: this.$t('tasks.fields.due').toUpperCase() },
       ]
     },
-    invoiceHeaders() {
+    invoiceMiniHeaders() {
       return [
         { key: 'number', label: this.$t('finance.fields.number').toUpperCase() },
         { key: 'installment', label: this.$t('projects.detail.installment').toUpperCase() },
@@ -865,6 +881,15 @@ export default defineComponent({
   background-color: var(--color-border);
   border: 1px solid var(--color-border);
   margin-bottom: 32px;
+  flex-shrink: 0;
+}
+
+.finance-summary-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background-color: var(--color-border);
+  border: 1px solid var(--color-border);
   flex-shrink: 0;
 }
 

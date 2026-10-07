@@ -8,6 +8,7 @@ import {
   MaxLength,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { CURRENCIES } from '../../../common/constants/currencies';
 
 export class CreateSubscriptionDto {
   @ApiPropertyOptional({ example: '64b1f2c3d4e5f6a7b8c9d0e1' })
@@ -31,8 +32,8 @@ export class CreateSubscriptionDto {
   @IsOptional()
   price?: number;
 
-  @ApiPropertyOptional({ example: 'USD' })
-  @IsString()
+  @ApiPropertyOptional({ enum: CURRENCIES, default: 'USD' })
+  @IsIn(CURRENCIES as unknown as string[])
   @IsOptional()
   currency?: string;
 

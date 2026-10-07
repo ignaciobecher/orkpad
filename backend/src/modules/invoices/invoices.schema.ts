@@ -70,6 +70,12 @@ export class Invoice extends BaseSchema {
   @Prop({ trim: true })
   notes: string;
 
+  @Prop({ type: Date, required: false, default: null })
+  paidDate?: Date | null;
+
+  @Prop({ trim: true, required: false })
+  paymentMethod?: string;
+
   @Prop({ type: Number, required: false, default: null })
   installmentNumber?: number | null;
 

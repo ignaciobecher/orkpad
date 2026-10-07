@@ -78,7 +78,12 @@ export class ProjectsService {
     if (dto.clientId !== undefined) {
       await this.validateClient(workspaceId, dto.clientId);
     }
-    const project = await this.projectsRepository.update(workspaceId, id, dto);
+    // Fecha de fin real: se fija al completar el proyecto y se limpia si se reabre.
+    const patch: Record<string, any> = { ...dto };
+    if ((dto as any).status !== undefined) {
+      patch.actualEndDate = (dto as any).status === 'completed' ? new Date() : null;
+    }
+    const project = await this.projectsRepository.update(workspaceId, id, patch);
     if (!project) throw new NotFoundException(`Project ${id} not found`);
     return project;
   }
@@ -146,6 +151,9 @@ export class ProjectsService {
 
     const invoiceStats = {
       total: invoices.length,
+      agreed: invoices
+        .filter((i) => i.status !== 'cancelled' && i.status !== 'draft')
+        .reduce((sum, i) => sum + (i.total ?? 0), 0),
       paid: invoices
         .filter((i) => i.status === 'paid' || i.status === 'collected')
         .reduce((sum, i) => sum + (i.total ?? 0), 0),
@@ -155,6 +163,21 @@ export class ProjectsService {
       overdue: invoices
         .filter((i) => i.status === 'overdue')
         .reduce((sum, i) => sum + (i.total ?? 0), 0),
+      installmentsTotal: invoices.filter((i) => i.installmentCount).length,
+      installmentsPending: invoices.filter(
+        (i) =>
+          i.installmentCount &&
+          (i.status === 'pending' || i.status === 'sent' || i.status === 'overdue'),
+      ).length,
+      nextDueDate: invoices
+        .filter(
+          (i) =>
+            (i.status === 'pending' || i.status === 'sent' || i.status === 'overdue') &&
+            i.dueDate,
+        )
+        .map((i) => new Date(i.dueDate as any).getTime())
+        .sort((a, b) => a - b)
+        .map((t) => new Date(t).toISOString())[0] ?? null,
     };
 
     const billableEntries = timeEntries.filter((t) => t.billable);
