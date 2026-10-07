@@ -172,12 +172,17 @@ export default defineComponent({
           label: this.$t('sidebar.sections.finance'),
           items: [
             { text: this.$t('sidebar.items.finance'), to: '/app/finance', icon: 'payments' },
-            { text: this.$t('sidebar.items.reports', 'Reportes'), to: '/app/reports', icon: 'bar_chart' },
             {
               text: this.$t('sidebar.items.quotes', 'Presupuestos'),
               to: '/app/quotes',
               icon: 'request_quote',
             },
+          ],
+        },
+        {
+          label: this.$t('sidebar.sections.reports', 'REPORTES'),
+          items: [
+            { text: this.$t('sidebar.items.reports', 'Reportes'), to: '/app/reports', icon: 'bar_chart' },
           ],
         },
         {

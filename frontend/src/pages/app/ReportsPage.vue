@@ -223,7 +223,7 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.reports-page { padding: 32px; max-width: 1200px; margin: 0 auto; }
+.reports-page { padding: 32px; flex-grow: 1; min-width: 0; display: flex; flex-direction: column; }
 .reports-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
 .page-title { font-family: var(--font-mono); font-size: 20px; font-weight: 700; text-transform: uppercase; margin: 0; }
 .page-sub { color: var(--color-text-muted); font-size: 13px; margin: 4px 0 0; }

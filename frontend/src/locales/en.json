@@ -334,7 +334,8 @@
       "planning": "PLANNING",
       "finance": "FINANCE",
       "operations": "OPERATIONS",
-      "knowledge": "FILES"
+      "knowledge": "FILES",
+      "reports": "REPORTS"
     },
     "items": {
       "dashboard": "Dashboard",
@@ -348,7 +349,8 @@
       "docs": "Documentation",
       "agenda": "Agenda",
       "settings": "Settings",
-      "logout": "Logout"
+      "logout": "Logout",
+      "reports": "Reports"
     },
     "logout_confirm": {
       "title": "Confirm Logout",

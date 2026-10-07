@@ -108,6 +108,7 @@ export default defineComponent({
       { text: t('sidebar.items.projects'), to: '/app/projects', icon: 'assignment', section: t('sidebar.sections.work') },
       { text: t('sidebar.items.tasks'), to: '/app/tasks', icon: 'task_alt', section: t('sidebar.sections.work') },
       { text: t('sidebar.items.finance'), to: '/app/finance', icon: 'payments', section: t('sidebar.sections.finance') },
+      { text: t('sidebar.items.reports', 'Reportes'), to: '/app/reports', icon: 'bar_chart', section: t('sidebar.sections.reports', 'REPORTES') },
       { text: t('sidebar.items.timeTracking'), to: '/app/time-tracking', icon: 'timer', section: t('sidebar.sections.finance') },
       { text: t('sidebar.items.subscriptions'), to: '/app/subscriptions', icon: 'rebase_edit', section: t('sidebar.sections.products') },
       { text: t('sidebar.items.integrations', 'Integraciones'), to: '/app/integrations', icon: 'electrical_services', section: t('sidebar.sections.products') },

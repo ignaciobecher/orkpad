@@ -334,7 +334,8 @@
       "planning": "PLANIFICACIÓN",
       "finance": "FINANZAS",
       "operations": "OPERACIONES",
-      "knowledge": "ARCHIVOS"
+      "knowledge": "ARCHIVOS",
+      "reports": "REPORTES"
     },
     "items": {
       "dashboard": "Dashboard",
@@ -348,7 +349,8 @@
       "docs": "Documentación",
       "agenda": "Agenda",
       "settings": "Configuración",
-      "logout": "Cerrar sesión"
+      "logout": "Cerrar sesión",
+      "reports": "Reportes"
     },
     "logout_confirm": {
       "title": "Confirmar Cierre de Sesión",
