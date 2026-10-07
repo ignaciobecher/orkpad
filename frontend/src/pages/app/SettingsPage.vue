@@ -21,6 +21,47 @@
         </div>
       </w-card>
 
+      <!-- Apariencia / Marca blanca -->
+      <w-card>
+        <div class="settings-section">
+          <h3 class="section-title">{{ $t('settings.branding.title') }}</h3>
+          <p class="setting-description">{{ $t('settings.branding.description') }}</p>
+          <div class="form-grid">
+            <w-input :label="$t('settings.branding.agencyName')" v-model="brandForm.displayName" :placeholder="$t('settings.branding.agencyPlaceholder')" />
+            <div>
+              <label class="w-input-label">{{ $t('settings.branding.color') }}</label>
+              <input v-model="brandForm.primaryColor" type="color" class="brand-color-input" />
+            </div>
+          </div>
+          <div class="form-grid">
+            <div>
+              <label class="w-input-label">{{ $t('settings.branding.logo') }}</label>
+              <div class="brand-logo-row">
+                <img v-if="brandLogoPreview" :src="brandLogoPreview" alt="logo" class="brand-logo-preview" />
+                <button v-if="!brandLogoPreview" class="btn-secondary" :disabled="brandLoading" @click="triggerLogoPicker">
+                  {{ $t('settings.branding.upload') }}
+                </button>
+                <button v-else class="btn-secondary" :disabled="brandLoading" @click="removeBrandLogo">
+                  {{ $t('settings.branding.remove') }}
+                </button>
+                <input ref="logoPicker" type="file" accept="image/png,image/jpeg" hidden @change="onLogoPicked" />
+              </div>
+            </div>
+            <div>
+              <label class="w-input-label">{{ $t('settings.branding.theme') }}</label>
+              <select v-model="brandForm.defaultTheme" class="brand-select">
+                <option :value="null">—</option>
+                <option value="dark">{{ $t('settings.branding.themeDark') }}</option>
+                <option value="light">{{ $t('settings.branding.themeLight') }}</option>
+              </select>
+            </div>
+          </div>
+          <w-button variant="primary" class="mt-4" :loading="brandLoading" @click="saveBranding">
+            {{ $t('settings.saveChanges') }}
+          </w-button>
+        </div>
+      </w-card>
+
       <!-- Security / 2FA -->
       <w-card>
         <div class="settings-section">
@@ -296,6 +337,8 @@ import { authApi } from '@/api/auth/auth.api'
 import { showToast } from '@/composables/useToast'
 import { usePushNotifications } from '@/composables/usePushNotifications'
 import { usePaymentMethodsStore } from '@/stores/payment-methods.store'
+import { useBrandingStore } from '@/stores/branding.store'
+import { filesApi } from '@/api/files/files.api'
 import { useWebAuthn } from '@/composables/useWebAuthn'
 import type { WebAuthnCredentialInfo } from '@/api/auth/auth.types'
 import WButton from '@/components/ui/WButton.vue'
@@ -343,6 +386,10 @@ export default defineComponent({
     return {
       form: { name: '', phone: '' },
       profileLoading: false,
+      brandForm: { displayName: '', primaryColor: '#5B4EFF', defaultTheme: null as 'dark' | 'light' | null },
+      brandLogoFileId: null as string | null,
+      brandLogoPreview: null as string | null,
+      brandLoading: false,
       passwordForm: { current: '', next: '' },
       passwordLoading: false,
       passwordError: '',
@@ -385,6 +432,7 @@ export default defineComponent({
       await this.loadWebAuthnCredentials()
     }
     await this.paymentMethodsStore.fetchAll()
+    await this.loadBranding()
   },
   methods: {
     ...mapActions(useAuthStore, ['fetchMe', 'logout']),
@@ -411,6 +459,71 @@ export default defineComponent({
         this.passwordError = err.response?.data?.message ?? 'No se pudo cambiar la contraseña.'
       } finally {
         this.passwordLoading = false
+      }
+    },
+
+    async loadBranding() {
+      const store = useBrandingStore()
+      if (!store.workspace) await store.fetch()
+      const ws = store.workspace
+      if (!ws) return
+      this.brandForm.displayName = ws.displayName ?? ''
+      this.brandForm.primaryColor = ws.primaryColor ?? '#5B4EFF'
+      this.brandForm.defaultTheme = ws.defaultTheme ?? null
+      this.brandLogoFileId = ws.logoFileId ?? null
+      this.brandLogoPreview = store.logoUrl
+    },
+
+    triggerLogoPicker() {
+      ;(this.$refs.logoPicker as HTMLInputElement | undefined)?.click()
+    },
+
+    async onLogoPicked(e: Event) {
+      const input = e.target as HTMLInputElement
+      const file = input.files?.[0]
+      input.value = ''
+      if (!file) return
+      this.brandLoading = true
+      try {
+        const { data } = await filesApi.upload(file)
+        if (this.brandLogoFileId && this.brandLogoFileId !== data.id) {
+          await filesApi.remove(this.brandLogoFileId).catch(() => {})
+        }
+        this.brandLogoFileId = data.id
+        this.brandLogoPreview = `${this.filesBaseUrl()}/files/${data.id}`
+      } catch {
+        showToast(this.$t('settings.branding.saveError'), 'error')
+      } finally {
+        this.brandLoading = false
+      }
+    },
+
+    filesBaseUrl() {
+      return (import.meta.env.VITE_API_URL as string | undefined) || ''
+    },
+
+    async removeBrandLogo() {
+      if (this.brandLogoFileId) {
+        await filesApi.remove(this.brandLogoFileId).catch(() => {})
+      }
+      this.brandLogoFileId = null
+      this.brandLogoPreview = null
+    },
+
+    async saveBranding() {
+      this.brandLoading = true
+      try {
+        await useBrandingStore().save({
+          displayName: this.brandForm.displayName?.trim() || null,
+          logoFileId: this.brandLogoFileId,
+          primaryColor: this.brandForm.primaryColor || null,
+          defaultTheme: this.brandForm.defaultTheme,
+        })
+        showToast(this.$t('settings.branding.saved'), 'success')
+      } catch {
+        showToast(this.$t('settings.branding.saveError'), 'error')
+      } finally {
+        this.brandLoading = false
       }
     },
 
@@ -920,5 +1033,51 @@ export default defineComponent({
 
 .action-btn .material-symbols-outlined {
   font-size: 18px;
+}
+
+.w-input-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 6px;
+}
+
+.brand-color-input {
+  width: 100%;
+  height: 40px;
+  padding: 2px 4px;
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.brand-select {
+  width: 100%;
+  height: 40px;
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-base);
+  font-size: 14px;
+  padding: 0 12px;
+  box-sizing: border-box;
+}
+
+.brand-logo-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-logo-preview {
+  max-height: 48px;
+  max-width: 180px;
+  object-fit: contain;
+  border: 1px solid var(--color-border);
+  padding: 4px;
+  background: var(--color-bg-surface);
 }
 </style>

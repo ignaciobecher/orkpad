@@ -14,7 +14,6 @@
     <w-toast-container />
     <onboarding-modal />
     <setup-checklist />
-    <support-fab />
   </div>
 </template>
 
@@ -25,10 +24,9 @@ import AppTopbar from './AppTopbar.vue'
 import WToastContainer from '../ui/WToastContainer.vue'
 import OnboardingModal from '../onboarding/OnboardingModal.vue'
 import SetupChecklist from '../onboarding/SetupChecklist.vue'
-import SupportFab from '../support/SupportFab.vue'
 import { useAuthStore } from '@/stores/auth.store'
+import { useBrandingStore } from '@/stores/branding.store'
 import { useOnboardingStore } from '@/stores/onboarding.store'
-import { useMessagingStore } from '@/stores/messaging.store'
 import { useNotificationsStore } from '@/stores/notifications.store'
 
 export default defineComponent({
@@ -39,13 +37,11 @@ export default defineComponent({
     WToastContainer,
     OnboardingModal,
     SetupChecklist,
-    SupportFab,
   },
   setup() {
     return {
       authStore: useAuthStore(),
       onboardingStore: useOnboardingStore(),
-      messagingStore: useMessagingStore(),
       notificationsStore: useNotificationsStore(),
     }
   },
@@ -54,18 +50,14 @@ export default defineComponent({
       immediate: true,
       handler(user) {
         if (user) {
+          useBrandingStore().fetch()
           this.onboardingStore.checkAndShow(user._id)
           this.onboardingStore.maybeShowWelcome(this.authStore.justLoggedInFirstTime)
           this.authStore.justLoggedInFirstTime = false
-          this.messagingStore.fetchConversations()
-          this.messagingStore.connectSocket()
           this.notificationsStore.fetchUnreadCount()
         }
       },
     },
-  },
-  beforeUnmount() {
-    this.messagingStore.disconnectSocket()
   },
 })
 </script>

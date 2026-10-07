@@ -661,6 +661,21 @@
       "confirmPlaceholder": "ELIMINAR",
       "confirmWord": "ELIMINAR",
       "confirmBtn": "Confirmar eliminación"
+    },
+    "branding": {
+      "title": "APARIENCIA / MARCA",
+      "description": "Logo, nombre y color de tu agencia. Así lo ven tus clientes.",
+      "agencyName": "Nombre de la agencia",
+      "agencyPlaceholder": "Ej: CuyoCode",
+      "logo": "Logo (PNG o JPG)",
+      "upload": "Subir logo",
+      "remove": "Quitar",
+      "color": "Color principal",
+      "theme": "Tema inicial",
+      "themeDark": "Oscuro",
+      "themeLight": "Claro",
+      "saved": "Marca actualizada.",
+      "saveError": "No se pudo guardar la marca."
     }
   },
   "agenda": {
@@ -709,7 +724,7 @@
     }
   },
   "subscriptions": {
-    "title": "Recurrentes",
+    "title": "Recurrentes (ingresos y egresos)",
     "searchPlaceholder": "BUSCAR...",
     "new": "NUEVA",
     "noRecords": "No se encontraron registros.",
@@ -720,7 +735,7 @@
       "interval": "Intervalo",
       "status": "Estado",
       "plan": "Plan",
-      "nextBilling": "Próx. cobro"
+      "nextBilling": "Próx. cobro/pago"
     }
   },
   "timeTracking": {

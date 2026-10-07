@@ -18,6 +18,8 @@ services:
   backend:
     build: ./backend
     restart: unless-stopped
+    volumes:
+      - ./uploads:/app/uploads
     env_file:
       # Single self-host config file (see .env.example). Optional here so
       # `docker compose config` still works before the first setup — the

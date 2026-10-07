@@ -13,6 +13,7 @@
 <script lang="ts">
 import { defineComponent, computed } from 'vue'
 import { useUIStore } from '@/stores/ui.store'
+import { useBrandingStore } from '@/stores/branding.store'
 
 export default defineComponent({
   name: 'WLogo',
@@ -29,11 +30,13 @@ export default defineComponent({
   },
   setup(props) {
     const uiStore = useUIStore()
+    const brandingStore = useBrandingStore()
 
     const logoSrc = computed(() => {
+      if (brandingStore.logoUrl) return brandingStore.logoUrl
       if (props.version === 'white') return '/logo-white.png'
       if (props.version === 'black') return '/logo-black.png'
-      
+
       // Auto based on theme
       return uiStore.theme === 'dark' ? '/logo-white.png' : '/logo-black.png'
     })

@@ -1,16 +1,5 @@
 <template>
   <div class="admin-users-page">
-    <div class="tab-bar">
-      <button class="tab-bar__item" :class="{ active: activeTab === 'users' }" @click="activeTab = 'users'">
-        Usuarios
-      </button>
-      <button class="tab-bar__item" :class="{ active: activeTab === 'support' }" @click="activeTab = 'support'">
-        Soporte
-        <span v-if="supportStore.adminUnreadTotal > 0" class="tab-bar__badge">{{ supportStore.adminUnreadTotal }}</span>
-      </button>
-    </div>
-
-    <div v-show="activeTab === 'users'">
     <header class="page-header">
       <h1 class="page-title">Usuarios del Sistema</h1>
       <span class="user-count">{{ usersData.total }} usuarios</span>
@@ -79,7 +68,6 @@
         </tbody>
       </table>
     </div>
-    </div>
 
     <AnnouncementComposerModal
       v-if="announcementModalOpen"
@@ -87,9 +75,6 @@
       @close="closeAnnouncementModal"
     />
 
-    <div v-show="activeTab === 'support'">
-      <support-admin-inbox />
-    </div>
   </div>
 </template>
 
@@ -98,20 +83,16 @@ import { defineComponent, ref, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { usersApi } from '@/api/users/users.api'
 import { useAuthStore } from '@/stores/auth.store'
-import { useSupportStore } from '@/stores/support.store'
 import { isAdminUser } from '@/utils/admin'
-import SupportAdminInbox from '@/components/support/SupportAdminInbox.vue'
 import AnnouncementComposerModal from '@/components/notifications/AnnouncementComposerModal.vue'
 import type { User, PaginatedResponse } from '@/api/users/users.types'
 
 export default defineComponent({
   name: 'AdminUsersPage',
-  components: { SupportAdminInbox, AnnouncementComposerModal },
+  components: { AnnouncementComposerModal },
   setup() {
     const router = useRouter()
     const authStore = useAuthStore()
-    const supportStore = useSupportStore()
-    const activeTab = ref<'users' | 'support'>('users')
     const loading = ref(true)
     const usersData = ref<PaginatedResponse<User>>({ data: [], total: 0, page: 1, limit: 20 })
     const sendingId = ref<string | null>(null)
@@ -179,7 +160,6 @@ export default defineComponent({
         (user) => {
           if (user) {
             loadUsers()
-            supportStore.fetchAdminUnreadTotal()
           }
         },
         { immediate: true }
@@ -217,8 +197,6 @@ export default defineComponent({
       formatDate,
       formatDateTime,
       authStore,
-      supportStore,
-      activeTab,
       announcementModalOpen,
       openAnnouncementModal,
       closeAnnouncementModal,
@@ -233,46 +211,6 @@ export default defineComponent({
   max-width: 1200px;
 }
 
-.tab-bar {
-  display: flex;
-  gap: 4px;
-  margin-bottom: 24px;
-  border-bottom: 1px solid var(--color-border);
-}
-
-.tab-bar__item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 10px 16px;
-  background: none;
-  border: none;
-  border-bottom: 2px solid transparent;
-  color: var(--color-text-muted);
-  font-family: var(--font-body);
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-}
-
-.tab-bar__item.active {
-  color: var(--color-text-base);
-  border-bottom-color: var(--color-primary);
-}
-
-.tab-bar__badge {
-  min-width: 18px;
-  height: 18px;
-  padding: 0 4px;
-  border-radius: 50%;
-  background-color: var(--color-error);
-  color: #fff;
-  font-size: 10px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
 
 .page-header {
   display: flex;

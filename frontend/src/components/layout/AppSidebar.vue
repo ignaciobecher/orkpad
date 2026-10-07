@@ -34,9 +34,6 @@
             >
               <span class="material-symbols-outlined nav-icon">{{ item.icon }}</span>
               <span class="nav-label">{{ item.text }}</span>
-              <span v-if="item.to === '/app/messaging' && unreadMessages > 0" class="nav-badge">{{
-                unreadMessages > 99 ? '99+' : unreadMessages
-              }}</span>
             </router-link>
           </div>
         </div>
@@ -94,7 +91,6 @@ import { defineComponent, computed, ref } from 'vue'
 import { useUIStore } from '@/stores/ui.store'
 import { useAuthStore } from '@/stores/auth.store'
 import { useOnboardingStore } from '@/stores/onboarding.store'
-import { useMessagingStore } from '@/stores/messaging.store'
 import WAvatar from '@/components/ui/WAvatar.vue'
 import WConfirmModal from '@/components/ui/WConfirmModal.vue'
 import WLogo from '@/components/ui/WLogo.vue'
@@ -107,11 +103,9 @@ export default defineComponent({
     const uiStore = useUIStore()
     const authStore = useAuthStore()
     const onboardingStore = useOnboardingStore()
-    const messagingStore = useMessagingStore()
     const isLogoutModalOpen = ref(false)
 
     const user = computed(() => authStore.user || { name: '...', role: '...' })
-    const unreadMessages = computed(() => messagingStore.totalUnread)
 
     const openSections = ref<Set<string>>(new Set())
 
@@ -131,10 +125,8 @@ export default defineComponent({
       uiStore,
       authStore,
       onboardingStore,
-      messagingStore,
       user,
       isLogoutModalOpen,
-      unreadMessages,
       openSections,
       toggleSection,
       isSectionOpen,
@@ -166,11 +158,6 @@ export default defineComponent({
           label: this.$t('sidebar.sections.clients'),
           items: [
             { text: this.$t('sidebar.items.clients'), to: '/app/clients', icon: 'group' },
-            {
-              text: this.$t('sidebar.items.messaging', 'Mensajes'),
-              to: '/app/messaging',
-              icon: 'chat',
-            },
           ],
         },
         {
@@ -185,6 +172,7 @@ export default defineComponent({
           label: this.$t('sidebar.sections.finance'),
           items: [
             { text: this.$t('sidebar.items.finance'), to: '/app/finance', icon: 'payments' },
+            { text: this.$t('sidebar.items.reports', 'Reportes'), to: '/app/reports', icon: 'bar_chart' },
             {
               text: this.$t('sidebar.items.quotes', 'Presupuestos'),
               to: '/app/quotes',

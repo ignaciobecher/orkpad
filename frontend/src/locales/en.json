@@ -663,6 +663,21 @@
       "confirmPlaceholder": "DELETE",
       "confirmWord": "DELETE",
       "confirmBtn": "Confirm deletion"
+    },
+    "branding": {
+      "title": "APPEARANCE / BRANDING",
+      "description": "Logo, name and color of your agency, as your clients see it.",
+      "agencyName": "Agency name",
+      "agencyPlaceholder": "E.g. Acme",
+      "logo": "Logo (PNG or JPG)",
+      "upload": "Upload logo",
+      "remove": "Remove",
+      "color": "Primary color",
+      "theme": "Default theme",
+      "themeDark": "Dark",
+      "themeLight": "Light",
+      "saved": "Branding updated.",
+      "saveError": "Could not save branding."
     }
   },
   "agenda": {
@@ -711,7 +726,7 @@
     }
   },
   "subscriptions": {
-    "title": "Recurring",
+    "title": "Recurring (income & expenses)",
     "searchPlaceholder": "SEARCH...",
     "new": "NEW",
     "noRecords": "No records found.",
@@ -722,7 +737,7 @@
       "interval": "Interval",
       "status": "Status",
       "plan": "Plan",
-      "nextBilling": "Next charge"
+      "nextBilling": "Next charge/payment"
     }
   },
   "timeTracking": {

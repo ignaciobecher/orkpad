@@ -21,6 +21,12 @@ export const useUIStore = defineStore('ui', {
       document.documentElement.setAttribute('data-theme', this.theme)
       document.documentElement.style.colorScheme = this.theme
     },
+    setTheme(theme: 'dark' | 'light') {
+      this.theme = theme
+      localStorage.setItem('workos_theme', theme)
+      document.documentElement.setAttribute('data-theme', theme)
+      document.documentElement.style.colorScheme = theme
+    },
     initTheme() {
       document.documentElement.setAttribute('data-theme', this.theme)
       document.documentElement.style.colorScheme = this.theme

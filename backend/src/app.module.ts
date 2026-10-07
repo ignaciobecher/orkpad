@@ -25,8 +25,8 @@ import { QuotesModule } from './modules/quotes/quotes.module';
 import { GithubIntegrationModule } from './modules/github-integration/github-integration.module';
 import { NotesModule } from './modules/notes/notes.module';
 import { PaymentMethodsModule } from './modules/payment-methods/payment-methods.module';
-import { MessagingModule } from './modules/messaging/messaging.module';
-import { SupportModule } from './modules/support/support.module';
+import { StorageModule } from './modules/storage/storage.module';
+import { ReportsModule } from './modules/reports/reports.module';
 import { PlannerBlocksModule } from './modules/planner-blocks/planner-blocks.module';
 import { PlannerTasksModule } from './modules/planner-tasks/planner-tasks.module';
 import { PlannerTemplatesModule } from './modules/planner-templates/planner-templates.module';
@@ -55,6 +55,7 @@ import { OnboardingModule } from './modules/onboarding/onboarding.module';
         GITHUB_WEBHOOK_SECRET: Joi.string().allow('').optional(),
         RESEND_API_KEY: Joi.string().allow('').optional(),
         FROM_EMAIL: Joi.string().email().default('no-reply@orkpad.com'),
+        UPLOADS_DIR: Joi.string().default('./uploads'),
         API_URL: Joi.string().uri().default('http://localhost:3000'),
         VAPID_PUBLIC_KEY: Joi.string().allow('').optional(),
         VAPID_PRIVATE_KEY: Joi.string().allow('').optional(),
@@ -98,8 +99,8 @@ import { OnboardingModule } from './modules/onboarding/onboarding.module';
     GithubIntegrationModule,
     NotesModule,
     PaymentMethodsModule,
-    MessagingModule,
-    SupportModule,
+    StorageModule,
+    ReportsModule,
     PlannerBlocksModule,
     PlannerTasksModule,
     PlannerTemplatesModule,

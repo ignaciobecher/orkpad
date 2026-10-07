@@ -19,5 +19,5 @@ export const ONBOARDING_STEP_LABELS: Record<keyof OnboardingSteps, string> = {
   addedThreeTasks: '3 tareas agregadas',
   loggedFirstHours: 'Primeras horas registradas',
   createdFirstQuote: 'Primer presupuesto creado',
-  addedFirstRetainer: 'Primera cuota registrada',
+  addedFirstRetainer: 'Primer recurrente registrado (cuota o gasto)',
 }

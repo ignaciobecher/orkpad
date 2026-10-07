@@ -4,6 +4,10 @@ export interface Workspace {
   slug: string
   ownerId: string
   status: 'active' | 'suspended'
+  displayName?: string | null
+  logoFileId?: string | null
+  primaryColor?: string | null
+  defaultTheme?: 'dark' | 'light' | null
   createdAt: string
   updatedAt: string
 }
@@ -11,4 +15,8 @@ export interface Workspace {
 export interface UpdateWorkspaceDto {
   name?: string
   slug?: string
+  displayName?: string | null
+  logoFileId?: string | null
+  primaryColor?: string | null
+  defaultTheme?: 'dark' | 'light' | null
 }

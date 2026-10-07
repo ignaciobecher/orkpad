@@ -26,7 +26,6 @@ const NotificationsPage = () => import('@/pages/NotificationsPage.vue')
 const AdminUsersPage = () => import('@/pages/app/AdminUsersPage.vue')
 const QuotesPage = () => import('@/pages/app/QuotesPage.vue')
 const NotesPage = () => import('@/pages/app/NotesPage.vue')
-const MessagingPage = () => import('@/pages/app/MessagingPage.vue')
 const ConnectionsPage = () => import('@/pages/app/ConnectionsPage.vue')
 const GoalsPage = () => import('@/pages/app/GoalsPage.vue')
 
@@ -101,6 +100,7 @@ const router = createRouter({
         { path: 'projects/:id/github', name: 'project-github', component: () => import('@/pages/app/ProjectGithubPage.vue') },
         { path: 'tasks',          name: 'tasks',          component: TasksPage },
         { path: 'finance',        name: 'finance',        component: FinancePage },
+        { path: 'reports',        name: 'reports',        component: () => import('@/pages/app/ReportsPage.vue') },
         { path: 'subscriptions',  name: 'subscriptions',  component: SubscriptionsPage },
         { path: 'subscriptions/:id', name: 'subscription-detail', component: () => import('@/pages/app/SubscriptionDetailPage.vue') },
         { path: 'time-tracking',  name: 'time-tracking',  component: TimeTrackingPage },
@@ -112,7 +112,6 @@ const router = createRouter({
         { path: 'admin-users',    name: 'admin-users',    component: AdminUsersPage },
         { path: 'quotes',         name: 'quotes',         component: QuotesPage },
         { path: 'notes',          name: 'notes',          component: NotesPage },
-        { path: 'messaging',      name: 'messaging',      component: MessagingPage },
         { path: 'integrations',   name: 'integrations',   component: ConnectionsPage },
         { path: 'planner',        name: 'planner',        component: () => import('@/pages/app/PlannerPage.vue') },
         { path: '',               redirect: { name: 'dashboard' } }
