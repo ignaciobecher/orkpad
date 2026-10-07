@@ -149,6 +149,22 @@ export class ProjectsService {
       ).length,
     };
 
+    const isInstallmentsPlan =
+      (project as any)?.billingType === 'installments';
+    const isInstallmentInvoice = (i: any) =>
+      i.installmentNumber != null || i.installmentCount != null;
+    // Invoices generated from a billing plan always carry installment
+    // markers, but invoices created manually (or by older versions) may not.
+    // In that case fall back to every invoice of an installments project so
+    // the counters never show 0 while invoices exist.
+    let installmentInvoices = invoices.filter(isInstallmentInvoice);
+    if (isInstallmentsPlan && installmentInvoices.length === 0) {
+      installmentInvoices = invoices.filter(
+        (i) => i.status !== 'cancelled' && i.status !== 'draft',
+      );
+    }
+    const installmentPendingStatuses = ['pending', 'sent', 'overdue'];
+
     const invoiceStats = {
       total: invoices.length,
       agreed: invoices
@@ -163,11 +179,9 @@ export class ProjectsService {
       overdue: invoices
         .filter((i) => i.status === 'overdue')
         .reduce((sum, i) => sum + (i.total ?? 0), 0),
-      installmentsTotal: invoices.filter((i) => i.installmentCount).length,
-      installmentsPending: invoices.filter(
-        (i) =>
-          i.installmentCount &&
-          (i.status === 'pending' || i.status === 'sent' || i.status === 'overdue'),
+      installmentsTotal: installmentInvoices.length,
+      installmentsPending: installmentInvoices.filter((i) =>
+        installmentPendingStatuses.includes(i.status),
       ).length,
       nextDueDate: invoices
         .filter(
@@ -232,7 +246,14 @@ export class ProjectsService {
       workspaceId,
       projectId: id,
       isDeleted: false,
-      installmentCount: { $ne: null },
+      $or: [
+        { installmentCount: { $ne: null } },
+        { installmentNumber: { $ne: null } },
+        // Invoices created manually (or by older versions) carry no
+        // installment markers — treat any live invoice as already generated
+        // so running this twice never duplicates the billing plan.
+        { status: { $nin: ['cancelled', 'draft'] } },
+      ],
     } as any);
     if (alreadyGenerated > 0) {
       throw new ConflictException(

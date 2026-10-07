@@ -315,10 +315,10 @@
                 <span class="mono-label">{{ $t('projects.detail.billingPlan') }}</span>
                 <div class="billing-type">{{ billingLabel }}</div>
                 <div v-if="isInstallments" class="billing-progress-text">
-                  {{ $t('projects.detail.billedOfBudget', { billed: formatMoney(invoicedTotal, overview.project.currency), budget: formatMoney(overview.project.budget, overview.project.currency), pct: budgetProgress }) }}
+                  {{ $t('projects.detail.collectedOfAgreed', { collected: formatMoney(overview.invoiceStats.paid, overview.project.currency), agreed: formatMoney(overview.invoiceStats.agreed, overview.project.currency), pct: collectedPct }) }}
                 </div>
-                <div v-if="isInstallments && overview.project.budget > 0" class="billing-progress-track">
-                  <div class="billing-progress-fill" :style="{ width: Math.min(budgetProgress, 100) + '%' }"></div>
+                <div v-if="isInstallments && overview.invoiceStats.agreed > 0" class="billing-progress-track">
+                  <div class="billing-progress-fill" :style="{ width: Math.min(collectedPct, 100) + '%' }"></div>
                 </div>
               </div>
               <w-button
@@ -516,23 +516,18 @@ export default defineComponent({
       const count = (this.overview?.project as any)?.installmentsCount ?? 0
       return this.$t('projects.detail.billingInInstallments', { count })
     },
-    invoicedTotal(): number {
-      const s = this.overview?.invoiceStats
-      if (!s) return 0
-      return (s.paid ?? 0) + (s.pending ?? 0) + (s.overdue ?? 0)
-    },
     collectedPct(): number {
       const s = this.overview?.invoiceStats
       if (!s || !s.agreed || s.agreed <= 0) return 0
       return Math.round(((s.paid ?? 0) / s.agreed) * 100)
     },
-    budgetProgress(): number {
-      const budget = (this.overview?.project as any)?.budget ?? 0
-      if (!budget || budget <= 0) return 0
-      return Math.round((this.invoicedTotal / budget) * 100)
-    },
     hasInstallmentInvoices(): boolean {
-      return (this.overview?.invoices ?? []).some((i: any) => i.installmentCount)
+      const list = this.overview?.invoices ?? []
+      if (list.some((i: any) => i.installmentNumber != null || i.installmentCount)) return true
+      // Same fallback as the backend stats: invoices without installment
+      // markers still count when the project uses a billing plan.
+      const project = this.overview?.project as any
+      return project?.billingType === 'installments' && list.some((i: any) => i.status !== 'cancelled' && i.status !== 'draft')
     },
     canGenerateInvoices(): boolean {
       const project = this.overview?.project as any
@@ -812,7 +807,7 @@ export default defineComponent({
   font-size: 11px;
   color: var(--color-text-muted);
 }
-.project-dates .material-symbols-outlined { font-size: 14px; }
+.project-dates .material-symbols-outlined { font-size: 14px; font-family: 'Material Symbols Outlined'; }
 
 .header-right { flex-shrink: 0; }
 

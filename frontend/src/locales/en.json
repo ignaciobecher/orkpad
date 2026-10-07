@@ -446,6 +446,7 @@
       "billingSingle": "Full payment",
       "billingInInstallments": "{count} installments",
       "billedOfBudget": "{billed} invoiced of {budget} ({pct}%)",
+      "collectedOfAgreed": "{collected} collected of {agreed} ({pct}%)",
       "generateInvoices": "Generate {count} invoices",
       "generateConfirm": "Generate the installment invoices? You can edit or delete them afterwards.",
       "installment": "Installment",

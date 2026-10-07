@@ -468,6 +468,7 @@
       "billingSingle": "Pago total",
       "billingInInstallments": "En {count} cuotas",
       "billedOfBudget": "{billed} facturado de {budget} ({pct}%)",
+      "collectedOfAgreed": "{collected} cobrado de {agreed} ({pct}%)",
       "generateInvoices": "Generar {count} facturas",
       "generateConfirm": "¿Generar las facturas de las cuotas? Podrás editarlas o eliminarlas después.",
       "installment": "Cuota",
