@@ -212,7 +212,9 @@
 
                 <!-- TAB: Freelancer -->
                 <div v-show="activeTab === 'freelancer'" class="form-grid">
-                  <div class="form-section-title full-width">Tus datos (aparecen en el PDF)</div>
+                  <div class="form-section-title full-width">Tus datos (aparecen en el PDF)
+                    <button class="link-btn" type="button" @click="fillFromBranding">Usar datos de mi agencia</button>
+                  </div>
                   <div class="form-field">
                     <label class="field-label">Nombre / Empresa</label>
                     <input v-model="form.freelancerName" class="field-input" placeholder="Tu nombre o empresa" />
@@ -224,6 +226,10 @@
                   <div class="form-field">
                     <label class="field-label">Teléfono</label>
                     <input v-model="form.freelancerPhone" class="field-input" placeholder="0000-0000" />
+                  </div>
+                  <div class="form-field">
+                    <label class="field-label">CUIT/CUIL</label>
+                    <input v-model="form.freelancerTaxId" class="field-input" placeholder="20-12345678-9" />
                   </div>
                   <div class="form-field">
                     <label class="field-label">Sitio web</label>
@@ -397,8 +403,10 @@ const emptyForm = () => ({
   freelancerName: '',
   freelancerEmail: '',
   freelancerPhone: '',
+  freelancerTaxId: '',
   freelancerAddress: '',
   freelancerWebsite: '',
+  agencyLogoFileId: '',
   sections: [] as any[],
   items: [] as any[],
   taxRate: 0,
@@ -520,6 +528,28 @@ export default defineComponent({
       this.itemsMode = 'flat'
       this.showModal = true
       await this.loadRemoteOptions()
+      await this.fillFromBranding(true)
+    },
+    async fillFromBranding(onlyEmpty = false) {
+      const { useBrandingStore } = await import('@/stores/branding.store')
+      const store = useBrandingStore()
+      if (!store.workspace) await store.fetch().catch(() => {})
+      const ws: any = store.workspace
+      if (!ws) return
+      const map: Record<string, string> = {
+        freelancerName: ws.displayName || ws.name || '',
+        freelancerEmail: ws.agencyEmail || '',
+        freelancerPhone: ws.agencyPhone || '',
+        freelancerTaxId: ws.taxId || '',
+        freelancerAddress: ws.agencyAddress || '',
+        freelancerWebsite: ws.agencyWebsite || '',
+      }
+      for (const [k, v] of Object.entries(map)) {
+        if (v && (!onlyEmpty || !(this.form as any)[k])) (this.form as any)[k] = v
+      }
+      if (ws.logoFileId && (!onlyEmpty || !(this.form as any).agencyLogoFileId)) {
+        (this.form as any).agencyLogoFileId = ws.logoFileId
+      }
     },
     async openEditQuote(item: any) {
       this.form = {
@@ -538,8 +568,10 @@ export default defineComponent({
         freelancerName: item.freelancerName || '',
         freelancerEmail: item.freelancerEmail || '',
         freelancerPhone: item.freelancerPhone || '',
+        freelancerTaxId: item.freelancerTaxId || '',
         freelancerAddress: item.freelancerAddress || '',
         freelancerWebsite: item.freelancerWebsite || '',
+        agencyLogoFileId: item.agencyLogoFileId || '',
         sections: JSON.parse(JSON.stringify(item.sections || [])),
         items: JSON.parse(JSON.stringify(item.items || [])),
         taxRate: item.taxRate || 0,
@@ -721,7 +753,9 @@ export default defineComponent({
 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 .form-field { display: flex; flex-direction: column; gap: 6px; }
 .form-field.full-width { grid-column: 1 / -1; }
-.form-section-title { font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--color-text-muted); padding-bottom: 8px; border-bottom: 1px solid var(--color-border-subtle); }
+.form-section-title { font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--color-text-muted); padding-bottom: 8px; border-bottom: 1px solid var(--color-border-subtle); display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.link-btn { background: none; border: none; color: var(--color-primary); font-size: 10px; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 1px; cursor: pointer; padding: 0; }
+.link-btn:hover { text-decoration: underline; }
 .field-label { font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--color-text-muted); }
 .field-input { background: var(--color-bg-surface-low); border: 1px solid var(--color-border); padding: 8px 12px; font-family: var(--font-mono); font-size: 12px; color: var(--color-text-base); outline: none; width: 100%; box-sizing: border-box; }
 .field-input:focus { border-color: var(--color-border-focus); }

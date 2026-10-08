@@ -29,5 +29,3 @@ export class AiSettings extends BaseSchema {
 }
 
 export const AiSettingsSchema = SchemaFactory.createForClass(AiSettings);
-
-AiSettingsSchema.index({ workspaceId: 1 }, { unique: true });

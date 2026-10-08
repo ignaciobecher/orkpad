@@ -10,6 +10,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { ClientsService } from '../clients/clients.service';
 import { InvoicesService } from '../invoices/invoices.service';
+import { AiIndexService } from '../ai/ai-index.service';
 import { normalizeCalendarDate, todayNoonUTC } from '../../common/utils/dates';
 import { ProjectsRepository } from './projects.repository';
 import { CreateProjectDto } from './dto/create-project.dto';
@@ -31,6 +32,7 @@ export class ProjectsService {
     private readonly clientsService: ClientsService,
     @Inject(forwardRef(() => InvoicesService))
     private readonly invoicesService: InvoicesService,
+    private readonly aiIndex: AiIndexService,
     @InjectModel(Project.name)
     private readonly projectModel: Model<ProjectDocument>,
     @InjectModel(Task.name) private readonly taskModel: Model<TaskDocument>,
@@ -74,7 +76,9 @@ export class ProjectsService {
         if (normalized) patch[key] = normalized;
       }
     }
-    return this.projectsRepository.create(workspaceId, patch);
+    const project = await this.projectsRepository.create(workspaceId, patch);
+    this.aiIndex.notifyChanged(workspaceId, 'project', (project._id as any).toString());
+    return project;
   }
 
   async update(workspaceId: string, id: string, dto: UpdateProjectDto) {
@@ -95,12 +99,14 @@ export class ProjectsService {
     }
     const project = await this.projectsRepository.update(workspaceId, id, patch);
     if (!project) throw new NotFoundException(`Project ${id} not found`);
+    this.aiIndex.notifyChanged(workspaceId, 'project', id);
     return project;
   }
 
   async remove(workspaceId: string, id: string) {
     const project = await this.projectsRepository.softDelete(workspaceId, id);
     if (!project) throw new NotFoundException(`Project ${id} not found`);
+    this.aiIndex.notifyChanged(workspaceId, 'project', id, true);
     return project;
   }
 

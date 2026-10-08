@@ -59,6 +59,18 @@
           <w-button variant="primary" class="mt-4" :loading="brandLoading" @click="saveBranding">
             {{ $t('settings.saveChanges') }}
           </w-button>
+          <p class="setting-description" style="margin-top:16px">{{ $t('settings.branding.agencySection') }}</p>
+          <div class="form-grid">
+            <w-input :label="$t('settings.branding.agencyEmail')" v-model="brandForm.agencyEmail" :placeholder="$t('settings.branding.agencyPlaceholder.email')" />
+            <w-input :label="$t('settings.branding.agencyPhone')" v-model="brandForm.agencyPhone" :placeholder="$t('settings.branding.agencyPlaceholder.phone')" />
+          </div>
+          <div class="form-grid">
+            <w-input :label="$t('settings.branding.agencyAddress')" v-model="brandForm.agencyAddress" :placeholder="$t('settings.branding.agencyPlaceholder.address')" />
+            <w-input :label="$t('settings.branding.agencyWebsite')" v-model="brandForm.agencyWebsite" :placeholder="$t('settings.branding.agencyPlaceholder.website')" />
+          </div>
+          <div class="form-grid">
+            <w-input :label="$t('settings.branding.taxId')" v-model="brandForm.taxId" :placeholder="$t('settings.branding.agencyPlaceholder.taxId')" />
+          </div>
         </div>
       </w-card>
 
@@ -125,6 +137,12 @@
             <button class="btn-secondary" :disabled="aiLoading || aiIndexing" @click="reindexAi">
               {{ aiIndexing ? $t('settings.ai.indexing') : $t('settings.ai.reindex') }}
             </button>
+            <div v-if="aiIndexing" class="ai-progress">
+              <div class="ai-progress-track">
+                <div class="ai-progress-fill" :style="{ width: aiIndexProgress + '%' }"></div>
+              </div>
+              <span class="ai-progress-label">{{ aiIndexLabel || $t('settings.ai.indexing') }}</span>
+            </div>
             <span v-if="aiTestResult" class="ai-test-result">{{ aiTestResult }}</span>
           </div>
         </div>
@@ -455,7 +473,7 @@ export default defineComponent({
     return {
       form: { name: '', phone: '' },
       profileLoading: false,
-      brandForm: { displayName: '', primaryColor: '#5B4EFF', defaultTheme: null as 'dark' | 'light' | null },
+      brandForm: { displayName: '', primaryColor: '#5B4EFF', defaultTheme: null as 'dark' | 'light' | null, agencyEmail: '', agencyPhone: '', agencyAddress: '', agencyWebsite: '', taxId: '' },
       brandLogoFileId: null as string | null,
       brandLogoPreview: null as string | null,
       brandLoading: false,
@@ -464,6 +482,8 @@ export default defineComponent({
       aiLoading: false,
       aiTesting: false,
       aiIndexing: false,
+      aiIndexProgress: 0,
+      aiIndexLabel: '',
       aiTestResult: '',
       aiIndexStats: null as { chunks: number } | null,
       passwordForm: { current: '', next: '' },
@@ -547,6 +567,11 @@ export default defineComponent({
       this.brandForm.displayName = ws.displayName ?? ''
       this.brandForm.primaryColor = ws.primaryColor ?? '#5B4EFF'
       this.brandForm.defaultTheme = ws.defaultTheme ?? null
+      this.brandForm.agencyEmail = (ws as any).agencyEmail ?? ''
+      this.brandForm.agencyPhone = (ws as any).agencyPhone ?? ''
+      this.brandForm.agencyAddress = (ws as any).agencyAddress ?? ''
+      this.brandForm.agencyWebsite = (ws as any).agencyWebsite ?? ''
+      this.brandForm.taxId = (ws as any).taxId ?? ''
       this.brandLogoFileId = ws.logoFileId ?? null
       this.brandLogoPreview = store.logoUrl
     },
@@ -662,14 +687,41 @@ export default defineComponent({
 
     async reindexAi() {
       this.aiIndexing = true
+      this.aiIndexProgress = 0
+      this.aiIndexLabel = ''
       try {
-        const { data } = await aiApi.reindex()
-        showToast(`Indexados ${data.documents} docs (${data.chunks} partes)`, 'success')
-        await this.loadAi()
+        const { data: job } = await aiApi.reindex()
+        await this.pollReindex(job.id)
       } catch (err: any) {
         showToast(err.response?.data?.message ?? 'Falló la indexación', 'error')
+        this.aiIndexing = false
+      }
+    },
+
+    async pollReindex(jobId: string) {
+      let status: string = 'running'
+      try {
+        while (status === 'running') {
+          await new Promise((r) => setTimeout(r, 1500))
+          const { data: job } = await aiApi.reindexStatus(jobId)
+          status = job.status
+          if (job.total > 0) {
+            this.aiIndexProgress = Math.min(100, Math.round((job.done / job.total) * 100))
+            this.aiIndexLabel = `${job.done}/${job.total} partes`
+          }
+          if (status === 'done') {
+            showToast(`Indexados ${job.documents} documentos (${job.done} partes)`, 'success')
+          } else if (status === 'failed') {
+            showToast(job.error ?? 'Falló la indexación', 'error')
+          }
+        }
+      } catch {
+        showToast('Se perdió el progreso, reintentá', 'error')
       } finally {
         this.aiIndexing = false
+        this.aiIndexProgress = 0
+        this.aiIndexLabel = ''
+        await this.loadAi()
       }
     },
 
@@ -681,7 +733,12 @@ export default defineComponent({
           logoFileId: this.brandLogoFileId,
           primaryColor: this.brandForm.primaryColor || null,
           defaultTheme: this.brandForm.defaultTheme,
-        })
+          agencyEmail: this.brandForm.agencyEmail?.trim() || null,
+          agencyPhone: this.brandForm.agencyPhone?.trim() || null,
+          agencyAddress: this.brandForm.agencyAddress?.trim() || null,
+          agencyWebsite: this.brandForm.agencyWebsite?.trim() || null,
+          taxId: this.brandForm.taxId?.trim() || null,
+        } as any)
         showToast(this.$t('settings.branding.saved'), 'success')
       } catch {
         showToast(this.$t('settings.branding.saveError'), 'error')
@@ -1282,5 +1339,61 @@ export default defineComponent({
 .ai-test-result {
   font-size: 12px;
   color: var(--color-text-muted);
+}
+
+.ai-progress {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  margin-top: 4px;
+}
+
+.ai-progress-track {
+  flex: 1;
+  height: 8px;
+  background: var(--color-bg-surface-high);
+  border: 1px solid var(--color-border);
+}
+
+.ai-progress-fill {
+  height: 100%;
+  background: var(--color-primary);
+  transition: width 0.4s;
+}
+
+.ai-progress-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 16px;
+  background: var(--color-bg-surface-low);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-base);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  border-color: var(--color-border-focus);
+  background: var(--color-bg-surface-high);
+}
+
+.btn-secondary:disabled {
+  opacity: 0.55;
+  cursor: default;
 }
 </style>

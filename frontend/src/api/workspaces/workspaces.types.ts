@@ -8,6 +8,11 @@ export interface Workspace {
   logoFileId?: string | null
   primaryColor?: string | null
   defaultTheme?: 'dark' | 'light' | null
+  agencyEmail?: string | null
+  agencyPhone?: string | null
+  agencyAddress?: string | null
+  agencyWebsite?: string | null
+  taxId?: string | null
   createdAt: string
   updatedAt: string
 }
@@ -19,4 +24,9 @@ export interface UpdateWorkspaceDto {
   logoFileId?: string | null
   primaryColor?: string | null
   defaultTheme?: 'dark' | 'light' | null
+  agencyEmail?: string | null
+  agencyPhone?: string | null
+  agencyAddress?: string | null
+  agencyWebsite?: string | null
+  taxId?: string | null
 }

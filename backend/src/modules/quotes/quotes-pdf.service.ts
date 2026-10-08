@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const PDFDocument = require('pdfkit');
 import { QuoteDocument } from './quotes.schema';
+import { StorageService } from '../storage/storage.service';
 
 const MARGIN = 40;
 const PAGE_W = 595;
@@ -11,7 +12,10 @@ const FOOTER_Y = 808;
 
 @Injectable()
 export class QuotesPdfService {
+  constructor(private readonly storageService: StorageService) {}
+
   async generate(quote: QuoteDocument): Promise<Buffer> {
+    const brand = await this.loadBrand(quote);
     return new Promise<Buffer>((resolve, reject) => {
       // autoFirstPage:false so we control pagination completely
       const doc = new PDFDocument({
@@ -26,7 +30,7 @@ export class QuotesPdfService {
       doc.on('error', reject);
 
       doc.addPage();
-      this.buildPdf(doc, quote);
+      this.buildPdf(doc, quote, brand);
       doc.end();
     });
   }
@@ -92,7 +96,22 @@ export class QuotesPdfService {
 
   // ─── main builder ───────────────────────────────────────────────────────────
 
-  private buildPdf(doc: any, quote: QuoteDocument) {
+  private async loadBrand(quote: QuoteDocument): Promise<{ name: string; website?: string; logo?: Buffer }> {
+    const name = (quote as any).freelancerName || 'Orkpad';
+    const website = (quote as any).freelancerWebsite as string | undefined;
+    const logoId = (quote as any).agencyLogoFileId as string | undefined;
+    if (!logoId) return { name, website };
+    try {
+      const { stream } = await this.storageService.read((quote as any).workspaceId, logoId);
+      const chunks: Buffer[] = [];
+      for await (const c of stream as any) chunks.push(c as Buffer);
+      return { name, website, logo: Buffer.concat(chunks) };
+    } catch {
+      return { name, website };
+    }
+  }
+
+  private buildPdf(doc: any, quote: QuoteDocument, brand?: { name: string; website?: string; logo?: Buffer }) {
     const C = quote.currency || 'USD';
     const fmt = (n: number) => this.fmt(n, C);
     const BLACK = '#111111';
@@ -122,14 +141,24 @@ export class QuotesPdfService {
       leftBottom += 14;
     }
 
-    // Right side (freelancer)
-    const freelancerLines = [
+    // Right side (freelancer / agency)
+    if (brand?.logo) {
+      try {
+        doc.image(brand.logo, rightColX + rightColW - 56, curY, { width: 56 });
+      } catch {
+        // logo inválido: se sigue sin imagen
+      }
+    }
+    const freelancerLines: string[] = [
       quote.freelancerName,
       quote.freelancerEmail,
       quote.freelancerPhone,
       quote.freelancerAddress,
       quote.freelancerWebsite,
-    ].filter(Boolean);
+      (quote as any).freelancerTaxId
+        ? `CUIT/CUIL: ${(quote as any).freelancerTaxId}`
+        : '',
+    ].filter((l): l is string => Boolean(l));
 
     let rightBottom = curY;
     freelancerLines.forEach((line, i) => {
@@ -415,13 +444,13 @@ export class QuotesPdfService {
     const range = doc.bufferedPageRange();
     for (let i = 0; i < range.count; i++) {
       doc.switchToPage(range.start + i);
-      this.drawFooter(doc, i + 1, range.count);
+      this.drawFooter(doc, i + 1, range.count, brand);
     }
   }
 
   // ─── footer ─────────────────────────────────────────────────────────────────
 
-  private drawFooter(doc: any, page: number, total: number) {
+  private drawFooter(doc: any, page: number, total: number, brand?: { name: string; website?: string }) {
     const GREY = '#aaaaaa';
     const ACCENT = '#2563EB';
 
@@ -440,13 +469,13 @@ export class QuotesPdfService {
     doc.circle(lx, ly, 1.8).fill(ACCENT);
 
     doc.fontSize(8).font('Helvetica-Bold').fillColor(ACCENT);
-    this.txt(doc, 'ORKPAD', MARGIN + r * 2 + 5, FOOTER_Y + 3, { width: 60 });
+    this.txt(doc, (brand?.name ?? 'ORKPAD').toUpperCase().slice(0, 28), MARGIN + r * 2 + 5, FOOTER_Y + 3, { width: 120 });
 
     doc.fontSize(7).font('Helvetica').fillColor(GREY);
     this.txt(
       doc,
-      '· orkpad.com · La app del freelancer',
-      MARGIN + r * 2 + 62,
+      `· ${(brand?.website ?? 'orkpad.com').replace(/^https?:\/\//, '')}`,
+      MARGIN + r * 2 + 128,
       FOOTER_Y + 4,
       { width: 220 },
     );

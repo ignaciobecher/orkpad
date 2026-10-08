@@ -56,6 +56,11 @@ export const useBrandingStore = defineStore('branding', {
       logoFileId?: string | null
       primaryColor?: string | null
       defaultTheme?: 'dark' | 'light' | null
+      agencyEmail?: string | null
+      agencyPhone?: string | null
+      agencyAddress?: string | null
+      agencyWebsite?: string | null
+      taxId?: string | null
     }) {
       const { data } = await workspacesApi.updateMe(dto)
       this.workspace = data

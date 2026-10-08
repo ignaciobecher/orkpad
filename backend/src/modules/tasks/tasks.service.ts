@@ -7,6 +7,7 @@ import { UsersService } from '../users/users.service';
 import { ProjectsService } from '../projects/projects.service';
 import { ClientsService } from '../clients/clients.service';
 import { MailService } from '../mail/mail.service';
+import { AiIndexService } from '../ai/ai-index.service';
 import { TaskColumnsService } from '../task-columns/task-columns.service';
 import { normalizeCalendarDate } from '../../common/utils/dates';
 import { TasksRepository } from './tasks.repository';
@@ -25,6 +26,7 @@ export class TasksService {
     private readonly taskColumnsService: TaskColumnsService,
     private readonly usersService: UsersService,
     private readonly mailService: MailService,
+    private readonly aiIndex: AiIndexService,
   ) {}
 
   findAll(workspaceId: string, query: QueryTaskDto) {
@@ -65,7 +67,9 @@ export class TasksService {
 
   async create(workspaceId: string, dto: CreateTaskDto) {
     const payload = await this.buildValidatedTaskPayload(workspaceId, dto);
-    return this.tasksRepository.create(workspaceId, payload);
+    const task = await this.tasksRepository.create(workspaceId, payload);
+    this.aiIndex.notifyChanged(workspaceId, 'task', (task._id as any).toString());
+    return task;
   }
 
   async update(workspaceId: string, id: string, dto: UpdateTaskDto) {
@@ -77,12 +81,14 @@ export class TasksService {
     );
     const task = await this.tasksRepository.update(workspaceId, id, payload);
     if (!task) throw new NotFoundException(`Task ${id} not found`);
+    this.aiIndex.notifyChanged(workspaceId, 'task', id);
     return task;
   }
 
   async remove(workspaceId: string, id: string) {
     const task = await this.tasksRepository.softDelete(workspaceId, id);
     if (!task) throw new NotFoundException(`Task ${id} not found`);
+    this.aiIndex.notifyChanged(workspaceId, 'task', id, true);
     return task;
   }
 
@@ -110,6 +116,7 @@ export class TasksService {
       order: dto.order ?? 0,
     });
     if (!task) throw new NotFoundException(`Task ${id} not found`);
+    this.aiIndex.notifyChanged(workspaceId, 'task', id);
     return task;
   }
 
@@ -185,6 +192,7 @@ export class TasksService {
       emailSent = true;
     }
 
+    this.aiIndex.notifyChanged(workspaceId, 'task', id);
     return {
       task: updatedTask,
       project: project

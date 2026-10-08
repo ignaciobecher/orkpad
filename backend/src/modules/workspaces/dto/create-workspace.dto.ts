@@ -47,4 +47,34 @@ export class CreateWorkspaceDto {
   @IsIn(['dark', 'light'])
   @IsOptional()
   defaultTheme?: 'dark' | 'light';
+
+  @ApiPropertyOptional({ example: 'contacto@miagencia.com' })
+  @IsString()
+  @IsOptional()
+  @MaxLength(120)
+  agencyEmail?: string;
+
+  @ApiPropertyOptional({ example: '+54 9 261 123-4567' })
+  @IsString()
+  @IsOptional()
+  @MaxLength(40)
+  agencyPhone?: string;
+
+  @ApiPropertyOptional({ example: 'Mendoza, Argentina' })
+  @IsString()
+  @IsOptional()
+  @MaxLength(200)
+  agencyAddress?: string;
+
+  @ApiPropertyOptional({ example: 'www.miagencia.com' })
+  @IsString()
+  @IsOptional()
+  @MaxLength(120)
+  agencyWebsite?: string;
+
+  @ApiPropertyOptional({ example: '20-12345678-9' })
+  @IsString()
+  @IsOptional()
+  @MaxLength(40)
+  taxId?: string;
 }

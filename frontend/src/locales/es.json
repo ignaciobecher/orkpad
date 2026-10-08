@@ -670,7 +670,13 @@
       "title": "APARIENCIA / MARCA",
       "description": "Logo, nombre y color de tu agencia. Así lo ven tus clientes.",
       "agencyName": "Nombre de la agencia",
-      "agencyPlaceholder": "Ej: CuyoCode",
+      "agencyPlaceholder": {
+        "email": "contacto@miagencia.com",
+        "phone": "+54 9 261 123-4567",
+        "address": "Mendoza, Argentina",
+        "website": "www.miagencia.com",
+        "taxId": "20-12345678-9"
+      },
       "logo": "Logo (PNG o JPG)",
       "upload": "Subir logo",
       "remove": "Quitar",
@@ -679,7 +685,13 @@
       "themeDark": "Oscuro",
       "themeLight": "Claro",
       "saved": "Marca actualizada.",
-      "saveError": "No se pudo guardar la marca."
+      "saveError": "No se pudo guardar la marca.",
+      "agencyEmail": "Email de la agencia",
+      "agencyPhone": "Teléfono",
+      "agencyAddress": "Dirección",
+      "agencyWebsite": "Sitio web",
+      "taxId": "CUIT/CUIL",
+      "agencySection": "Datos para presupuestos (se reutilizan al crear)"
     },
     "ai": {
       "title": "ASISTENTE IA",

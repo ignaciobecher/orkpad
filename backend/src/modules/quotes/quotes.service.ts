@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { ClientsService } from '../clients/clients.service';
 import { ProjectsService } from '../projects/projects.service';
+import { WorkspacesService } from '../workspaces/workspaces.service';
 import { normalizeCalendarDate } from '../../common/utils/dates';
 import { InvoicesService } from '../invoices/invoices.service';
 import { QuotesRepository } from './quotes.repository';
@@ -21,6 +22,7 @@ export class QuotesService {
     private readonly clientsService: ClientsService,
     private readonly projectsService: ProjectsService,
     private readonly invoicesService: InvoicesService,
+    private readonly workspacesService: WorkspacesService,
   ) {}
 
   findAll(workspaceId: string, query: QueryQuoteDto) {
@@ -49,6 +51,24 @@ export class QuotesService {
     await this.validateRelations(workspaceId, dto.clientId, dto.projectId);
     const computed = this.computeTotals(dto);
     const patch: Record<string, any> = { ...dto, ...computed };
+    // Snapshot de datos de la agencia: lo que falte se completa con la
+    // marca configurada para que el presupuesto salga con membrete.
+    const ws = await this.workspacesService.findById(workspaceId).catch(() => null);
+    const brand = ws as any;
+    if (brand) {
+      const fill: Record<string, any> = {
+        freelancerName: brand.displayName ?? brand.name,
+        freelancerEmail: brand.agencyEmail,
+        freelancerPhone: brand.agencyPhone,
+        freelancerAddress: brand.agencyAddress,
+        freelancerWebsite: brand.agencyWebsite,
+        freelancerTaxId: brand.taxId,
+        agencyLogoFileId: brand.logoFileId,
+      };
+      for (const [k, v] of Object.entries(fill)) {
+        if ((patch[k] === undefined || patch[k] === '') && v) patch[k] = v;
+      }
+    }
     for (const key of ['issueDate', 'expiresAt'] as const) {
       if ((dto as any)[key] !== undefined) {
         const normalized = normalizeCalendarDate((dto as any)[key]);

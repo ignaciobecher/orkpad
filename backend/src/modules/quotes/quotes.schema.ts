@@ -68,6 +68,12 @@ export class Quote extends BaseSchema {
   @Prop({ trim: true })
   freelancerWebsite: string;
 
+  @Prop({ trim: true })
+  freelancerTaxId: string;
+
+  @Prop({ type: String, default: null })
+  agencyLogoFileId: string | null;
+
   @Prop({
     type: [
       {

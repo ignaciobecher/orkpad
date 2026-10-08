@@ -78,7 +78,13 @@ export class AiService {
   }
 
   async reindex(workspaceId: string) {
-    return this.index.reindex(workspaceId);
+    return this.index.startReindex(workspaceId);
+  }
+
+  reindexStatus(workspaceId: string, jobId: string) {
+    const job = this.index.getJob(workspaceId, jobId);
+    if (!job) throw new NotFoundException('Trabajo no encontrado');
+    return job;
   }
 
   async chat(workspaceId: string, userId: string, dto: ChatDto, res: Response) {

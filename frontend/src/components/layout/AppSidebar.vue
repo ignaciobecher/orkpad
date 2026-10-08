@@ -4,6 +4,7 @@
     <div class="sidebar-header">
       <div class="brand">
         <w-logo :height="28" />
+        <span v-if="agencyName" class="brand-agency">{{ agencyName }}</span>
       </div>
       <button class="mobile-close-btn" @click="uiStore.closeSidebar">
         <span class="material-symbols-outlined">close</span>
@@ -91,6 +92,7 @@ import { defineComponent, computed, ref } from 'vue'
 import { useUIStore } from '@/stores/ui.store'
 import { useAuthStore } from '@/stores/auth.store'
 import { useOnboardingStore } from '@/stores/onboarding.store'
+import { useBrandingStore } from '@/stores/branding.store'
 import WAvatar from '@/components/ui/WAvatar.vue'
 import WConfirmModal from '@/components/ui/WConfirmModal.vue'
 import WLogo from '@/components/ui/WLogo.vue'
@@ -106,6 +108,8 @@ export default defineComponent({
     const isLogoutModalOpen = ref(false)
 
     const user = computed(() => authStore.user || { name: '...', role: '...' })
+    const brandingStore = useBrandingStore()
+    const agencyName = computed(() => brandingStore.workspace?.displayName || '')
 
     const openSections = ref<Set<string>>(new Set())
 
@@ -126,6 +130,7 @@ export default defineComponent({
       authStore,
       onboardingStore,
       user,
+      agencyName,
       isLogoutModalOpen,
       openSections,
       toggleSection,
@@ -321,6 +326,19 @@ export default defineComponent({
   font-weight: 600;
   color: var(--color-text-base);
   letter-spacing: -0.05em;
+}
+
+.brand-agency {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-base);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 140px;
 }
 
 .brand-square {

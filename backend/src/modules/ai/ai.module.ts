@@ -2,8 +2,8 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AiController } from './ai.controller';
 import { AiService } from './ai.service';
-import { AiContextService } from './ai-context.service';
 import { AiIndexService } from './ai-index.service';
+import { AiContextService } from './ai-context.service';
 import { OllamaService } from './ollama.service';
 import { AiConversation, AiConversationSchema } from './ai-conversation.schema';
 import { AiMessage, AiMessageSchema } from './ai-message.schema';
@@ -33,6 +33,6 @@ import { Document, DocumentSchema } from '../docs/docs.schema';
   ],
   controllers: [AiController],
   providers: [AiService, AiContextService, AiIndexService, OllamaService],
-  exports: [AiService],
+  exports: [AiService, AiIndexService],
 })
 export class AiModule {}

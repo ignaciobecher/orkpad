@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import * as crypto from 'crypto';
 import { AiEmbedding, AiEmbeddingDocument } from './ai-embedding.schema';
 import { AiSettings, AiSettingsDocument } from './ai-settings.schema';
 import { Note, NoteDocument } from '../notes/note.schema';
@@ -11,6 +12,20 @@ import { Invoice, InvoiceDocument } from '../invoices/invoices.schema';
 import { OllamaService } from './ollama.service';
 
 const CHUNK_SIZE = 1000;
+
+export interface ReindexJob {
+  id: string;
+  status: 'running' | 'done' | 'failed';
+  total: number;
+  done: number;
+  documents: number;
+  error?: string;
+  startedAt: Date;
+  finishedAt?: Date;
+}
+
+const EMBED_TIMEOUT_MS = 300000;
+const EMBED_RETRIES = 2;
 
 export interface IndexedChunk {
   refType: string;
@@ -95,61 +110,174 @@ export class AiIndexService {
     return (html ?? '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
   }
 
-  async reindex(workspaceId: string) {
-    const cfg = await this.settings(workspaceId);
-    const baseUrl = this.ollama.normalizeUrl(cfg.ollamaBaseUrl);
-    const types = new Set(cfg.indexTypes);
-    const items: { refType: string; refId: string; projectId: string | null; title: string; text: string }[] = [];
-
-    if (types.has('note')) {
-      const notes = await this.noteModel.find({ workspaceId, isDeleted: false }, { title: 1, content: 1, projectId: 1 }).lean().exec();
-      for (const n of notes) {
-        items.push({ refType: 'note', refId: n._id.toString(), projectId: n.projectId ?? null, title: n.title ?? 'Nota', text: `${n.title ?? ''}\n${this.stripHtml(n.content)}` });
-      }
-    }
-    if (types.has('doc')) {
-      const docs = await this.docModel.find({ workspaceId, isDeleted: false }, { title: 1, content: 1, projectId: 1 }).lean().exec();
-      for (const d of docs) {
-        let text = d.content ?? '';
+  private itemFromDoc(
+    refType: string,
+    doc: any,
+  ): { refType: string; refId: string; projectId: string | null; title: string; text: string } | null {
+    const refId = doc._id?.toString();
+    if (!refId) return null;
+    switch (refType) {
+      case 'note':
+        return { refType, refId, projectId: doc.projectId ?? null, title: doc.title ?? 'Nota', text: `${doc.title ?? ''}\n${this.stripHtml(doc.content)}` };
+      case 'doc': {
+        let text = doc.content ?? '';
         try {
           const parsed = JSON.parse(text);
           text = parsed.text ?? parsed.data ?? text;
-          if (typeof text !== 'string' || text.startsWith('data:')) text = d.title ?? '';
+          if (typeof text !== 'string' || text.startsWith('data:')) text = doc.title ?? '';
         } catch {
           // texto plano
         }
-        items.push({ refType: 'doc', refId: d._id.toString(), projectId: d.projectId ?? null, title: d.title ?? 'Documento', text: `${d.title ?? ''}\n${this.stripHtml(text)}` });
+        return { refType, refId, projectId: doc.projectId ?? null, title: doc.title ?? 'Documento', text: `${doc.title ?? ''}\n${this.stripHtml(text)}` };
       }
+      case 'task':
+        return { refType, refId, projectId: doc.projectId ?? null, title: doc.title, text: `${doc.title}\n${this.stripHtml(doc.description ?? '')} (estado: ${doc.status})` };
+      case 'project':
+        return { refType, refId, projectId: refId, title: doc.name, text: `${doc.name}\n${doc.description ?? ''} (estado: ${doc.status}, presupuesto: ${doc.budget ?? 0})` };
+      case 'invoice':
+        return { refType, refId, projectId: doc.projectId ?? null, title: `Factura ${doc.number ?? ''}`, text: `Factura ${doc.number ?? ''} total ${doc.total ?? 0} estado ${doc.status} vence ${doc.dueDate ?? 's/d'}` };
+      default:
+        return null;
     }
-    if (types.has('task')) {
-      const tasks = await this.taskModel.find({ workspaceId, isDeleted: false }, { title: 1, description: 1, projectId: 1, status: 1 }).lean().exec();
-      for (const t of tasks) {
-        items.push({ refType: 'task', refId: t._id.toString(), projectId: t.projectId ?? null, title: t.title, text: `${t.title}\n${this.stripHtml(t.description ?? '')} (estado: ${t.status})` });
-      }
-    }
-    if (types.has('project')) {
-      const projects = await this.projectModel.find({ workspaceId, isDeleted: false }, { name: 1, description: 1, status: 1, budget: 1 }).lean().exec();
-      for (const p of projects) {
-        items.push({ refType: 'project', refId: p._id.toString(), projectId: p._id.toString(), title: p.name, text: `${p.name}\n${p.description ?? ''} (estado: ${p.status}, presupuesto: ${p.budget ?? 0})` });
-      }
-    }
-    if (types.has('invoice')) {
-      const invoices = await this.invoiceModel.find({ workspaceId, isDeleted: false }, { number: 1, status: 1, total: 1, dueDate: 1, projectId: 1 }).lean().exec();
-      for (const i of invoices) {
-        items.push({ refType: 'invoice', refId: i._id.toString(), projectId: i.projectId ?? null, title: `Factura ${i.number ?? ''}`, text: `Factura ${i.number ?? ''} total ${i.total ?? 0} estado ${i.status} vence ${i.dueDate ?? 's/d'}` });
-      }
-    }
+  }
 
-    await this.embeddingModel.deleteMany({ workspaceId }).exec();
-    let chunks = 0;
-    for (const item of items) {
-      for (const chunk of this.chunkText(item.text)) {
-        const embedding = await this.ollama.embed(baseUrl, cfg.embedModel, chunk);
-        await this.embeddingModel.create({ workspaceId, refType: item.refType, refId: item.refId, projectId: item.projectId, title: item.title, chunk, embedding });
-        chunks++;
+  private async storeChunks(
+    workspaceId: string,
+    baseUrl: string,
+    embedModel: string,
+    item: { refType: string; refId: string; projectId: string | null; title: string; text: string },
+  ): Promise<number> {
+    let count = 0;
+    for (const chunk of this.chunkText(item.text)) {
+      const embedding = await this.embedWithRetry(baseUrl, embedModel, chunk);
+      await this.embeddingModel.create({ workspaceId, refType: item.refType, refId: item.refId, projectId: item.projectId, title: item.title, chunk, embedding });
+      count++;
+    }
+    return count;
+  }
+
+  private async embedWithRetry(baseUrl: string, model: string, text: string): Promise<number[]> {
+    let lastErr: any = null;
+    for (let attempt = 0; attempt < EMBED_RETRIES; attempt++) {
+      try {
+        return await this.ollama.embed(baseUrl, model, text, EMBED_TIMEOUT_MS);
+      } catch (err) {
+        lastErr = err;
       }
     }
-    return { documents: items.length, chunks };
+    throw lastErr;
+  }
+
+  private jobs = new Map<string, ReindexJob>();
+
+  getJob(workspaceId: string, id: string): ReindexJob | null {
+    const job = this.jobs.get(`${workspaceId}:${id}`);
+    return job ?? null;
+  }
+
+  /** Inicia reindex en segundo plano y devuelve el job para polling. */
+  startReindex(workspaceId: string): ReindexJob {
+    const job: ReindexJob = {
+      id: crypto.randomBytes(8).toString('hex'),
+      status: 'running',
+      total: 0,
+      done: 0,
+      documents: 0,
+      startedAt: new Date(),
+    };
+    this.jobs.set(`${workspaceId}:${job.id}`, job);
+    void this.runReindex(workspaceId, job).catch(() => {});
+    return job;
+  }
+
+  private async runReindex(workspaceId: string, job: ReindexJob): Promise<void> {
+    try {
+      const cfg = await this.settings(workspaceId);
+      const baseUrl = this.ollama.normalizeUrl(cfg.ollamaBaseUrl);
+      const types = new Set(cfg.indexTypes);
+      const items: { refType: string; refId: string; projectId: string | null; title: string; text: string }[] = [];
+
+      const push = (refType: string, docs: any[], build: (d: any) => any) => {
+        if (!types.has(refType)) return;
+        for (const d of docs) {
+          const item = build(d);
+          if (item) items.push(item);
+        }
+      };
+      push('note', await this.noteModel.find({ workspaceId, isDeleted: false }, { title: 1, content: 1, projectId: 1 }).lean().exec(), (d) => this.itemFromDoc('note', d));
+      push('doc', await this.docModel.find({ workspaceId, isDeleted: false }, { title: 1, content: 1, projectId: 1 }).lean().exec(), (d) => this.itemFromDoc('doc', d));
+      push('task', await this.taskModel.find({ workspaceId, isDeleted: false }, { title: 1, description: 1, projectId: 1, status: 1 }).lean().exec(), (d) => this.itemFromDoc('task', d));
+      push('project', await this.projectModel.find({ workspaceId, isDeleted: false }, { name: 1, description: 1, status: 1, budget: 1 }).lean().exec(), (d) => this.itemFromDoc('project', d));
+      push('invoice', await this.invoiceModel.find({ workspaceId, isDeleted: false }, { number: 1, status: 1, total: 1, dueDate: 1, projectId: 1 }).lean().exec(), (d) => this.itemFromDoc('invoice', d));
+
+      // Estimación para la barra: 1 chunk cada ~600 caracteres.
+      job.total = items.reduce((s, i) => s + Math.max(1, Math.ceil((i.text?.length ?? 0) / 600)), 0);
+      job.documents = items.length;
+
+      await this.embeddingModel.deleteMany({ workspaceId }).exec();
+      let done = 0;
+      for (const item of items) {
+        for (const chunk of this.chunkText(item.text)) {
+          const embedding = await this.embedWithRetry(baseUrl, cfg.embedModel, chunk);
+          await this.embeddingModel.create({ workspaceId, refType: item.refType, refId: item.refId, projectId: item.projectId, title: item.title, chunk, embedding });
+          done++;
+          job.done = done;
+        }
+      }
+      job.status = 'done';
+      job.finishedAt = new Date();
+    } catch (err: any) {
+      job.status = 'failed';
+      job.error = err?.message ?? 'Error desconocido';
+      job.finishedAt = new Date();
+    }
+  }
+
+  private async loadDoc(refType: string, workspaceId: string, refId: string): Promise<any> {
+    const filter = { workspaceId, _id: refId, isDeleted: false };
+    switch (refType) {
+      case 'note':
+        return this.noteModel.findOne(filter, { title: 1, content: 1, projectId: 1 }).lean().exec();
+      case 'doc':
+        return this.docModel.findOne(filter, { title: 1, content: 1, projectId: 1 }).lean().exec();
+      case 'task':
+        return this.taskModel.findOne(filter, { title: 1, description: 1, projectId: 1, status: 1 }).lean().exec();
+      case 'project':
+        return this.projectModel.findOne(filter, { name: 1, description: 1, status: 1, budget: 1 }).lean().exec();
+      case 'invoice':
+        return this.invoiceModel.findOne(filter, { number: 1, status: 1, total: 1, dueDate: 1, projectId: 1 }).lean().exec();
+      default:
+        return null;
+    }
+  }
+
+  /** Reindexa un único documento (creación/edición) o borra sus vectores (eliminado). */
+  async indexOne(workspaceId: string, refType: string, refId: string, deleted = false): Promise<void> {
+    const cfg = await this.settings(workspaceId).catch(() => null);
+    if (!cfg || !cfg.enabled || !cfg.indexTypes.includes(refType)) return;
+    await this.embeddingModel.deleteMany({ workspaceId, refType, refId }).exec();
+    if (deleted) return;
+    const doc = await this.loadDoc(refType, workspaceId, refId).catch(() => null);
+    if (!doc) return;
+    const item = this.itemFromDoc(refType, doc);
+    if (!item) return;
+    const baseUrl = this.ollama.normalizeUrl(cfg.ollamaBaseUrl);
+    await this.storeChunks(workspaceId, baseUrl, cfg.embedModel, item).catch(() => {});
+  }
+
+  private pendingTimers = new Map<string, ReturnType<typeof setTimeout>>();
+
+  /** Aviso fire-and-forget desde los servicios: no bloquea el request y
+   *  coalescea ediciones rápidas del mismo documento (2s). */
+  notifyChanged(workspaceId: string, refType: string, refId: string, deleted = false): void {
+    const key = `${workspaceId}:${refType}:${refId}`;
+    const prev = this.pendingTimers.get(key);
+    if (prev) clearTimeout(prev);
+    const timer = setTimeout(() => {
+      this.pendingTimers.delete(key);
+      this.indexOne(workspaceId, refType, refId, deleted).catch(() => {});
+    }, 2000);
+    this.pendingTimers.set(key, timer);
   }
 
   async stats(workspaceId: string) {

@@ -6,11 +6,13 @@ import { InvoicesController } from './invoices.controller';
 import { InvoicesService } from './invoices.service';
 import { InvoicesRepository } from './invoices.repository';
 import { Invoice, InvoiceSchema } from './invoices.schema';
+import { AiModule } from '../ai/ai.module';
 
 @Module({
   imports: [
     ClientsModule,
     forwardRef(() => ProjectsModule),
+    AiModule,
     MongooseModule.forFeature([{ name: Invoice.name, schema: InvoiceSchema }]),
   ],
   controllers: [InvoicesController],

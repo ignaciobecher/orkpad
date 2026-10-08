@@ -30,12 +30,12 @@ export class OllamaService {
     return { ok: true, models: models.length };
   }
 
-  async embed(baseUrl: string, model: string, text: string): Promise<number[]> {
+  async embed(baseUrl: string, model: string, text: string, timeoutMs = 60000): Promise<number[]> {
     const res = await fetch(`${baseUrl}/api/embed`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ model, input: text }),
-      signal: AbortSignal.timeout(60000),
+      signal: AbortSignal.timeout(timeoutMs),
     });
     if (!res.ok) {
       const body = await res.text().catch(() => '');

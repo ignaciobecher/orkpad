@@ -138,6 +138,16 @@ export class CreateQuoteDto {
   @IsOptional()
   freelancerWebsite?: string;
 
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  freelancerTaxId?: string;
+
+  @ApiPropertyOptional({ description: 'Logo de la agencia (archivo en /files)' })
+  @IsString()
+  @IsOptional()
+  agencyLogoFileId?: string;
+
   @ApiPropertyOptional({ type: [QuoteSectionDto] })
   @IsArray()
   @ValidateNested({ each: true })

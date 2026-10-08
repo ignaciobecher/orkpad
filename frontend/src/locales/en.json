@@ -672,7 +672,13 @@
       "title": "APPEARANCE / BRANDING",
       "description": "Logo, name and color of your agency, as your clients see it.",
       "agencyName": "Agency name",
-      "agencyPlaceholder": "E.g. Acme",
+      "agencyPlaceholder": {
+        "email": "contact@myagency.com",
+        "phone": "+1 555 123-4567",
+        "address": "City, Country",
+        "website": "www.myagency.com",
+        "taxId": "12-3456789"
+      },
       "logo": "Logo (PNG or JPG)",
       "upload": "Upload logo",
       "remove": "Remove",
@@ -681,7 +687,13 @@
       "themeDark": "Dark",
       "themeLight": "Light",
       "saved": "Branding updated.",
-      "saveError": "Could not save branding."
+      "saveError": "Could not save branding.",
+      "agencyEmail": "Agency email",
+      "agencyPhone": "Phone",
+      "agencyAddress": "Address",
+      "agencyWebsite": "Website",
+      "taxId": "Tax ID",
+      "agencySection": "Quote data (reused on create)"
     },
     "ai": {
       "title": "AI ASSISTANT",

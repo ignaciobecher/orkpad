@@ -3,6 +3,8 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ClientsModule } from '../clients/clients.module';
 import { ProjectsModule } from '../projects/projects.module';
 import { InvoicesModule } from '../invoices/invoices.module';
+import { WorkspacesModule } from '../workspaces/workspaces.module';
+import { StorageModule } from '../storage/storage.module';
 import { QuotesController } from './quotes.controller';
 import { QuotesService } from './quotes.service';
 import { QuotesRepository } from './quotes.repository';
@@ -14,6 +16,8 @@ import { Quote, QuoteSchema } from './quotes.schema';
     ClientsModule,
     ProjectsModule,
     InvoicesModule,
+    WorkspacesModule,
+    StorageModule,
     MongooseModule.forFeature([{ name: Quote.name, schema: QuoteSchema }]),
   ],
   controllers: [QuotesController],

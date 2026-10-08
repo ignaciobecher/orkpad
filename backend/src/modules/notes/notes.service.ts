@@ -4,10 +4,14 @@ import { CreateNoteDto } from './dto/create-note.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
 import { QueryNoteDto } from './dto/query-note.dto';
 import { ReorderNotesDto } from './dto/reorder-notes.dto';
+import { AiIndexService } from '../ai/ai-index.service';
 
 @Injectable()
 export class NotesService {
-  constructor(private readonly notesRepository: NotesRepository) {}
+  constructor(
+    private readonly notesRepository: NotesRepository,
+    private readonly aiIndex: AiIndexService,
+  ) {}
 
   findAll(workspaceId: string, query: QueryNoteDto) {
     const { page, limit, search, status, tags, projectId, clientId, unassigned } = query;
@@ -39,13 +43,16 @@ export class NotesService {
     return note;
   }
 
-  create(workspaceId: string, dto: CreateNoteDto) {
-    return this.notesRepository.create(workspaceId, dto);
+  async create(workspaceId: string, dto: CreateNoteDto) {
+    const note = await this.notesRepository.create(workspaceId, dto);
+    this.aiIndex.notifyChanged(workspaceId, 'note', (note._id as any).toString());
+    return note;
   }
 
   async update(workspaceId: string, id: string, dto: UpdateNoteDto) {
     const note = await this.notesRepository.update(workspaceId, id, dto);
     if (!note) throw new NotFoundException(`Note ${id} not found`);
+    this.aiIndex.notifyChanged(workspaceId, 'note', id);
     return note;
   }
 
@@ -72,6 +79,7 @@ export class NotesService {
   async remove(workspaceId: string, id: string) {
     const note = await this.notesRepository.softDelete(workspaceId, id);
     if (!note) throw new NotFoundException(`Note ${id} not found`);
+    this.aiIndex.notifyChanged(workspaceId, 'note', id, true);
     return note;
   }
 }

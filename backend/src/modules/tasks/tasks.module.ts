@@ -10,6 +10,7 @@ import { TasksController } from './tasks.controller';
 import { TasksService } from './tasks.service';
 import { TasksRepository } from './tasks.repository';
 import { Task, TaskSchema } from './tasks.schema';
+import { AiModule } from '../ai/ai.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { Task, TaskSchema } from './tasks.schema';
     UsersModule,
     ClientsModule,
     MailModule,
+    AiModule,
     forwardRef(() => GithubIntegrationModule),
     MongooseModule.forFeature([{ name: Task.name, schema: TaskSchema }]),
   ],

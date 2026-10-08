@@ -30,7 +30,9 @@ export const aiApi = {
   saveSettings: (dto: Partial<AiSettings>) => apiClient.patch<AiSettings>('/ai/settings', dto),
   test: (baseUrl?: string) => apiClient.post<{ ok: boolean; url: string; models: number }>('/ai/test', { baseUrl }),
   models: (baseUrl?: string) => apiClient.get<{ name: string; size: number }[]>('/ai/models', { params: { baseUrl } }),
-  reindex: () => apiClient.post<{ documents: number; chunks: number }>('/ai/reindex'),
+  reindex: () => apiClient.post<{ id: string; status: string }>('/ai/reindex'),
+  reindexStatus: (jobId: string) =>
+    apiClient.get<{ id: string; status: 'running' | 'done' | 'failed'; total: number; done: number; documents: number; error?: string }>(`/ai/reindex/${jobId}`),
   conversations: () => apiClient.get<AiConversation[]>('/ai/conversations'),
   messages: (id: string) => apiClient.get<AiMessage[]>(`/ai/conversations/${id}/messages`),
   removeConversation: (id: string) => apiClient.delete(`/ai/conversations/${id}`),

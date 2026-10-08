@@ -40,9 +40,15 @@ export class AiController {
   }
 
   @Post('reindex')
-  @ApiOperation({ summary: 'Reindexar documentos del workspace para RAG' })
+  @ApiOperation({ summary: 'Iniciar reindexado en segundo plano (ver progreso por job)' })
   reindex(@WorkspaceId() workspaceId: string) {
     return this.aiService.reindex(workspaceId);
+  }
+
+  @Get('reindex/:jobId')
+  @ApiOperation({ summary: 'Progreso del reindexado' })
+  reindexStatus(@WorkspaceId() workspaceId: string, @Param('jobId') jobId: string) {
+    return this.aiService.reindexStatus(workspaceId, jobId);
   }
 
   @Get('conversations')
