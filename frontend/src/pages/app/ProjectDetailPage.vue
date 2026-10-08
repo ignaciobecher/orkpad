@@ -378,35 +378,6 @@ export default defineComponent({
         .map((r) => (r.agreed > 0 ? Math.round((r.paid / r.agreed) * 100) : 0) + '%')
         .join(' + ')
     },
-    currencyRows(): { currency: string; agreed: number; paid: number; pending: number; overdue: number }[] {
-      const s: any = this.overview?.invoiceStats
-      if (s?.byCurrency?.length) return s.byCurrency
-      const c = (this.overview?.project as any)?.currency ?? 'USD'
-      return [{
-        currency: c,
-        agreed: s?.agreed ?? 0,
-        paid: s?.paid ?? 0,
-        pending: s?.pending ?? 0,
-        overdue: s?.overdue ?? 0,
-      }]
-    },
-    moneyByCurrency(key: 'agreed' | 'paid' | 'pending' | 'overdue' | 'pendingOverdue'): string {
-      return this.currencyRows()
-        .map((r) => this.formatMoney(key === 'pendingOverdue' ? r.pending + r.overdue : r[key], r.currency))
-        .join(' + ')
-    },
-    collectedOfAgreedText(): string {
-      return this.currencyRows()
-        .map((r) => {
-          const pct = r.agreed > 0 ? Math.round((r.paid / r.agreed) * 100) : 0
-          return (this.$t('projects.detail.collectedOfAgreed', {
-            collected: this.formatMoney(r.paid, r.currency),
-            agreed: this.formatMoney(r.agreed, r.currency),
-            pct,
-          }) as string)
-        })
-        .join(' + ')
-    },
     hasInstallmentInvoices(): boolean {
       const list = this.overview?.invoices ?? []
       if (list.some((i: any) => i.installmentNumber != null || i.installmentCount)) return true
@@ -461,6 +432,35 @@ export default defineComponent({
       'fetchOverview',
       'generateInvoices',
     ]),
+    currencyRows(): { currency: string; agreed: number; paid: number; pending: number; overdue: number }[] {
+      const s: any = this.overview?.invoiceStats
+      if (s?.byCurrency?.length) return s.byCurrency
+      const c = (this.overview?.project as any)?.currency ?? 'USD'
+      return [{
+        currency: c,
+        agreed: s?.agreed ?? 0,
+        paid: s?.paid ?? 0,
+        pending: s?.pending ?? 0,
+        overdue: s?.overdue ?? 0,
+      }]
+    },
+    moneyByCurrency(key: 'agreed' | 'paid' | 'pending' | 'overdue' | 'pendingOverdue'): string {
+      return this.currencyRows()
+        .map((r) => this.formatMoney(key === 'pendingOverdue' ? r.pending + r.overdue : r[key], r.currency))
+        .join(' + ')
+    },
+    collectedOfAgreedText(): string {
+      return this.currencyRows()
+        .map((r) => {
+          const pct = r.agreed > 0 ? Math.round((r.paid / r.agreed) * 100) : 0
+          return (this.$t('projects.detail.collectedOfAgreed', {
+            collected: this.formatMoney(r.paid, r.currency),
+            agreed: this.formatMoney(r.agreed, r.currency),
+            pct,
+          }) as string)
+        })
+        .join(' + ')
+    },
     formatDate,
     formatCalendarDate,
     formatMoney(amount: number | undefined, currency?: string) {
