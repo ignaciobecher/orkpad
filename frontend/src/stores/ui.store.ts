@@ -3,9 +3,19 @@ import { defineStore } from 'pinia'
 export const useUIStore = defineStore('ui', {
   state: () => ({
     sidebarOpen: false,
-    theme: (localStorage.getItem('workos_theme') || 'dark') as 'dark' | 'light'
+    theme: (localStorage.getItem('workos_theme') || 'dark') as 'dark' | 'light',
+    pendingRequests: 0,
   }),
+  getters: {
+    globalLoading: (state) => state.pendingRequests > 0,
+  },
   actions: {
+    trackRequestStart() {
+      this.pendingRequests += 1
+    },
+    trackRequestEnd() {
+      if (this.pendingRequests > 0) this.pendingRequests -= 1
+    },
     toggleSidebar() {
       this.sidebarOpen = !this.sidebarOpen
     },

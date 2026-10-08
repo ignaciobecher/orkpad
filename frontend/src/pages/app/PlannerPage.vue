@@ -55,8 +55,12 @@
     <div class="planner-body">
       <!-- Main view -->
       <div class="planner-main">
+        <div v-if="blocksStore.loading" class="planner-loading">
+          <span class="material-symbols-outlined spinning">sync</span>
+          Cargando planner...
+        </div>
         <PlannerDayView
-          v-if="uiStore.view === 'day'"
+          v-else-if="uiStore.view === 'day'"
           :date="uiStore.selectedDate"
           @new-block="openCreateBlock"
           @edit-block="openEditBlock"
@@ -231,6 +235,7 @@ export default defineComponent({
 
     return {
       uiStore,
+      blocksStore,
       views,
       sidebarTabs,
       currentLabel,
@@ -520,5 +525,23 @@ export default defineComponent({
     border-top: 1px solid var(--color-border);
     max-height: 40vh;
   }
+}
+
+.planner-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 64px 0;
+  color: var(--color-text-muted);
+  font-size: 13px;
+}
+
+.planner-loading .material-symbols-outlined {
+  animation: planner-spin 0.8s linear infinite;
+}
+
+@keyframes planner-spin {
+  to { transform: rotate(360deg); }
 }
 </style>

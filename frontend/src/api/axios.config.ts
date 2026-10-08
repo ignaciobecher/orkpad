@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { showToast } from '@/composables/useToast'
+import { useUIStore } from '@/stores/ui.store'
 
 export const baseURL = import.meta.env.VITE_API_URL ||
   (import.meta.env.MODE === 'production'
@@ -30,7 +31,23 @@ const processQueue = (error: any) => {
   failedQueue = [];
 };
 
-// Request interceptor: clean empty params
+// Request interceptor: clean empty params + global loading bar
+function trackStart() {
+  try {
+    useUIStore().trackRequestStart()
+  } catch {
+    // pinia aún no inicializado (p. ej. refresh previo al mount)
+  }
+}
+
+function trackEnd() {
+  try {
+    useUIStore().trackRequestEnd()
+  } catch {
+    // ignorar
+  }
+}
+
 apiClient.interceptors.request.use((config) => {
   if (config.params) {
     Object.keys(config.params).forEach((key) => {
@@ -39,12 +56,14 @@ apiClient.interceptors.request.use((config) => {
       }
     });
   }
+  trackStart()
   return config
 })
 
 // Response interceptor: handle 401, refresh token, retry, and global success toast
 apiClient.interceptors.response.use(
   (response) => {
+    trackEnd()
     const method = response.config.method?.toLowerCase();
     const url = response.config.url;
 
@@ -60,6 +79,7 @@ apiClient.interceptors.response.use(
     return response;
   },
   async (error) => {
+    trackEnd()
     const originalRequest = error.config
 
     if (error.response?.status === 401 && !originalRequest._retry) {

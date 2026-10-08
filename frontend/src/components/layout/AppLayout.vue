@@ -1,5 +1,6 @@
 <template>
   <div class="app-layout">
+    <w-top-loading-bar />
     <app-sidebar />
     <div class="app-main-wrapper">
       <app-topbar />
@@ -22,6 +23,7 @@ import { defineComponent } from 'vue'
 import AppSidebar from './AppSidebar.vue'
 import AppTopbar from './AppTopbar.vue'
 import WToastContainer from '../ui/WToastContainer.vue'
+import WTopLoadingBar from '../ui/WTopLoadingBar.vue'
 import OnboardingModal from '../onboarding/OnboardingModal.vue'
 import SetupChecklist from '../onboarding/SetupChecklist.vue'
 import { useAuthStore } from '@/stores/auth.store'
@@ -35,6 +37,7 @@ export default defineComponent({
     AppSidebar,
     AppTopbar,
     WToastContainer,
+    WTopLoadingBar,
     OnboardingModal,
     SetupChecklist,
   },

@@ -162,5 +162,62 @@ export function getDocumentIcon(doc: Document) {
   if (extension === 'pdf') return 'picture_as_pdf'
   if (['doc', 'docx'].includes(extension)) return 'article'
   if (['xls', 'xlsx', 'csv'].includes(extension)) return 'table_chart'
+  if (['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg'].includes(extension)) return 'image'
+  if (['zip', 'rar', '7z'].includes(extension)) return 'folder_zip'
   return 'draft'
+}
+
+export function getFileKindLabel(doc: Document): string {
+  if (isFolderDocument(doc)) return 'Carpeta'
+  const payload = parseStoredFile(doc)
+  const extension = (payload?.extension || getFileExtension(doc.title)).toLowerCase()
+  if (extension === 'pdf') return 'Documento PDF'
+  if (['doc', 'docx'].includes(extension)) return 'Documento de Word'
+  if (['xls', 'xlsx'].includes(extension)) return 'Hoja de cálculo'
+  if (extension === 'csv') return 'CSV'
+  if (extension === 'md') return 'Markdown'
+  if (['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg'].includes(extension)) return 'Imagen'
+  if (['zip', 'rar', '7z'].includes(extension)) return 'Archivo comprimido'
+  if (extension) return `Archivo .${extension}`
+  return 'Archivo'
+}
+
+export function getFileIconColor(doc: Document): string {
+  if (isFolderDocument(doc)) return '#FFC107'
+  const payload = parseStoredFile(doc)
+  const extension = (payload?.extension || getFileExtension(doc.title)).toLowerCase()
+  if (extension === 'pdf') return '#F44336'
+  if (['doc', 'docx'].includes(extension)) return '#2196F3'
+  if (['xls', 'xlsx', 'csv'].includes(extension)) return '#4CAF50'
+  if (['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg'].includes(extension)) return '#9C27B0'
+  if (extension === 'md') return '#9E9E9E'
+  return 'var(--color-text-muted)'
+}
+
+export function getStoredFileSize(doc: Document): number | null {
+  const payload = parseStoredFile(doc)
+  return payload?.size ?? null
+}
+
+export function formatBytes(size: number | null | undefined): string {
+  if (size === null || size === undefined) return '—'
+  if (size < 1024) return `${size} B`
+  if (size < 1024 * 1024) return `${Math.round(size / 1024)} KB`
+  return `${(size / (1024 * 1024)).toFixed(1)} MB`
+}
+
+/** Todas las rutas de carpetas existentes (ordenadas), para el árbol lateral. */
+export function getAllFolderPaths(docs: Document[]): string[] {
+  const paths = new Set<string>()
+  docs.forEach((doc) => {
+    const folderPath = isFolderDocument(doc)
+      ? joinFolderPath(doc.folderId || '', doc.title)
+      : normalizeFolderPath(doc.folderId)
+    if (!folderPath) return
+    const parts = folderPath.split('/')
+    for (let i = 1; i <= parts.length; i++) {
+      paths.add(parts.slice(0, i).join('/'))
+    }
+  })
+  return [...paths].sort((a, b) => a.localeCompare(b))
 }
