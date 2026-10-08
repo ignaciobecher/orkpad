@@ -107,6 +107,23 @@
             <span class="material-symbols-outlined">add</span>
           </button>
         </div>
+        <div v-if="quickAddColumnId === column._id" class="quick-add-card quick-add-card--list">
+          <textarea
+            ref="quickAddInputRef"
+            v-model="quickAddTitle"
+            class="quick-add-input"
+            placeholder="Ingresá el título de la tarea..."
+            rows="2"
+            @keydown.enter.prevent="confirmQuickAdd"
+            @keydown.esc="cancelQuickAdd"
+          ></textarea>
+          <div class="quick-add-actions">
+            <button class="btn-primary" @click="confirmQuickAdd">Agregar tarjeta</button>
+            <button class="col-btn" @click="cancelQuickAdd">
+              <span class="material-symbols-outlined">close</span>
+            </button>
+          </div>
+        </div>
         <div
           v-for="task in (columnsData[column._id] || [])"
           :key="task._id"
@@ -138,23 +155,6 @@
           <button class="card-action-btn" title="Eliminar" @click.stop="confirmDeleteTask(task)">
             <span class="material-symbols-outlined">delete</span>
           </button>
-        </div>
-        <div v-if="quickAddColumnId === column._id" class="quick-add-card quick-add-card--list">
-          <textarea
-            ref="quickAddInputRef"
-            v-model="quickAddTitle"
-            class="quick-add-input"
-            placeholder="Ingresá el título de la tarea..."
-            rows="2"
-            @keydown.enter.prevent="confirmQuickAdd"
-            @keydown.esc="cancelQuickAdd"
-          ></textarea>
-          <div class="quick-add-actions">
-            <button class="btn-primary" @click="confirmQuickAdd">Agregar tarjeta</button>
-            <button class="col-btn" @click="cancelQuickAdd">
-              <span class="material-symbols-outlined">close</span>
-            </button>
-          </div>
         </div>
       </div>
     </div>
@@ -1516,10 +1516,11 @@ export default defineComponent({
   overflow-x: auto;
   overflow-y: hidden;
   flex: 1;
+  min-height: 0;
   padding: 4px 4px 24px 4px;
   scrollbar-width: thin;
   scrollbar-color: var(--color-border) transparent;
-  align-items: flex-start;
+  align-items: stretch;
 }
 
 .kanban-board::-webkit-scrollbar { height: 6px; }
@@ -1536,7 +1537,9 @@ export default defineComponent({
   border-radius: 0;
   border-top: 3px solid var(--col-color, var(--color-primary));
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  height: 100%;
   max-height: calc(100vh - var(--topbar-height) - 100px);
+  min-height: 0;
   position: relative;
   transition: box-shadow 0.15s;
 }
@@ -1645,6 +1648,7 @@ export default defineComponent({
 /* ── Column cards area ── */
 .column-cards {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
   padding: 8px;
   display: flex;
@@ -1652,11 +1656,11 @@ export default defineComponent({
   gap: 8px;
   scrollbar-width: thin;
   scrollbar-color: var(--color-border) transparent;
-  min-height: 40px;
 }
 
 .column-cards::-webkit-scrollbar { width: 4px; }
 .column-cards::-webkit-scrollbar-thumb { background: var(--color-border); }
+.column-cards:empty { min-height: 60px; }
 
 /* ── Kanban card ── */
 .kanban-card {
@@ -1929,6 +1933,7 @@ export default defineComponent({
   align-items: center;
   gap: 6px;
   width: 100%;
+  flex-shrink: 0;
   padding: 10px 12px;
   background: none;
   border: none;
