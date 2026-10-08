@@ -19,6 +19,22 @@ export const useInvoicesStore = defineStore('invoices', {
     } as any
   }),
   getters: {
+    incomeByCurrency: (state) => {
+      const map = new Map<string, number>()
+      for (const i of state.items.filter(i => i.type === 'income' || !i.type)) {
+        const c = (i as any).currency ?? 'USD'
+        map.set(c, (map.get(c) ?? 0) + (i.total || 0))
+      }
+      return [...map.entries()].map(([currency, total]) => ({ currency, total }))
+    },
+    expenseByCurrency: (state) => {
+      const map = new Map<string, number>()
+      for (const i of state.items.filter(i => i.type === 'expense')) {
+        const c = (i as any).currency ?? 'USD'
+        map.set(c, (map.get(c) ?? 0) + (i.total || 0))
+      }
+      return [...map.entries()].map(([currency, total]) => ({ currency, total }))
+    },
     totalIncome: (state) => state.items
       .filter(i => i.type === 'income' || !i.type)
       .reduce((sum, i) => sum + (i.total || 0), 0),

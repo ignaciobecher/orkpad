@@ -7,22 +7,21 @@ export class ReportsExportService {
   toCsv(data: any): string {
     const rows: string[][] = [];
     const f = data.finance;
+    const amt = (a: { currency: string; total: number }[]) =>
+      a.map((x) => `${x.currency} ${x.total}`).join(' + ') || '—';
     rows.push(['FINANZAS DEL PERIODO']);
-    rows.push(['Facturado', String(f.invoiced)]);
-    rows.push(['Cobrado', String(f.collected)]);
-    rows.push(['Pendiente', String(f.pending)]);
-    rows.push(['Vencido', String(f.overdue)]);
-    rows.push(['Gastos', String(f.expenses)]);
-    rows.push(['Neto', String(f.net)]);
-    rows.push([]);
-    rows.push(['POR CLIENTE', 'Facturado', 'Cobrado', 'Pendiente']);
-    for (const c of f.byClient) {
-      rows.push([c.name, String(c.invoiced), String(c.collected), String(c.pending)]);
+    for (const t of f.totals) {
+      rows.push([t.label, amt(t.amounts)]);
     }
     rows.push([]);
-    rows.push(['PROXIMOS VENCIMIENTOS', 'Monto', 'Estado', 'Vence']);
+    rows.push(['POR CLIENTE', 'Moneda', 'Facturado', 'Cobrado', 'Pendiente']);
+    for (const c of f.byClient) {
+      rows.push([c.name, c.currency, String(c.invoiced), String(c.collected), String(c.pending)]);
+    }
+    rows.push([]);
+    rows.push(['PROXIMOS VENCIMIENTOS', 'Monto', 'Moneda', 'Estado', 'Vence']);
     for (const u of f.upcoming) {
-      rows.push([u.number ?? u.id, String(u.total), u.status, u.dueDate ?? '']);
+      rows.push([u.number ?? u.id, String(u.total), u.currency ?? '', u.status, u.dueDate ?? '']);
     }
     rows.push([]);
     const t = data.tasks;
@@ -63,10 +62,10 @@ export class ReportsExportService {
         .text(`Periodo: ${data.range.from.slice(0, 10)} al ${data.range.to.slice(0, 10)}`);
       doc.moveDown().fillColor('#000');
       doc.fontSize(14).text('Finanzas');
-      doc.fontSize(11).text(
-        `Facturado: ${f.invoiced} | Cobrado: ${f.collected} | Pendiente: ${f.pending} | Vencido: ${f.overdue}`,
-      );
-      doc.text(`Gastos: ${f.expenses} | Neto: ${f.net}`);
+      doc.fontSize(11);
+      for (const t of f.totals) {
+        doc.text(`${t.label}: ${(t.amounts as { currency: string; total: number }[]).map((a) => `${a.currency} ${a.total}`).join(' + ') || '—'}`);
+      }
       doc.moveDown();
       doc.fontSize(14).text('Tareas');
       doc.fontSize(11).text(
@@ -76,7 +75,7 @@ export class ReportsExportService {
       doc.fontSize(14).text('Proyectos');
       doc.fontSize(11);
       for (const p of data.projects.slice(0, 30)) {
-        doc.text(`${p.name} — avance ${p.progress}% — cobrado ${p.collected}/${p.invoiced}`);
+        doc.text(`${p.name} [${p.currency ?? ''}] — avance ${p.progress}% — cobrado ${p.collected}/${p.invoiced}`);
       }
       doc.moveDown();
       doc.fontSize(14).text('Horas');

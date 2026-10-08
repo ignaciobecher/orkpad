@@ -60,10 +60,11 @@ export class ReportsService {
       issueDate: { $gte: from, $lte: to },
     });
     const rows = await this.invoiceModel
-      .find(base, { status: 1, type: 1, total: 1, clientId: 1, projectId: 1, number: 1, dueDate: 1 })
+      .find(base, { status: 1, type: 1, total: 1, currency: 1, clientId: 1, projectId: 1, number: 1, dueDate: 1 })
       .lean()
       .exec();
 
+    const cur = (i: any) => i.currency ?? 'USD';
     const sum = (list: any[]) => list.reduce((s, i) => s + (i.total ?? 0), 0);
     const income = rows.filter((i) => (i.type ?? 'income') === 'income');
     const expenses = rows.filter((i) => i.type === 'expense');
@@ -71,28 +72,46 @@ export class ReportsService {
     const open = (l: any[]) => l.filter((i) => ['pending', 'sent'].includes(i.status));
     const overdue = (l: any[]) => l.filter((i) => i.status === 'overdue');
 
+    // Totales discriminados por moneda: nunca se suman USD con ARS.
+    const bucket = (list: any[]) => {
+      const map = new Map<string, number>();
+      for (const i of list) {
+        map.set(cur(i), (map.get(cur(i)) ?? 0) + (i.total ?? 0));
+      }
+      return [...map.entries()].map(([currency, total]) => ({ currency, total }));
+    };
+
     const byClientMap = new Map<string, any>();
     for (const i of income) {
-      const key = i.clientId ?? 'sin-cliente';
-      const cur = byClientMap.get(key) ?? { clientId: i.clientId ?? null, invoiced: 0, collected: 0, pending: 0 };
-      cur.invoiced += i.total ?? 0;
-      if (['paid', 'collected'].includes(i.status)) cur.collected += i.total ?? 0;
-      else cur.pending += i.total ?? 0;
-      byClientMap.set(key, cur);
+      const key = `${i.clientId ?? 'sin-cliente'}|${cur(i)}`;
+      const row = byClientMap.get(key) ?? { clientId: i.clientId ?? null, currency: cur(i), invoiced: 0, collected: 0, pending: 0 };
+      row.invoiced += i.total ?? 0;
+      if (['paid', 'collected'].includes(i.status)) row.collected += i.total ?? 0;
+      else row.pending += i.total ?? 0;
+      byClientMap.set(key, row);
     }
-    const clientIds = [...byClientMap.keys()].filter((k) => k !== 'sin-cliente');
+    const clientIds = [...new Set([...byClientMap.values()].map((c) => c.clientId).filter(Boolean))];
     const clients = clientIds.length
       ? await this.clientModel.find({ workspaceId, _id: { $in: clientIds } }, { name: 1 }).lean().exec()
       : [];
     const names = new Map(clients.map((c: any) => [c._id.toString(), c.name]));
 
+    const netByCurrency = (() => {
+      const map = new Map<string, number>();
+      for (const i of paid(income)) map.set(cur(i), (map.get(cur(i)) ?? 0) + (i.total ?? 0));
+      for (const i of expenses) map.set(cur(i), (map.get(cur(i)) ?? 0) - (i.total ?? 0));
+      return [...map.entries()].map(([currency, total]) => ({ currency, total }));
+    })();
+
     return {
-      invoiced: sum(income),
-      collected: sum(paid(income)),
-      pending: sum(open(income)),
-      overdue: sum(overdue(income)),
-      expenses: sum(expenses),
-      net: sum(paid(income)) - sum(expenses),
+      totals: [
+        { key: 'invoiced', label: 'Facturado', amounts: bucket(income) },
+        { key: 'collected', label: 'Cobrado', amounts: bucket(paid(income)) },
+        { key: 'pending', label: 'Pendiente', amounts: bucket(open(income)) },
+        { key: 'overdue', label: 'Vencido', amounts: bucket(overdue(income)) },
+        { key: 'expenses', label: 'Gastos', amounts: bucket(expenses) },
+        { key: 'net', label: 'Neto', amounts: netByCurrency },
+      ],
       byClient: [...byClientMap.values()].map((c) => ({
         ...c,
         name: c.clientId ? (names.get(c.clientId.toString()) ?? c.clientId) : 'Sin cliente',
@@ -105,6 +124,7 @@ export class ReportsService {
           id: i._id,
           number: i.number,
           total: i.total,
+          currency: cur(i),
           status: i.status,
           dueDate: i.dueDate,
           clientId: i.clientId ?? null,
@@ -162,12 +182,8 @@ export class ReportsService {
       const collected = inv.filter((i: any) => ['paid', 'collected'].includes(i.status)).reduce((s: number, i: any) => s + (i.total ?? 0), 0);
       const done = t.filter((x: any) => x.status === 'done').length;
       const invoiced = inv.reduce((s: number, i: any) => s + (i.total ?? 0), 0);
-      // Sin tareas, el avance se mide por cobro (cobrado/facturado).
-      const progress = t.length
-        ? Math.round((done / t.length) * 100)
-        : invoiced > 0
-          ? Math.round((collected / invoiced) * 100)
-          : 0;
+      // Avance = porcentaje pagado al momento.
+      const progress = invoiced > 0 ? Math.round((collected / invoiced) * 100) : 0;
       return {
         id: pid,
         name: p.name,

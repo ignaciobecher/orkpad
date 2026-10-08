@@ -2,7 +2,7 @@ export interface DashboardStats {
   totalClients: number
   totalProjects: number
   totalTasks: number
-  totalRevenue: number
+  revenueByCurrency: { currency: string; total: number }[]
   recentTasks: RecentTask[]
 }
 

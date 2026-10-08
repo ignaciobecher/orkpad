@@ -181,11 +181,23 @@ export default defineComponent({
     },
     formattedRevenue(): string {
       if (!this.stats) return '—'
-      return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        maximumFractionDigits: 0,
-      }).format(this.stats.totalRevenue)
+      const rows = this.stats.revenueByCurrency ?? []
+      if (!rows.length) {
+        return new Intl.NumberFormat('en-US', {
+          style: 'currency',
+          currency: 'USD',
+          maximumFractionDigits: 0,
+        }).format(0)
+      }
+      return rows
+        .map((r) =>
+          new Intl.NumberFormat(r.currency === 'ARS' ? 'es-AR' : 'en-US', {
+            style: 'currency',
+            currency: r.currency,
+            maximumFractionDigits: 0,
+          }).format(r.total),
+        )
+        .join(' + ')
     },
     taskHeaders() {
       return [

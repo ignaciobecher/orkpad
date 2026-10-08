@@ -55,21 +55,22 @@
       </nav>
 
       <section v-if="activeTab === 'finanzas'" class="kpi-grid">
-        <div class="kpi"><span class="kpi-label">Facturado</span><span class="kpi-value">{{ money(data.finance.invoiced) }}</span></div>
-        <div class="kpi"><span class="kpi-label">Cobrado</span><span class="kpi-value kpi-value--ok">{{ money(data.finance.collected) }}</span></div>
-        <div class="kpi"><span class="kpi-label">Pendiente</span><span class="kpi-value">{{ money(data.finance.pending) }}</span></div>
-        <div class="kpi"><span class="kpi-label">Vencido</span><span class="kpi-value kpi-value--bad">{{ money(data.finance.overdue) }}</span></div>
-        <div class="kpi"><span class="kpi-label">Gastos</span><span class="kpi-value">{{ money(data.finance.expenses) }}</span></div>
-        <div class="kpi"><span class="kpi-label">Neto</span><span class="kpi-value">{{ money(data.finance.net) }}</span></div>
+        <div v-for="t in data.finance.totals" :key="t.key" class="kpi">
+          <span class="kpi-label">{{ t.label }}</span>
+          <span class="kpi-value" :class="{ 'kpi-value--ok': t.key === 'collected', 'kpi-value--bad': t.key === 'overdue' }">
+            <span v-for="(a, i) in t.amounts" :key="a.currency">{{ i > 0 ? ' + ' : '' }}{{ money(a.total, a.currency) }}</span>
+            <span v-if="!t.amounts.length">—</span>
+          </span>
+        </div>
       </section>
 
       <section v-if="activeTab === 'finanzas'" class="report-table-wrap">
         <h3>Por cliente</h3>
         <table class="report-table">
-          <thead><tr><th>Cliente</th><th>Facturado</th><th>Cobrado</th><th>Pendiente</th></tr></thead>
+          <thead><tr><th>Cliente</th><th>Moneda</th><th>Facturado</th><th>Cobrado</th><th>Pendiente</th></tr></thead>
           <tbody>
-            <tr v-for="c in data.finance.byClient" :key="c.clientId ?? 'none'">
-              <td>{{ c.name }}</td><td>{{ money(c.invoiced) }}</td><td>{{ money(c.collected) }}</td><td>{{ money(c.pending) }}</td>
+            <tr v-for="c in data.finance.byClient" :key="(c.clientId ?? 'none') + c.currency">
+              <td>{{ c.name }}</td><td>{{ c.currency }}</td><td>{{ money(c.invoiced, c.currency) }}</td><td>{{ money(c.collected, c.currency) }}</td><td>{{ money(c.pending, c.currency) }}</td>
             </tr>
           </tbody>
         </table>
@@ -78,7 +79,7 @@
           <thead><tr><th>N°</th><th>Monto</th><th>Estado</th><th>Vence</th></tr></thead>
           <tbody>
             <tr v-for="u in data.finance.upcoming" :key="u.id">
-              <td>{{ u.number || '—' }}</td><td>{{ money(u.total) }}</td><td>{{ u.status }}</td><td>{{ fmtDate(u.dueDate) }}</td>
+              <td>{{ u.number || '—' }}</td><td>{{ money(u.total, u.currency) }}</td><td>{{ statusLabel(u.status) }}</td><td>{{ fmtDate(u.dueDate) }}</td>
             </tr>
           </tbody>
         </table>
@@ -99,7 +100,7 @@
           <thead><tr><th>Proyecto</th><th>Presupuesto</th><th>Facturado</th><th>Cobrado</th><th>Avance</th></tr></thead>
           <tbody>
             <tr v-for="p in data.projects" :key="p.id">
-              <td>{{ p.name }}</td><td>{{ money(p.budget) }}</td><td>{{ money(p.invoiced) }}</td><td>{{ money(p.collected) }}</td><td>{{ p.progress }}%</td>
+              <td>{{ p.name }}</td><td>{{ money(p.budget, p.currency) }}</td><td>{{ money(p.invoiced, p.currency) }}</td><td>{{ money(p.collected, p.currency) }}</td><td>{{ p.progress }}%</td>
             </tr>
           </tbody>
         </table>
@@ -108,14 +109,14 @@
       <section v-if="activeTab === 'horas'" class="kpi-grid">
         <div class="kpi"><span class="kpi-label">Horas totales</span><span class="kpi-value">{{ hours(data.time.totalMinutes) }}</span></div>
         <div class="kpi"><span class="kpi-label">Facturables</span><span class="kpi-value">{{ hours(data.time.billableMinutes) }}</span></div>
-        <div class="kpi"><span class="kpi-label">Monto facturable</span><span class="kpi-value">{{ money(data.time.billableAmount) }}</span></div>
+        <div class="kpi"><span class="kpi-label">Monto facturable</span><span class="kpi-value">{{ billableByCurrency() }}</span></div>
       </section>
       <section v-if="activeTab === 'horas'" class="report-table-wrap">
         <table class="report-table">
           <thead><tr><th>Proyecto</th><th>Minutos</th><th>Facturables</th><th>Monto</th></tr></thead>
           <tbody>
             <tr v-for="r in data.time.byProject" :key="r.projectId ?? 'none'">
-              <td>{{ projectName(r.projectId) }}</td><td>{{ r.minutes }}</td><td>{{ r.billableMinutes }}</td><td>{{ money(r.billableAmount) }}</td>
+              <td>{{ projectName(r.projectId) }}</td><td>{{ r.minutes }}</td><td>{{ r.billableMinutes }}</td><td>{{ money(r.billableAmount, projectCurrency(r.projectId)) }}</td>
             </tr>
           </tbody>
         </table>
@@ -194,8 +195,17 @@ export default defineComponent({
       }
     }
 
-    function money(n: number) {
-      return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n ?? 0)
+    function money(n: number, currency = 'USD') {
+      return new Intl.NumberFormat(currency === 'ARS' ? 'es-AR' : 'es-AR', { style: 'currency', currency, maximumFractionDigits: 0 }).format(n ?? 0)
+    }
+
+    const STATUS_ES: Record<string, string> = {
+      draft: 'Borrador', pending: 'Pendiente', sent: 'Enviada', paid: 'Pagada',
+      collected: 'Cobrada', overdue: 'Vencida', cancelled: 'Cancelada',
+    }
+
+    function statusLabel(s: string) {
+      return STATUS_ES[s] ?? s
     }
 
     function hours(min: number) {
@@ -214,9 +224,25 @@ export default defineComponent({
       return projects.value.find((p) => p._id === id)?.name ?? id
     }
 
+    function projectCurrency(id: string | null) {
+      if (!id) return 'USD'
+      return (projects.value.find((p) => p._id === id) as any)?.currency ?? 'USD'
+    }
+
+    function billableByCurrency() {
+      if (!data.value) return '—'
+      const map = new Map<string, number>()
+      for (const r of data.value.time.byProject) {
+        const c = projectCurrency(r.projectId)
+        map.set(c, (map.get(c) ?? 0) + (r.billableAmount ?? 0))
+      }
+      if (!map.size) return money(0)
+      return [...map.entries()].map(([c, n]) => money(n, c)).join(' + ')
+    }
+
     return {
       filters, clients, projects, data, loading, exporting, activeTab, tabs,
-      load, doExport, money, hours, fmtDate, projectName,
+      load, doExport, money, hours, fmtDate, projectName, projectCurrency, billableByCurrency, statusLabel,
     }
   },
 })

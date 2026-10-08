@@ -181,6 +181,19 @@ export class ProjectsService {
     }
     const installmentPendingStatuses = ['pending', 'sent', 'overdue'];
 
+    const curOf = (i: any) => i.currency ?? (project as any)?.currency ?? 'USD';
+    const byCurrencyMap = new Map<string, { currency: string; agreed: number; paid: number; pending: number; overdue: number }>();
+    for (const i of invoices) {
+      if (i.status === 'cancelled' || i.status === 'draft') continue;
+      const c = curOf(i);
+      const row = byCurrencyMap.get(c) ?? { currency: c, agreed: 0, paid: 0, pending: 0, overdue: 0 };
+      row.agreed += i.total ?? 0;
+      if (i.status === 'paid' || i.status === 'collected') row.paid += i.total ?? 0;
+      else if (i.status === 'pending' || i.status === 'sent') row.pending += i.total ?? 0;
+      else if (i.status === 'overdue') row.overdue += i.total ?? 0;
+      byCurrencyMap.set(c, row);
+    }
+
     const invoiceStats = {
       total: invoices.length,
       agreed: invoices
@@ -208,6 +221,7 @@ export class ProjectsService {
         .map((i) => new Date(i.dueDate as any).getTime())
         .sort((a, b) => a - b)
         .map((t) => new Date(t).toISOString())[0] ?? null,
+      byCurrency: [...byCurrencyMap.values()],
     };
 
     const billableEntries = timeEntries.filter((t) => t.billable);

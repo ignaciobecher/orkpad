@@ -39,7 +39,7 @@
         </div>
         <div class="summary-content">
           <span class="summary-label">{{ $t('finance.type.income') }}</span>
-          <span class="summary-value">{{ formatCurrency(totalIncome) }}</span>
+          <span class="summary-value">{{ formatAmounts(incomeByCurrency) }}</span>
         </div>
       </w-card>
       <w-card class="summary-card expense">
@@ -48,16 +48,16 @@
         </div>
         <div class="summary-content">
           <span class="summary-label">{{ $t('finance.type.expense') }}</span>
-          <span class="summary-value">{{ formatCurrency(totalExpense) }}</span>
+          <span class="summary-value">{{ formatAmounts(expenseByCurrency) }}</span>
         </div>
       </w-card>
-      <w-card class="summary-card balance" :class="{ 'positive': balance >= 0, 'negative': balance < 0 }">
+      <w-card class="summary-card balance">
         <div class="summary-icon">
           <span class="material-symbols-outlined">account_balance_wallet</span>
         </div>
         <div class="summary-content">
           <span class="summary-label">{{ $t('finance.balance') }}</span>
-          <span class="summary-value">{{ formatCurrency(balance) }}</span>
+          <span class="summary-value">{{ formatAmounts(balanceByCurrency()) }}</span>
         </div>
       </w-card>
     </div>
@@ -78,7 +78,7 @@
           </template>
           <template #item-total="{ item }">
             <span :class="{ 'font-bold': true, 'text-success': item.type !== 'expense', 'text-error': item.type === 'expense' }">
-              {{ (item.type === 'expense' ? '-' : '+') }} {{ formatCurrency(item.total) }}
+              {{ (item.type === 'expense' ? '-' : '+') }} {{ formatCurrency(item.total, item.currency) }}
             </span>
           </template>
           <template #item-status="{ item }">
@@ -141,7 +141,7 @@ export default defineComponent({
     }
   },
   computed: {
-    ...mapState(useInvoicesStore, ['items', 'loading', 'totalIncome', 'totalExpense', 'balance']),
+    ...mapState(useInvoicesStore, ['items', 'loading', 'totalIncome', 'totalExpense', 'balance', 'incomeByCurrency', 'expenseByCurrency']),
     ...mapState(usePaymentMethodsStore, { paymentMethodNames: 'activeNames' }),
     ...mapWritableState(useInvoicesStore, ['filters']),
     crudSchema() {
@@ -215,6 +215,16 @@ export default defineComponent({
   methods: {
     ...mapActions(useInvoicesStore, ['fetchAll', 'setFilters', 'create', 'update', 'remove']),
     formatCurrency,
+    formatAmounts(list: { currency: string; total: number }[]) {
+      if (!list?.length) return formatCurrency(0, 'USD')
+      return list.map((x) => formatCurrency(x.total, x.currency)).join(' + ')
+    },
+    balanceByCurrency() {
+      const map = new Map<string, number>()
+      for (const x of this.incomeByCurrency ?? []) map.set(x.currency, (map.get(x.currency) ?? 0) + x.total)
+      for (const x of this.expenseByCurrency ?? []) map.set(x.currency, (map.get(x.currency) ?? 0) - x.total)
+      return [...map.entries()].map(([currency, total]) => ({ currency, total }))
+    },
     async loadRelationLabels() {
       const ids = [...new Set(this.items.map(item => item.clientId).filter(Boolean))]
       await Promise.all(ids.map(async (id) => {

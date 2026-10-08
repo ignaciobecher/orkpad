@@ -50,9 +50,9 @@
         <w-kpi-card :title="$t('projects.detail.taskInProgress')" :value="overview.taskStats.inProgress" />
         <w-kpi-card :title="$t('projects.detail.taskOverdue')" :value="overview.taskStats.overdue" />
         <w-kpi-card :title="$t('projects.detail.hoursLogged')" :value="formatHours(overview.timeStats.totalMinutes)" />
-        <w-kpi-card :title="$t('projects.detail.invoicePaid')" :value="formatMoney(overview.invoiceStats.paid, overview.project.currency)" />
-        <w-kpi-card :title="$t('projects.detail.invoicePending')" :value="formatMoney(overview.invoiceStats.pending, overview.project.currency)" />
-        <w-kpi-card :title="$t('projects.detail.invoiceOverdue')" :value="formatMoney(overview.invoiceStats.overdue, overview.project.currency)" />
+        <w-kpi-card :title="$t('projects.detail.invoicePaid')" :value="moneyByCurrency('paid')" />
+        <w-kpi-card :title="$t('projects.detail.invoicePending')" :value="moneyByCurrency('pending')" />
+        <w-kpi-card :title="$t('projects.detail.invoiceOverdue')" :value="moneyByCurrency('overdue')" />
       </section>
 
       <!-- Detail tabs -->
@@ -174,7 +174,7 @@
                 <span class="mono-label">{{ $t('projects.detail.billingPlan') }}</span>
                 <div class="billing-type">{{ billingLabel }}</div>
                 <div v-if="isInstallments" class="billing-progress-text">
-                  {{ $t('projects.detail.collectedOfAgreed', { collected: formatMoney(overview.invoiceStats.paid, overview.project.currency), agreed: formatMoney(overview.invoiceStats.agreed, overview.project.currency), pct: collectedPct }) }}
+                  {{ collectedOfAgreedText() }}
                 </div>
                 <div v-if="isInstallments && overview.invoiceStats.agreed > 0" class="billing-progress-track">
                   <div class="billing-progress-fill" :style="{ width: Math.min(collectedPct, 100) + '%' }"></div>
@@ -195,10 +195,10 @@
 
         <section class="detail-section full-width">
           <div class="finance-summary-cards">
-            <w-kpi-card :title="$t('projects.detail.agreed')" :value="formatMoney(overview.invoiceStats.agreed, overview.project.currency)" />
-            <w-kpi-card :title="$t('projects.detail.collected')" :value="formatMoney(overview.invoiceStats.paid, overview.project.currency)" />
-            <w-kpi-card :title="$t('projects.detail.pending')" :value="formatMoney(overview.invoiceStats.pending + overview.invoiceStats.overdue, overview.project.currency)" />
-            <w-kpi-card :title="$t('projects.detail.collectedPct')" :value="collectedPct + '%' " />
+            <w-kpi-card :title="$t('projects.detail.agreed')" :value="moneyByCurrency('agreed')" />
+            <w-kpi-card :title="$t('projects.detail.collected')" :value="moneyByCurrency('paid')" />
+            <w-kpi-card :title="$t('projects.detail.pending')" :value="moneyByCurrency('pendingOverdue')" />
+            <w-kpi-card :title="$t('projects.detail.collectedPct')" :value="collectedPctText" />
             <w-kpi-card :title="$t('projects.detail.installmentsCount')" :value="overview.invoiceStats.installmentsTotal" />
             <w-kpi-card :title="$t('projects.detail.installmentsPending')" :value="overview.invoiceStats.installmentsPending" />
             <w-kpi-card :title="$t('projects.detail.nextDue')" :value="overview.invoiceStats.nextDueDate ? formatCalendarDate(overview.invoiceStats.nextDueDate) : '—'" />
@@ -367,9 +367,45 @@ export default defineComponent({
       return this.$t('projects.detail.billingInInstallments', { count })
     },
     collectedPct(): number {
-      const s = this.overview?.invoiceStats
-      if (!s || !s.agreed || s.agreed <= 0) return 0
-      return Math.round(((s.paid ?? 0) / s.agreed) * 100)
+      const rows = this.currencyRows()
+      const pcts = rows.map((r) => (!r.agreed || r.agreed <= 0 ? 0 : Math.round((r.paid / r.agreed) * 100)))
+      return Math.max(0, ...pcts)
+    },
+    collectedPctText(): string {
+      const rows = this.currencyRows()
+      if (rows.length === 1) return this.collectedPct + '%'
+      return rows
+        .map((r) => (r.agreed > 0 ? Math.round((r.paid / r.agreed) * 100) : 0) + '%')
+        .join(' + ')
+    },
+    currencyRows(): { currency: string; agreed: number; paid: number; pending: number; overdue: number }[] {
+      const s: any = this.overview?.invoiceStats
+      if (s?.byCurrency?.length) return s.byCurrency
+      const c = (this.overview?.project as any)?.currency ?? 'USD'
+      return [{
+        currency: c,
+        agreed: s?.agreed ?? 0,
+        paid: s?.paid ?? 0,
+        pending: s?.pending ?? 0,
+        overdue: s?.overdue ?? 0,
+      }]
+    },
+    moneyByCurrency(key: 'agreed' | 'paid' | 'pending' | 'overdue' | 'pendingOverdue'): string {
+      return this.currencyRows()
+        .map((r) => this.formatMoney(key === 'pendingOverdue' ? r.pending + r.overdue : r[key], r.currency))
+        .join(' + ')
+    },
+    collectedOfAgreedText(): string {
+      return this.currencyRows()
+        .map((r) => {
+          const pct = r.agreed > 0 ? Math.round((r.paid / r.agreed) * 100) : 0
+          return (this.$t('projects.detail.collectedOfAgreed', {
+            collected: this.formatMoney(r.paid, r.currency),
+            agreed: this.formatMoney(r.agreed, r.currency),
+            pct,
+          }) as string)
+        })
+        .join(' + ')
     },
     hasInstallmentInvoices(): boolean {
       const list = this.overview?.invoices ?? []

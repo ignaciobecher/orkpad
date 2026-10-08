@@ -29,7 +29,7 @@ export interface DashboardStats {
   totalClients: number;
   totalProjects: number;
   totalTasks: number;
-  totalRevenue: number;
+  revenueByCurrency: { currency: string; total: number }[];
   recentTasks: RecentTask[];
 }
 
@@ -72,8 +72,8 @@ export class DashboardService {
         .limit(5)
         .exec(),
       this.invoiceModel.aggregate([
-        { $match: { ...baseFilter, status: 'paid', type: 'income' } },
-        { $group: { _id: null, total: { $sum: '$total' } } },
+        { $match: { ...baseFilter, status: { $in: ['paid', 'collected'] }, type: 'income' } },
+        { $group: { _id: { $ifNull: ['$currency', 'USD'] }, total: { $sum: '$total' } } },
       ]),
     ]);
 
@@ -104,7 +104,10 @@ export class DashboardService {
       totalClients,
       totalProjects,
       totalTasks,
-      totalRevenue: revenueResult[0]?.total ?? 0,
+      revenueByCurrency: (revenueResult as { _id: string; total: number }[]).map((r) => ({
+        currency: r._id ?? 'USD',
+        total: r.total ?? 0,
+      })),
       recentTasks,
     };
   }
