@@ -335,8 +335,7 @@
       "finance": "FINANCE",
       "operations": "OPERATIONS",
       "knowledge": "FILES",
-      "reports": "REPORTS",
-      "ai": "AI ASSISTANT"
+      "reports": "REPORTS"
     },
     "items": {
       "dashboard": "Dashboard",
@@ -351,8 +350,7 @@
       "agenda": "Agenda",
       "settings": "Settings",
       "logout": "Logout",
-      "reports": "Reports",
-      "assistant": "Assistant"
+      "reports": "Reports"
     },
     "logout_confirm": {
       "title": "Confirm Logout",
@@ -694,23 +692,6 @@
       "agencyWebsite": "Website",
       "taxId": "Tax ID",
       "agencySection": "Quote data (reused on create)"
-    },
-    "ai": {
-      "title": "AI ASSISTANT",
-      "description": "Chat with your data using a local model (Ollama). Nothing leaves your server.",
-      "enabled": "Assistant enabled",
-      "baseUrl": "Ollama URL",
-      "chatModel": "Chat model",
-      "embedModel": "Embeddings model",
-      "temperature": "Temperature",
-      "systemPrompt": "System prompt",
-      "systemPromptPh": "Empty = default prompt",
-      "indexLabel": "Index for search",
-      "indexStats": "{chunks} indexed chunks",
-      "test": "Test connection",
-      "testing": "Testing...",
-      "reindex": "Reindex all",
-      "indexing": "Indexing..."
     }
   },
   "agenda": {

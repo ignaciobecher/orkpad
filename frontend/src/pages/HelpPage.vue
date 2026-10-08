@@ -642,35 +642,6 @@
           </section>
 
           <!-- Settings -->
-          <section id="assistant" class="article-section">
-            <h2>ASISTENTE IA</h2>
-            <p>
-              PREGUNTALE A ORKPAD POR TUS PROYECTOS, CUOTAS, TAREAS Y DOCUMENTACIÓN. USA UN
-              MODELO LOCAL (OLLAMA): NADA SALE DE TU SERVIDOR.
-            </p>
-
-            <div class="tutorial-box">
-              <h4>
-                <span class="material-symbols-outlined">play_circle</span> TUTORIAL: PRIMERA PREGUNTA
-              </h4>
-              <ol>
-                <li>ABRÍ <strong>ASISTENTE IA</strong> EN EL MENÚ LATERAL.</li>
-                <li>ELEGÍ UN PROYECTO O DEJÁ "TODO EL WORKSPACE".</li>
-                <li>ESCRIBÍ TU PREGUNTA, POR EJEMPLO "¿QUÉ FALTA COBRAR ESTE MES?".</li>
-                <li>LAS RESPUESTAS CITAN LAS FUENTES [1], [2]... USADAS.</li>
-              </ol>
-            </div>
-
-            <div class="info-box info">
-              <span class="material-symbols-outlined">settings</span>
-              <p>
-                CONFIGURALO EN <strong>CONFIGURACIÓN → ASISTENTE IA</strong>: URL DE OLLAMA,
-                MODELO DE CHAT Y DE EMBEDDINGS, QUÉ TIPOS DE DATOS INDEXA Y BOTÓN
-                <strong>REINDEXAR TODO</strong> DESPUÉS DE CARGAR DOCUMENTACIÓN.
-              </p>
-            </div>
-          </section>
-
           <section id="settings" class="article-section">
             <h2>CONFIGURACIÓN DEL SISTEMA</h2>
             <p>PERSONALIZA TU EXPERIENCIA EN ORKPAD.</p>
@@ -762,7 +733,6 @@ export default defineComponent({
       {
         title: 'SISTEMA',
         items: [
-          { id: 'assistant', label: 'ASISTENTE IA', icon: 'smart_toy' },
           { id: 'settings', label: 'CONFIGURACIÓN', icon: 'settings' },
         ],
       },

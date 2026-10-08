@@ -335,8 +335,7 @@
       "finance": "FINANZAS",
       "operations": "OPERACIONES",
       "knowledge": "ARCHIVOS",
-      "reports": "REPORTES",
-      "ai": "ASISTENTE IA"
+      "reports": "REPORTES"
     },
     "items": {
       "dashboard": "Dashboard",
@@ -351,8 +350,7 @@
       "agenda": "Agenda",
       "settings": "Configuración",
       "logout": "Cerrar sesión",
-      "reports": "Reportes",
-      "assistant": "Asistente"
+      "reports": "Reportes"
     },
     "logout_confirm": {
       "title": "Confirmar Cierre de Sesión",
@@ -692,23 +690,6 @@
       "agencyWebsite": "Sitio web",
       "taxId": "CUIT/CUIL",
       "agencySection": "Datos para presupuestos (se reutilizan al crear)"
-    },
-    "ai": {
-      "title": "ASISTENTE IA",
-      "description": "Chat con tus datos usando un modelo local (Ollama). Nada sale de tu servidor.",
-      "enabled": "Asistente activado",
-      "baseUrl": "URL de Ollama",
-      "chatModel": "Modelo de chat",
-      "embedModel": "Modelo de embeddings",
-      "temperature": "Temperatura",
-      "systemPrompt": "Prompt del sistema",
-      "systemPromptPh": "Vacío = prompt por defecto",
-      "indexLabel": "Indexar para buscar",
-      "indexStats": "{chunks} partes indexadas",
-      "test": "Probar conexión",
-      "testing": "Probando...",
-      "reindex": "Reindexar todo",
-      "indexing": "Indexando..."
     }
   },
   "agenda": {

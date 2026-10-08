@@ -74,80 +74,6 @@
         </div>
       </w-card>
 
-      <!-- Asistente IA -->
-      <w-card>
-        <div class="settings-section">
-          <h3 class="section-title">{{ $t('settings.ai.title') }}</h3>
-          <p class="setting-description">{{ $t('settings.ai.description') }}</p>
-          <div class="setting-row">
-            <div class="setting-info">
-              <p class="setting-label">{{ $t('settings.ai.enabled') }}</p>
-            </div>
-            <div class="setting-actions">
-              <label class="toggle-switch">
-                <input type="checkbox" v-model="aiForm.enabled" />
-                <span class="toggle-slider"></span>
-              </label>
-            </div>
-          </div>
-          <div class="form-grid">
-            <w-input :label="$t('settings.ai.baseUrl')" v-model="aiForm.ollamaBaseUrl" placeholder="http://ollama:11434" />
-            <div>
-              <label class="w-input-label">{{ $t('settings.ai.chatModel') }}</label>
-              <select v-model="aiForm.chatModel" class="brand-select">
-                <option v-for="m in aiModels" :key="m.name" :value="m.name">{{ m.name }}</option>
-              </select>
-            </div>
-          </div>
-          <div class="form-grid">
-            <div>
-              <label class="w-input-label">{{ $t('settings.ai.embedModel') }}</label>
-              <select v-model="aiForm.embedModel" class="brand-select">
-                <option v-for="m in aiModels" :key="m.name" :value="m.name">{{ m.name }}</option>
-              </select>
-            </div>
-            <div>
-              <label class="w-input-label">{{ $t('settings.ai.temperature') }}</label>
-              <input v-model.number="aiForm.temperature" type="number" min="0" max="2" step="0.1" class="brand-select" />
-            </div>
-          </div>
-          <div class="form-grid">
-            <div style="grid-column: 1 / -1">
-              <label class="w-input-label">{{ $t('settings.ai.systemPrompt') }}</label>
-              <textarea v-model="aiForm.systemPrompt" rows="3" class="brand-textarea" :placeholder="$t('settings.ai.systemPromptPh')"></textarea>
-            </div>
-          </div>
-          <div class="ai-index-row">
-            <span class="setting-label">{{ $t('settings.ai.indexLabel') }}</span>
-            <label v-for="t in aiIndexOptions" :key="t.value" class="ai-check">
-              <input type="checkbox" :value="t.value" v-model="aiForm.indexTypes" />
-              {{ t.label }}
-            </label>
-          </div>
-          <p class="setting-description" v-if="aiIndexStats">
-            {{ $t('settings.ai.indexStats', { chunks: aiIndexStats.chunks }) }}
-          </p>
-          <div class="ai-actions">
-            <w-button variant="primary" :loading="aiLoading" @click="saveAi">
-              {{ $t('settings.saveChanges') }}
-            </w-button>
-            <button class="btn-secondary" :disabled="aiLoading || aiTesting" @click="testAi">
-              {{ aiTesting ? $t('settings.ai.testing') : $t('settings.ai.test') }}
-            </button>
-            <button class="btn-secondary" :disabled="aiLoading || aiIndexing" @click="reindexAi">
-              {{ aiIndexing ? $t('settings.ai.indexing') : $t('settings.ai.reindex') }}
-            </button>
-            <div v-if="aiIndexing" class="ai-progress">
-              <div class="ai-progress-track">
-                <div class="ai-progress-fill" :style="{ width: aiIndexProgress + '%' }"></div>
-              </div>
-              <span class="ai-progress-label">{{ aiIndexLabel || $t('settings.ai.indexing') }}</span>
-            </div>
-            <span v-if="aiTestResult" class="ai-test-result">{{ aiTestResult }}</span>
-          </div>
-        </div>
-      </w-card>
-
       <!-- Security / 2FA -->
       <w-card>
         <div class="settings-section">
@@ -425,7 +351,6 @@ import { usePushNotifications } from '@/composables/usePushNotifications'
 import { usePaymentMethodsStore } from '@/stores/payment-methods.store'
 import { useBrandingStore } from '@/stores/branding.store'
 import { filesApi } from '@/api/files/files.api'
-import { aiApi } from '@/api/ai/ai.api'
 import { useWebAuthn } from '@/composables/useWebAuthn'
 import type { WebAuthnCredentialInfo } from '@/api/auth/auth.types'
 import WButton from '@/components/ui/WButton.vue'
@@ -477,15 +402,6 @@ export default defineComponent({
       brandLogoFileId: null as string | null,
       brandLogoPreview: null as string | null,
       brandLoading: false,
-      aiForm: { enabled: true, ollamaBaseUrl: '', chatModel: '', embedModel: '', temperature: 0.3, systemPrompt: '', indexTypes: ['note', 'doc', 'task', 'project', 'invoice'] as string[] },
-      aiModels: [] as { name: string }[],
-      aiLoading: false,
-      aiTesting: false,
-      aiIndexing: false,
-      aiIndexProgress: 0,
-      aiIndexLabel: '',
-      aiTestResult: '',
-      aiIndexStats: null as { chunks: number } | null,
       passwordForm: { current: '', next: '' },
       passwordLoading: false,
       passwordError: '',
@@ -529,7 +445,6 @@ export default defineComponent({
     }
     await this.paymentMethodsStore.fetchAll()
     await this.loadBranding()
-    await this.loadAi()
   },
   methods: {
     ...mapActions(useAuthStore, ['fetchMe', 'logout']),
@@ -610,119 +525,6 @@ export default defineComponent({
       }
       this.brandLogoFileId = null
       this.brandLogoPreview = null
-    },
-
-    aiIndexOptions() {
-      return [
-        { value: 'note', label: 'Pizarra' },
-        { value: 'doc', label: 'Docs' },
-        { value: 'task', label: 'Tareas' },
-        { value: 'project', label: 'Proyectos' },
-        { value: 'invoice', label: 'Facturas' },
-      ]
-    },
-
-    async loadAi() {
-      this.aiLoading = true
-      try {
-        const { data } = await aiApi.settings()
-        this.aiForm = {
-          enabled: data.enabled,
-          ollamaBaseUrl: data.ollamaBaseUrl,
-          chatModel: data.chatModel,
-          embedModel: data.embedModel,
-          temperature: data.temperature,
-          systemPrompt: data.systemPrompt ?? '',
-          indexTypes: data.indexTypes?.length ? data.indexTypes : ['note', 'doc', 'task', 'project', 'invoice'],
-        }
-        this.aiIndexStats = data.index ?? null
-        await this.loadAiModels()
-      } catch {
-        // sin backend de IA: se muestra vacío
-      } finally {
-        this.aiLoading = false
-      }
-    },
-
-    async loadAiModels() {
-      try {
-        const { data } = await aiApi.models(this.aiForm.ollamaBaseUrl || undefined)
-        this.aiModels = data
-        if (!this.aiForm.chatModel && data.length) this.aiForm.chatModel = data[0].name
-        if (!this.aiForm.embedModel && data.length) this.aiForm.embedModel = data[0].name
-      } catch {
-        this.aiModels = []
-      }
-    },
-
-    async saveAi() {
-      this.aiLoading = true
-      try {
-        const { data } = await aiApi.saveSettings({
-          ...this.aiForm,
-          systemPrompt: this.aiForm.systemPrompt || null,
-        })
-        this.aiIndexStats = (data as any).index ?? null
-        showToast(this.$t('settings.saveChanges'), 'success')
-      } catch {
-        showToast(this.$t('settings.ai.saveError', 'No se pudo guardar.'), 'error')
-      } finally {
-        this.aiLoading = false
-      }
-    },
-
-    async testAi() {
-      this.aiTesting = true
-      this.aiTestResult = ''
-      try {
-        const { data } = await aiApi.test(this.aiForm.ollamaBaseUrl || undefined)
-        this.aiTestResult = `OK — ${data.models} modelos`
-        await this.loadAiModels()
-      } catch (err: any) {
-        this.aiTestResult = err.response?.data?.message ?? 'Sin conexión'
-      } finally {
-        this.aiTesting = false
-      }
-    },
-
-    async reindexAi() {
-      this.aiIndexing = true
-      this.aiIndexProgress = 0
-      this.aiIndexLabel = ''
-      try {
-        const { data: job } = await aiApi.reindex()
-        await this.pollReindex(job.id)
-      } catch (err: any) {
-        showToast(err.response?.data?.message ?? 'Falló la indexación', 'error')
-        this.aiIndexing = false
-      }
-    },
-
-    async pollReindex(jobId: string) {
-      let status: string = 'running'
-      try {
-        while (status === 'running') {
-          await new Promise((r) => setTimeout(r, 1500))
-          const { data: job } = await aiApi.reindexStatus(jobId)
-          status = job.status
-          if (job.total > 0) {
-            this.aiIndexProgress = Math.min(100, Math.round((job.done / job.total) * 100))
-            this.aiIndexLabel = `${job.done}/${job.total} partes`
-          }
-          if (status === 'done') {
-            showToast(`Indexados ${job.documents} documentos (${job.done} partes)`, 'success')
-          } else if (status === 'failed') {
-            showToast(job.error ?? 'Falló la indexación', 'error')
-          }
-        }
-      } catch {
-        showToast('Se perdió el progreso, reintentá', 'error')
-      } finally {
-        this.aiIndexing = false
-        this.aiIndexProgress = 0
-        this.aiIndexLabel = ''
-        await this.loadAi()
-      }
     },
 
     async saveBranding() {

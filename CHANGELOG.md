@@ -5,6 +5,9 @@ All notable changes to this project are documented here. Format follows
 
 ## [Unreleased]
 
+### Removed
+- AI assistant with local Ollama models (chat, RAG, settings) and the Ollama stack.
+
 ### Added
 - AI assistant with local Ollama models: chat section with history,
   RAG over notes/docs/tasks/projects/invoices with cited sources,

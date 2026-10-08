@@ -9,7 +9,6 @@ import {
 import { normalizeCalendarDate } from '../../common/utils/dates';
 import { ClientsService } from '../clients/clients.service';
 import { ProjectsService } from '../projects/projects.service';
-import { AiIndexService } from '../ai/ai-index.service';
 import { InvoicesRepository } from './invoices.repository';
 import { CreateInvoiceDto } from './dto/create-invoice.dto';
 import { UpdateInvoiceDto } from './dto/update-invoice.dto';
@@ -22,7 +21,6 @@ export class InvoicesService {
     private readonly clientsService: ClientsService,
     @Inject(forwardRef(() => ProjectsService))
     private readonly projectsService: ProjectsService,
-    private readonly aiIndex: AiIndexService,
   ) {}
 
   findAll(workspaceId: string, query: QueryInvoiceDto) {
@@ -131,14 +129,12 @@ export class InvoicesService {
       throw err;
     }
     if (!invoice) throw new NotFoundException(`Invoice ${id} not found`);
-    this.aiIndex.notifyChanged(workspaceId, 'invoice', id);
     return invoice;
   }
 
   async remove(workspaceId: string, id: string) {
     const invoice = await this.invoicesRepository.softDelete(workspaceId, id);
     if (!invoice) throw new NotFoundException(`Invoice ${id} not found`);
-    this.aiIndex.notifyChanged(workspaceId, 'invoice', id, true);
     return invoice;
   }
 

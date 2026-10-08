@@ -4,14 +4,12 @@ import { DocumentsController } from './docs.controller';
 import { DocumentsService } from './docs.service';
 import { DocumentsRepository } from './docs.repository';
 import { Document, DocumentSchema } from './docs.schema';
-import { AiModule } from '../ai/ai.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: Document.name, schema: DocumentSchema },
     ]),
-    AiModule,
   ],
   controllers: [DocumentsController],
   providers: [DocumentsService, DocumentsRepository],
