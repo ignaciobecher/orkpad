@@ -73,7 +73,7 @@ import WCard from '@/components/ui/WCard.vue'
 import WBadge from '@/components/ui/WBadge.vue'
 import WCrudModal from '@/components/ui/WCrudModal.vue'
 import { loadClientOptionById, loadClientOptions } from '@/utils/remote-entity-options'
-import { formatDate } from '@/utils/date'
+import { formatDate, formatCalendarDate } from '@/utils/date'
 
 export default defineComponent({
   name: 'ProjectsPage',
@@ -130,8 +130,8 @@ export default defineComponent({
     formattedItems() {
       return this.items.map((item: any) => ({
         ...item,
-        startDateFormatted: item.startDate ? formatDate(item.startDate) : '—',
-        endDateFormatted: item.endDate ? formatDate(item.endDate) : '—',
+        startDateFormatted: item.startDate ? formatCalendarDate(item.startDate) : '—',
+        endDateFormatted: item.endDate ? formatCalendarDate(item.endDate) : '—',
       }))
     }
   },

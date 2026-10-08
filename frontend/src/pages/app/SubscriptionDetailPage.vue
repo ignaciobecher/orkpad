@@ -49,13 +49,13 @@
       <section class="kpi-strip">
         <w-kpi-card
           title="Último Pago"
-          :value="subscription.lastPaymentDate ? formatDate(subscription.lastPaymentDate) : '—'"
+          :value="subscription.lastPaymentDate ? formatCalendarDate(subscription.lastPaymentDate) : '—'"
           icon="check_circle"
           color="var(--color-success)"
         />
         <w-kpi-card
           title="Próximo Vencimiento"
-          :value="formatDate(subscription.nextBillingDate)"
+          :value="formatCalendarDate(subscription.nextBillingDate)"
           icon="event"
           :color="isOverdue(subscription.nextBillingDate) ? 'var(--color-error)' : isExpiringSoon(subscription.nextBillingDate) ? 'var(--color-warning)' : 'var(--color-primary)'"
         />
@@ -110,8 +110,8 @@
               </span>
               <div class="payment-info">
                 <span class="payment-period">{{ payment.periodLabel }}</span>
-                <span class="payment-due">Vence: {{ formatDate(payment.dueDate) }}</span>
-                <span v-if="payment.paidAt" class="payment-paid-at">Pagado: {{ formatDate(payment.paidAt) }}</span>
+                <span class="payment-due">Vence: {{ formatCalendarDate(payment.dueDate) }}</span>
+                <span v-if="payment.paidAt" class="payment-paid-at">Pagado: {{ formatCalendarDate(payment.paidAt) }}</span>
                 <span v-if="payment.notes" class="payment-notes">{{ payment.notes }}</span>
               </div>
             </div>
@@ -181,7 +181,7 @@ import WButton from '@/components/ui/WButton.vue'
 import WBadge from '@/components/ui/WBadge.vue'
 import WKpiCard from '@/components/ui/WKpiCard.vue'
 import WCrudModal from '@/components/ui/WCrudModal.vue'
-import { formatDate, isExpiringSoon } from '@/utils/date'
+import { formatDate, formatCalendarDate, isExpiringSoon } from '@/utils/date'
 import {
   loadClientOptionById,
   loadClientOptions,
@@ -381,7 +381,7 @@ export default defineComponent({
       totalPaid, pendingCount,
       showAddPaymentModal, showEditModal, paymentData, subscriptionEditData,
       paymentSchema, subscriptionSchema,
-      formatDate, formatMoney, isExpiringSoon, isOverdue, getStatusColor, getStatusLabel,
+      formatDate, formatMoney, formatCalendarDate, isExpiringSoon, isOverdue, getStatusColor, getStatusLabel,
       handleMarkPaid, handleMarkPending, handleDeletePayment,
       openAddPaymentModal, onSavePayment, openEditModal, onSaveSubscription,
     }

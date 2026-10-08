@@ -19,15 +19,15 @@
           <div class="project-dates">
             <span v-if="overview.project.startDate">
               <span class="material-symbols-outlined">calendar_today</span>
-              {{ formatDate(overview.project.startDate) }}
+              {{ formatCalendarDate(overview.project.startDate) }}
             </span>
             <span v-if="overview.project.endDate">
               <span class="material-symbols-outlined">event</span>
-              {{ formatDate(overview.project.endDate) }}
+              {{ formatCalendarDate(overview.project.endDate) }}
             </span>
             <span v-if="overview.project.actualEndDate">
               <span class="material-symbols-outlined">event_available</span>
-              Fin real: {{ formatDate(overview.project.actualEndDate) }}
+              Fin real: {{ formatCalendarDate(overview.project.actualEndDate) }}
             </span>
             <span v-if="overview.project.budget">
               <span class="material-symbols-outlined">payments</span>
@@ -86,7 +86,7 @@
                 <w-badge :color="getPriorityColor(item.priority)">{{ item.priority }}</w-badge>
               </template>
               <template #item-dueDate="{ item }">
-                <span :class="{ 'text-error': isOverdue(item.dueDate) }">{{ item.dueDate ? formatDate(item.dueDate) : '—' }}</span>
+                <span :class="{ 'text-error': isOverdue(item.dueDate) }">{{ item.dueDate ? formatCalendarDate(item.dueDate) : '—' }}</span>
               </template>
             </w-table>
           </w-card>
@@ -112,7 +112,7 @@
                 {{ formatMoney(item.total, item.currency) }}
               </template>
               <template #item-dueDate="{ item }">
-                {{ item.dueDate ? formatDate(item.dueDate) : '—' }}
+                {{ item.dueDate ? formatCalendarDate(item.dueDate) : '—' }}
               </template>
             </w-table>
           </w-card>
@@ -139,7 +139,7 @@
                 <w-badge :color="getPriorityColor(item.priority)">{{ item.priority }}</w-badge>
               </template>
               <template #item-dueDate="{ item }">
-                <span :class="{ 'text-error': isOverdue(item.dueDate) }">{{ item.dueDate ? formatDate(item.dueDate) : '—' }}</span>
+                <span :class="{ 'text-error': isOverdue(item.dueDate) }">{{ item.dueDate ? formatCalendarDate(item.dueDate) : '—' }}</span>
               </template>
             </w-table>
           </w-card>
@@ -158,7 +158,7 @@
                 <w-badge :color="getPriorityColor(item.priority)">{{ item.priority }}</w-badge>
               </template>
               <template #item-dueDate="{ item }">
-                <span :class="{ 'text-error': isOverdue(item.dueDate) }">{{ item.dueDate ? formatDate(item.dueDate) : '—' }}</span>
+                <span :class="{ 'text-error': isOverdue(item.dueDate) }">{{ item.dueDate ? formatCalendarDate(item.dueDate) : '—' }}</span>
               </template>
             </w-table>
           </w-card>
@@ -201,7 +201,7 @@
             <w-kpi-card :title="$t('projects.detail.collectedPct')" :value="collectedPct + '%' " />
             <w-kpi-card :title="$t('projects.detail.installmentsCount')" :value="overview.invoiceStats.installmentsTotal" />
             <w-kpi-card :title="$t('projects.detail.installmentsPending')" :value="overview.invoiceStats.installmentsPending" />
-            <w-kpi-card :title="$t('projects.detail.nextDue')" :value="overview.invoiceStats.nextDueDate ? formatDate(overview.invoiceStats.nextDueDate) : '—'" />
+            <w-kpi-card :title="$t('projects.detail.nextDue')" :value="overview.invoiceStats.nextDueDate ? formatCalendarDate(overview.invoiceStats.nextDueDate) : '—'" />
           </div>
         </section>
 
@@ -320,7 +320,7 @@ import { mapState, mapActions } from 'pinia'
 import { useProjectsStore } from '@/stores/projects.store'
 import { useGithubStore } from '@/stores/github.store'
 import { useToast } from '@/composables/useToast'
-import { formatDate } from '@/utils/date'
+import { formatDate, formatCalendarDate } from '@/utils/date'
 import WButton from '@/components/ui/WButton.vue'
 import WCard from '@/components/ui/WCard.vue'
 import WTable from '@/components/ui/WTable.vue'
@@ -426,6 +426,7 @@ export default defineComponent({
       'generateInvoices',
     ]),
     formatDate,
+    formatCalendarDate,
     formatMoney(amount: number | undefined, currency?: string) {
       if (amount === undefined || amount === null) return '—'
       return new Intl.NumberFormat('en-US', {

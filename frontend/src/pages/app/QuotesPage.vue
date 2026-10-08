@@ -72,7 +72,7 @@
             <span class="total-amount">{{ formatCurrency(item.total, item.currency) }}</span>
           </template>
           <template #item-issueDate="{ item }">
-            <span>{{ formatDate(item.issueDate) }}</span>
+            <span>{{ formatCalendarDate(item.issueDate) }}</span>
           </template>
           <template #item-actions="{ item }">
             <div class="table-actions">
@@ -373,6 +373,7 @@ import { defineComponent } from 'vue'
 import { mapState, mapActions } from 'pinia'
 import { useQuotesStore } from '@/stores/quotes.store'
 import { formatCurrency } from '@/utils/currency'
+import { formatCalendarDate as formatCalendarDateUtil } from '@/utils/date'
 import { CURRENCIES } from '@/constants/currencies'
 import { loadClientOptions, loadProjectOptions } from '@/utils/remote-entity-options'
 import WButton from '@/components/ui/WButton.vue'
@@ -470,6 +471,10 @@ export default defineComponent({
     formatDate(date: string) {
       if (!date) return '-'
       return new Date(date).toLocaleDateString('es-AR', { year: 'numeric', month: 'short', day: 'numeric' })
+    },
+    formatCalendarDate(date: string) {
+      if (!date) return '-'
+      return formatCalendarDateUtil(date)
     },
     onSearch() {
       this.setFilters({ search: this.filters.search })

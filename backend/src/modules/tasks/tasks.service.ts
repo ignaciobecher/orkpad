@@ -8,6 +8,7 @@ import { ProjectsService } from '../projects/projects.service';
 import { ClientsService } from '../clients/clients.service';
 import { MailService } from '../mail/mail.service';
 import { TaskColumnsService } from '../task-columns/task-columns.service';
+import { normalizeCalendarDate } from '../../common/utils/dates';
 import { TasksRepository } from './tasks.repository';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
@@ -322,6 +323,11 @@ export class TasksService {
       }
 
       payload.projectId = column.projectId;
+    }
+
+    if ((dto as any).dueDate !== undefined) {
+      const normalized = normalizeCalendarDate((dto as any).dueDate);
+      if (normalized) payload.dueDate = normalized;
     }
 
     return payload;

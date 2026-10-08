@@ -65,7 +65,7 @@
               <span class="project-status" :class="project.status">{{ project.status }}</span>
             </div>
             <div class="project-meta">
-              <span>{{ formatDate(project.startDate) }}</span>
+              <span>{{ formatCalendarDate(project.startDate) }}</span>
               <span class="project-budget">{{ formatCurrency(project.budget) }}</span>
             </div>
           </div>
@@ -88,7 +88,7 @@
               <span class="invoice-total" :class="invoice.type">{{ formatCurrency(invoice.total) }}</span>
             </div>
             <div class="invoice-sub">
-              <span class="invoice-date">{{ formatDate(invoice.issueDate) }}</span>
+              <span class="invoice-date">{{ formatCalendarDate(invoice.issueDate) }}</span>
               <span class="invoice-status-badge" :class="invoice.status">{{ invoice.status }}</span>
             </div>
           </div>
@@ -103,6 +103,7 @@ import { defineComponent, PropType, ref, watch } from 'vue'
 import { projectsApi } from '@/api/projects/projects.api'
 import { invoicesApi } from '@/api/invoices/invoices.api'
 import { formatCurrency } from '@/utils/currency'
+import { formatCalendarDate } from '@/utils/date'
 
 export default defineComponent({
   name: 'Client360View',
@@ -149,7 +150,8 @@ export default defineComponent({
       invoices,
       loading,
       formatCurrency,
-      formatDate
+      formatDate,
+      formatCalendarDate
     }
   }
 })

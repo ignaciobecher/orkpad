@@ -7,6 +7,7 @@ import { SubscriptionPaymentsRepository } from './subscription-payments.reposito
 import { SubscriptionsRepository } from './subscriptions.repository';
 import { CreateSubscriptionPaymentDto } from './dto/create-subscription-payment.dto';
 import { UpdateSubscriptionPaymentDto } from './dto/update-subscription-payment.dto';
+import { normalizeCalendarDate, todayNoonUTC } from '../../common/utils/dates';
 
 @Injectable()
 export class SubscriptionPaymentsService {
@@ -26,8 +27,10 @@ export class SubscriptionPaymentsService {
     dto: CreateSubscriptionPaymentDto,
   ) {
     await this.assertSubscriptionExists(workspaceId, subscriptionId);
+    const dueDate = normalizeCalendarDate((dto as any).dueDate);
     return this.repository.create(workspaceId, {
       ...dto,
+      ...(dueDate ? { dueDate } : {}),
       subscriptionId,
       status: 'pending',
     });
@@ -37,7 +40,7 @@ export class SubscriptionPaymentsService {
     await this.assertSubscriptionExists(workspaceId, subscriptionId);
     const payment = await this.repository.update(workspaceId, id, {
       status: 'paid',
-      paidAt: new Date(),
+      paidAt: todayNoonUTC(),
     });
     if (!payment) throw new NotFoundException(`Payment ${id} not found`);
     return payment;
@@ -60,7 +63,14 @@ export class SubscriptionPaymentsService {
     dto: UpdateSubscriptionPaymentDto,
   ) {
     await this.assertSubscriptionExists(workspaceId, subscriptionId);
-    const payment = await this.repository.update(workspaceId, id, dto);
+    const patch: Record<string, any> = { ...dto };
+    for (const key of ['dueDate', 'paidAt'] as const) {
+      if ((dto as any)[key] !== undefined) {
+        const normalized = normalizeCalendarDate((dto as any)[key]);
+        if (normalized) patch[key] = normalized;
+      }
+    }
+    const payment = await this.repository.update(workspaceId, id, patch);
     if (!payment) throw new NotFoundException(`Payment ${id} not found`);
     return payment;
   }

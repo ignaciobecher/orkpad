@@ -10,6 +10,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { ClientsService } from '../clients/clients.service';
 import { InvoicesService } from '../invoices/invoices.service';
+import { normalizeCalendarDate, todayNoonUTC } from '../../common/utils/dates';
 import { ProjectsRepository } from './projects.repository';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
@@ -66,7 +67,14 @@ export class ProjectsService {
 
   async create(workspaceId: string, dto: CreateProjectDto) {
     await this.validateClient(workspaceId, dto.clientId);
-    return this.projectsRepository.create(workspaceId, dto);
+    const patch: Record<string, any> = { ...dto };
+    for (const key of ['startDate', 'endDate'] as const) {
+      if ((dto as any)[key] !== undefined) {
+        const normalized = normalizeCalendarDate((dto as any)[key]);
+        if (normalized) patch[key] = normalized;
+      }
+    }
+    return this.projectsRepository.create(workspaceId, patch);
   }
 
   async update(workspaceId: string, id: string, dto: UpdateProjectDto) {
@@ -76,7 +84,14 @@ export class ProjectsService {
     // Fecha de fin real: se fija al completar el proyecto y se limpia si se reabre.
     const patch: Record<string, any> = { ...dto };
     if ((dto as any).status !== undefined) {
-      patch.actualEndDate = (dto as any).status === 'completed' ? new Date() : null;
+      patch.actualEndDate =
+        (dto as any).status === 'completed' ? todayNoonUTC() : null;
+    }
+    for (const key of ['startDate', 'endDate'] as const) {
+      if ((dto as any)[key] !== undefined) {
+        const normalized = normalizeCalendarDate((dto as any)[key]);
+        if (normalized) patch[key] = normalized;
+      }
     }
     const project = await this.projectsRepository.update(workspaceId, id, patch);
     if (!project) throw new NotFoundException(`Project ${id} not found`);

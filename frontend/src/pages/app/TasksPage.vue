@@ -133,7 +133,7 @@
           <span class="card-priority" :class="`priority-${task.priority}`">{{ task.priority }}</span>
           <span v-if="task.dueDate" class="card-due" :class="getDueDateClass(task)">
             <span class="material-symbols-outlined">schedule</span>
-            {{ formatDate(task.dueDate) }}
+            {{ formatCalendarDate(task.dueDate) }}
           </span>
           <button class="card-action-btn" title="Eliminar" @click.stop="confirmDeleteTask(task)">
             <span class="material-symbols-outlined">delete</span>
@@ -296,7 +296,7 @@
                       </span>
                       <span v-if="task.dueDate" class="card-due" :class="getDueDateClass(task)">
                         <span class="material-symbols-outlined">schedule</span>
-                        {{ formatDate(task.dueDate) }}
+                        {{ formatCalendarDate(task.dueDate) }}
                       </span>
                     </div>
                   </div>
@@ -529,6 +529,7 @@ import type { Task, CompleteTaskResponse } from '@/api/tasks/tasks.types'
 import type { Project } from '@/api/projects/projects.types'
 import { useTaskColumnsStore } from '@/stores/task-columns.store'
 import { useTasksStore } from '@/stores/tasks.store'
+import { formatCalendarDate } from '@/utils/date'
 import { useProjectsStore } from '@/stores/projects.store'
 import { useGithubStore } from '@/stores/github.store'
 import { projectsApi } from '@/api/projects/projects.api'
@@ -1130,6 +1131,7 @@ export default defineComponent({
       getDueDateClass,
       getLabelTextColor,
       formatDate,
+      formatCalendarDate,
       // github
       activeProjectHasRepo,
       createBranchForTask,

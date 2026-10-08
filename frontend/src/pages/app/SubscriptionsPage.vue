@@ -46,7 +46,7 @@
           </template>
           <template #item-lastPaymentDate="{ item }">
             <span v-if="item.lastPaymentDate" class="date-cell">
-              {{ formatDate(item.lastPaymentDate) }}
+              {{ formatCalendarDate(item.lastPaymentDate) }}
             </span>
             <span v-else class="text-muted">—</span>
           </template>
@@ -56,7 +56,7 @@
               class="date-cell"
               :class="{ 'text-warning': isExpiringSoon(item.nextBillingDate), 'text-error': isOverdue(item.nextBillingDate) }"
             >
-              {{ formatDate(item.nextBillingDate) }}
+              {{ formatCalendarDate(item.nextBillingDate) }}
             </span>
             <span v-else class="text-muted">—</span>
           </template>
@@ -103,7 +103,7 @@ import {
   loadClientOptionById,
   loadClientOptions,
 } from '@/utils/remote-entity-options'
-import { formatDate, isExpiringSoon } from '@/utils/date'
+import { formatDate, formatCalendarDate, isExpiringSoon } from '@/utils/date'
 
 export default defineComponent({
   name: 'SubscriptionsPage',
@@ -159,6 +159,7 @@ export default defineComponent({
   methods: {
     ...mapActions(useSubscriptionsStore, ['fetchAll', 'setFilters', 'create', 'update', 'remove']),
     formatDate,
+    formatCalendarDate,
     isExpiringSoon,
     isOverdue(date: string) {
       return new Date(date) < new Date()

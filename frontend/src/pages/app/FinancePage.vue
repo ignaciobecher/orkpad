@@ -117,7 +117,7 @@ import { useInvoicesStore } from '@/stores/invoices.store'
 import { usePaymentMethodsStore } from '@/stores/payment-methods.store'
 import { CURRENCIES } from '@/constants/currencies'
 import { formatCurrency } from '@/utils/currency'
-import { formatDate } from '@/utils/date'
+import { formatDate, formatCalendarDate } from '@/utils/date'
 import WButton from '@/components/ui/WButton.vue'
 import WTable from '@/components/ui/WTable.vue'
 import WCard from '@/components/ui/WCard.vue'
@@ -208,7 +208,7 @@ export default defineComponent({
     formattedItems() {
       return this.items.map((item: any) => ({
         ...item,
-        issueDateFormatted: item.issueDate ? formatDate(item.issueDate) : '—',
+        issueDateFormatted: item.issueDate ? formatCalendarDate(item.issueDate) : '—',
       }))
     }
   },

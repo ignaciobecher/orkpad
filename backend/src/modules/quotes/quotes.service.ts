@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { ClientsService } from '../clients/clients.service';
 import { ProjectsService } from '../projects/projects.service';
+import { normalizeCalendarDate } from '../../common/utils/dates';
 import { InvoicesService } from '../invoices/invoices.service';
 import { QuotesRepository } from './quotes.repository';
 import { QuotesPdfService } from './quotes-pdf.service';
@@ -47,7 +48,14 @@ export class QuotesService {
   async create(workspaceId: string, dto: CreateQuoteDto) {
     await this.validateRelations(workspaceId, dto.clientId, dto.projectId);
     const computed = this.computeTotals(dto);
-    return this.quotesRepository.create(workspaceId, { ...dto, ...computed });
+    const patch: Record<string, any> = { ...dto, ...computed };
+    for (const key of ['issueDate', 'expiresAt'] as const) {
+      if ((dto as any)[key] !== undefined) {
+        const normalized = normalizeCalendarDate((dto as any)[key]);
+        if (normalized) patch[key] = normalized;
+      }
+    }
+    return this.quotesRepository.create(workspaceId, patch);
   }
 
   async update(workspaceId: string, id: string, dto: UpdateQuoteDto) {
@@ -55,10 +63,14 @@ export class QuotesService {
     const current = await this.findOne(workspaceId, id);
     const merged = { ...current.toObject(), ...dto };
     const computed = this.computeTotals(merged);
-    const quote = await this.quotesRepository.update(workspaceId, id, {
-      ...dto,
-      ...computed,
-    });
+    const patch: Record<string, any> = { ...dto, ...computed };
+    for (const key of ['issueDate', 'expiresAt'] as const) {
+      if ((dto as any)[key] !== undefined) {
+        const normalized = normalizeCalendarDate((dto as any)[key]);
+        if (normalized) patch[key] = normalized;
+      }
+    }
+    const quote = await this.quotesRepository.update(workspaceId, id, patch);
     if (!quote) throw new NotFoundException(`Quote ${id} not found`);
     return quote;
   }

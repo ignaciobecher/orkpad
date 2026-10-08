@@ -4,6 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { ClientsService } from '../clients/clients.service';
+import { normalizeCalendarDate } from '../../common/utils/dates';
 import { SubscriptionsRepository } from './subscriptions.repository';
 import { SubscriptionPaymentsRepository } from './subscription-payments.repository';
 import { CreateSubscriptionDto } from './dto/create-subscription.dto';
@@ -53,7 +54,10 @@ export class SubscriptionsService {
 
   async create(workspaceId: string, dto: CreateSubscriptionDto) {
     await this.validateClient(workspaceId, dto.clientId, dto.type);
-    return this.repository.create(workspaceId, dto);
+    const patch: Record<string, any> = { ...dto };
+    const nextBillingDate = normalizeCalendarDate((dto as any).nextBillingDate);
+    if (nextBillingDate) patch.nextBillingDate = nextBillingDate;
+    return this.repository.create(workspaceId, patch);
   }
 
   async update(workspaceId: string, id: string, dto: UpdateSubscriptionDto) {
@@ -65,7 +69,12 @@ export class SubscriptionsService {
         dto.type ?? current.type,
       );
     }
-    const item = await this.repository.update(workspaceId, id, dto);
+    const patch: Record<string, any> = { ...dto };
+    if ((dto as any).nextBillingDate !== undefined) {
+      const normalized = normalizeCalendarDate((dto as any).nextBillingDate);
+      if (normalized) patch.nextBillingDate = normalized;
+    }
+    const item = await this.repository.update(workspaceId, id, patch);
     if (!item) throw new NotFoundException(`Subscription ${id} not found`);
     return item;
   }

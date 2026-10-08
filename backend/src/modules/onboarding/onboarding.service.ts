@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { todayNoonUTC } from '../../common/utils/dates';
 import { ClientsService } from '../clients/clients.service';
 import { ProjectsService } from '../projects/projects.service';
 import { TasksService } from '../tasks/tasks.service';
@@ -116,7 +117,7 @@ export class OnboardingService {
         currency: 'USD',
         billingCycle: 'monthly',
         status: 'active',
-        nextBillingDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+        nextBillingDate: new Date(todayNoonUTC().getTime() + 30 * 24 * 60 * 60 * 1000),
         isDemo: true,
       } as any),
     ]);

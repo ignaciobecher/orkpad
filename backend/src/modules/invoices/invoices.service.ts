@@ -6,6 +6,7 @@ import {
   NotFoundException,
   forwardRef,
 } from '@nestjs/common';
+import { normalizeCalendarDate } from '../../common/utils/dates';
 import { ClientsService } from '../clients/clients.service';
 import { ProjectsService } from '../projects/projects.service';
 import { InvoicesRepository } from './invoices.repository';
@@ -62,9 +63,18 @@ export class InvoicesService {
     const total = hasItems ? computed.total : (dto.total ?? 0);
     const subtotal = hasItems ? computed.subtotal : (dto.total ?? 0);
 
+    const dates: Record<string, any> = {};
+    const issueDate = normalizeCalendarDate((dto as any).issueDate);
+    const dueDate = normalizeCalendarDate((dto as any).dueDate);
+    const paidDate = normalizeCalendarDate((dto as any).paidDate);
+    if (issueDate) dates.issueDate = issueDate;
+    if (dueDate) dates.dueDate = dueDate;
+    if (paidDate) dates.paidDate = paidDate;
+
     try {
       return await this.invoicesRepository.create(workspaceId, {
         ...dto,
+        ...dates,
         subtotal,
         taxAmount: hasItems ? computed.taxAmount : 0,
         total,
@@ -97,6 +107,13 @@ export class InvoicesService {
       extra.total = dto.total;
       extra.subtotal = dto.total;
       extra.taxAmount = 0;
+    }
+
+    for (const key of ['issueDate', 'dueDate', 'paidDate'] as const) {
+      if ((dto as any)[key] !== undefined) {
+        const normalized = normalizeCalendarDate((dto as any)[key]);
+        if (normalized) extra[key] = normalized;
+      }
     }
 
     let invoice;
