@@ -27,19 +27,19 @@ export class Workspace {
   @Prop({ type: String, default: null })
   defaultTheme: 'dark' | 'light' | null;
 
-  @Prop({ trim: true, default: null })
+  @Prop({ type: String, trim: true, default: null })
   agencyEmail: string | null;
 
-  @Prop({ trim: true, default: null })
+  @Prop({ type: String, trim: true, default: null })
   agencyPhone: string | null;
 
-  @Prop({ trim: true, default: null })
+  @Prop({ type: String, trim: true, default: null })
   agencyAddress: string | null;
 
-  @Prop({ trim: true, default: null })
+  @Prop({ type: String, trim: true, default: null })
   agencyWebsite: string | null;
 
-  @Prop({ trim: true, default: null })
+  @Prop({ type: String, trim: true, default: null })
   taxId: string | null;
 
   @Prop({ default: 'active' })
