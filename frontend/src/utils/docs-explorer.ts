@@ -13,9 +13,10 @@ export interface StoredFilePayload {
   extension: string
   fileName: string
   size: number
-  encoding: 'text' | 'data-url'
+  encoding: 'text' | 'data-url' | 'file-ref'
   text?: string
   data?: string
+  fileId?: string
 }
 
 export function normalizeFolderPath(path?: string) {
@@ -154,10 +155,13 @@ export function parseStoredFile(doc: Document): StoredFilePayload | null {
   }
 }
 
+export const VIDEO_EXTENSIONS = ['mp4', 'webm', 'ogg', 'mov', 'avi', 'mkv']
+
 export function getDocumentIcon(doc: Document) {
   if (isFolderDocument(doc)) return 'folder'
   const payload = parseStoredFile(doc)
   const extension = payload?.extension || getFileExtension(doc.title)
+  if (VIDEO_EXTENSIONS.includes(extension)) return 'movie'
   if (extension === 'md') return 'description'
   if (extension === 'pdf') return 'picture_as_pdf'
   if (['doc', 'docx'].includes(extension)) return 'article'
@@ -171,6 +175,7 @@ export function getFileKindLabel(doc: Document): string {
   if (isFolderDocument(doc)) return 'Carpeta'
   const payload = parseStoredFile(doc)
   const extension = (payload?.extension || getFileExtension(doc.title)).toLowerCase()
+  if (VIDEO_EXTENSIONS.includes(extension)) return 'Video'
   if (extension === 'pdf') return 'Documento PDF'
   if (['doc', 'docx'].includes(extension)) return 'Documento de Word'
   if (['xls', 'xlsx'].includes(extension)) return 'Hoja de cálculo'
@@ -186,6 +191,7 @@ export function getFileIconColor(doc: Document): string {
   if (isFolderDocument(doc)) return '#FFC107'
   const payload = parseStoredFile(doc)
   const extension = (payload?.extension || getFileExtension(doc.title)).toLowerCase()
+  if (VIDEO_EXTENSIONS.includes(extension)) return '#FF5722'
   if (extension === 'pdf') return '#F44336'
   if (['doc', 'docx'].includes(extension)) return '#2196F3'
   if (['xls', 'xlsx', 'csv'].includes(extension)) return '#4CAF50'

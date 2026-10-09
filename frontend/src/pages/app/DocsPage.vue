@@ -5,7 +5,7 @@
         <h1 class="page-title">Archivos</h1>
       </div>
       <div class="header-right">
-        <input ref="fileInput" type="file" class="hidden-file-input" accept=".md,.doc,.docx,.xls,.xlsx,.pdf,.png,.jpg,.jpeg,.gif,.webp" multiple @change="handleFileUpload" />
+        <input ref="fileInput" type="file" class="hidden-file-input" accept=".md,.doc,.docx,.xls,.xlsx,.pdf,.png,.jpg,.jpeg,.gif,.webp,.mp4,.webm,.ogg,.mov,.avi,.mkv" multiple @change="handleFileUpload" />
         <w-button variant="secondary" @click="openFolderModal = true">
           <span class="material-symbols-outlined mr-2">create_new_folder</span>
           NUEVA CARPETA
@@ -239,7 +239,7 @@
       </div>
     </div>
 
-    <div v-if="selectedDocument" class="modal-overlay" @click.self="selectedDocument = null">
+    <div v-if="selectedDocument" class="modal-overlay" @click.self="closePreview">
       <div class="modal-box modal-box--large">
         <div class="doc-preview__header">
           <div>
@@ -248,12 +248,19 @@
           </div>
           <div class="doc-preview__actions">
             <button class="btn-secondary" @click="downloadSelectedDocument">Descargar</button>
-            <button class="btn-secondary" @click="selectedDocument = null">Cerrar</button>
+            <button class="btn-secondary" @click="closePreview">Cerrar</button>
           </div>
         </div>
 
         <div class="doc-preview__body">
           <pre v-if="selectedDocumentPayload?.encoding === 'text'" class="doc-text-preview">{{ selectedDocumentPayload.text }}</pre>
+          <video
+            v-else-if="selectedDocumentPayload?.encoding === 'file-ref'"
+            class="doc-video-preview"
+            controls
+            preload="metadata"
+            :src="previewObjectUrl || undefined"
+          />
           <div v-else class="doc-binary-preview">
             <span class="material-symbols-outlined">{{ selectedDocument ? getDocumentIcon(selectedDocument) : 'draft' }}</span>
             <p>Archivo importado correctamente.</p>
@@ -298,8 +305,10 @@ import {
   isFolderDocument,
   normalizeFolderPath,
   parseStoredFile,
+  VIDEO_EXTENSIONS,
   type StoredFilePayload,
 } from '@/utils/docs-explorer'
+import { filesApi } from '@/api/files/files.api'
 
 interface ExplorerRow {
   key: string
@@ -347,6 +356,7 @@ export default defineComponent({
       renameTarget: null as ExplorerRow | null,
       renameName: '',
       selectedDocument: null as Document | null,
+      previewObjectUrl: null as string | null,
       confirmDeleteOpen: false,
       deletingDoc: null as Document | null,
       uploading: false,
@@ -648,6 +658,14 @@ export default defineComponent({
     async confirmDelete() {
       if (!this.deletingDoc) return
       const doc = this.deletingDoc
+      // junta blobs de /files para limpiarlos (videos)
+      const fileIds: string[] = []
+      const collectBlob = (d: any) => {
+        try {
+          const p = parseStoredFile(d)
+          if (p?.encoding === 'file-ref' && p.fileId) fileIds.push(p.fileId)
+        } catch { /* doc sin payload válido */ }
+      }
       if (isFolderDocument(doc)) {
         // borrado recursivo
         const folderPath = normalizeFolderPath([doc.folderId, doc.title].filter(Boolean).join('/'))
@@ -656,6 +674,7 @@ export default defineComponent({
           return fid === folderPath || fid.startsWith(folderPath + '/')
         })
         for (const child of children) {
+          collectBlob(child)
           await this.remove(child._id)
         }
         if (this.currentFolderPath === folderPath || this.currentFolderPath.startsWith(folderPath + '/')) {
@@ -665,7 +684,11 @@ export default defineComponent({
         }
       }
       await this.remove(doc._id)
-      if (this.selectedDocument?._id === doc._id) this.selectedDocument = null
+      collectBlob(doc)
+      for (const fid of fileIds) {
+        await filesApi.remove(fid).catch(() => {})
+      }
+      if (this.selectedDocument?._id === doc._id) this.closePreview()
       this.deletingDoc = null
       this.confirmDeleteOpen = false
     },
@@ -690,73 +713,109 @@ export default defineComponent({
     },
     async handleDrop(e: DragEvent) {
       this.dragActive = false
-      const allowed = ['md', 'doc', 'docx', 'xls', 'xlsx', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'webp']
+      const allowed = ['md', 'doc', 'docx', 'xls', 'xlsx', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'webp', 'mp4', 'webm', 'ogg', 'mov', 'avi', 'mkv']
       const dropped = Array.from(e.dataTransfer?.files ?? [])
       const files = dropped.filter((f) => allowed.includes(getFileExtension(f.name)))
       const skipped = dropped.length - files.length
       if (skipped > 0) {
         const { showToast } = await import('@/composables/useToast')
-        showToast(`Se omitieron ${skipped} archivo(s) no soportados (solo documentos e imágenes)`, 'error')
+        showToast(`Se omitieron ${skipped} archivo(s) no soportados`, 'error')
       }
+      await this.uploadFiles(files)
+    },
+    async handleFileUpload(event: Event) {
+      const input = event.target as HTMLInputElement
+      const files = Array.from(input.files ?? [])
+      input.value = ''
+      await this.uploadFiles(files)
+    },
+    async uploadFiles(files: File[]) {
       if (!files.length || this.uploading) return
       this.uploading = true
       this.uploadDone = 0
       this.uploadTotal = files.length
       try {
         for (const file of files) {
-          const payload = await fileToDocumentPayload(file)
-          await this.create({
-            title: file.name,
-            folderId: this.currentFolderPath,
-            tags: [
-              'system:file',
-              `extension:${getFileExtension(file.name)}`,
-              `mime:${payload.mimeType}`
-            ],
-            content: JSON.stringify(payload)
-          })
+          const ext = getFileExtension(file.name)
+          if (VIDEO_EXTENSIONS.includes(ext)) {
+            // Videos van al storage del servidor (no a Mongo)
+            const { data: stored } = await filesApi.upload(file)
+            await this.create({
+              title: file.name,
+              folderId: this.currentFolderPath,
+              tags: ['system:file', `extension:${ext}`, `mime:${file.type || 'video/mp4'}`],
+              content: JSON.stringify({
+                kind: 'file',
+                mimeType: file.type || 'video/mp4',
+                extension: ext,
+                fileName: file.name,
+                size: file.size,
+                encoding: 'file-ref',
+                fileId: stored.id,
+              }),
+            })
+          } else {
+            const payload = await fileToDocumentPayload(file)
+            await this.create({
+              title: file.name,
+              folderId: this.currentFolderPath,
+              tags: [
+                'system:file',
+                `extension:${getFileExtension(file.name)}`,
+                `mime:${payload.mimeType}`
+              ],
+              content: JSON.stringify(payload)
+            })
+          }
           this.uploadDone += 1
         }
+      } catch (err: any) {
+        const { showToast } = await import('@/composables/useToast')
+        showToast(err.response?.data?.message ?? 'Error al subir (revisá el tope en Configuración)', 'error')
       } finally {
-        this.uploading = false
-      }
-    },
-    async handleFileUpload(event: Event) {
-      const input = event.target as HTMLInputElement
-      const files = Array.from(input.files ?? [])
-      if (!files.length) return
-      this.uploading = true
-      this.uploadDone = 0
-      this.uploadTotal = files.length
-      try {
-        for (const file of files) {
-          const payload = await fileToDocumentPayload(file)
-          await this.create({
-            title: file.name,
-            folderId: this.currentFolderPath,
-            tags: [
-              'system:file',
-              `extension:${getFileExtension(file.name)}`,
-              `mime:${payload.mimeType}`
-            ],
-            content: JSON.stringify(payload)
-          })
-          this.uploadDone += 1
-        }
-      } finally {
-        input.value = ''
         this.uploading = false
       }
     },
     openDocument(doc: Document) {
+      this.revokePreviewUrl()
       this.selectedDocument = doc
+      const payload = parseStoredFile(doc)
+      if (payload?.encoding === 'file-ref' && payload.fileId) {
+        filesApi.download(payload.fileId)
+          .then((res) => {
+            this.previewObjectUrl = URL.createObjectURL(res.data)
+          })
+          .catch(() => {
+            this.previewObjectUrl = null
+          })
+      }
     },
-    downloadSelectedDocument() {
+    closePreview() {
+      this.revokePreviewUrl()
+      this.selectedDocument = null
+    },
+    revokePreviewUrl() {
+      if (this.previewObjectUrl) {
+        URL.revokeObjectURL(this.previewObjectUrl)
+        this.previewObjectUrl = null
+      }
+    },
+    async downloadSelectedDocument() {
       if (!this.selectedDocument || !this.selectedDocumentPayload) return
       const payload = this.selectedDocumentPayload
       if (payload.encoding === 'text') {
         const blob = new Blob([payload.text ?? ''], { type: payload.mimeType })
         const url = URL.createObjectURL(blob)
+        this.triggerBrowserDownload(url, payload.fileName)
+        return
+      }
+      if (payload.encoding === 'file-ref' && payload.fileId) {
+        if (this.previewObjectUrl) {
+          this.triggerBrowserDownload(this.previewObjectUrl, payload.fileName)
+          return
+        }
+        const res = await filesApi.download(payload.fileId)
+        const url = URL.createObjectURL(res.data)
         this.triggerBrowserDownload(url, payload.fileName)
         return
       }
@@ -910,6 +969,7 @@ button.details-col:hover { color: var(--color-text-base); }
 .doc-preview__actions { display: flex; gap: 10px; align-items: flex-start; }
 .doc-preview__body { min-height: 320px; border: 1px solid var(--color-border); background: var(--color-bg-surface-highest); padding: 16px; overflow: auto; }
 .doc-text-preview { white-space: pre-wrap; margin: 0; color: var(--color-text-base); font-family: var(--font-mono); line-height: 1.5; }
+.doc-video-preview { width: 100%; max-height: 60vh; background: #000; }
 .doc-binary-preview { min-height: 280px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; color: var(--color-text-muted); }
 .doc-binary-preview .material-symbols-outlined { font-size: 48px; color: var(--color-primary); }
 .doc-preview__hint { margin: 0; font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; }

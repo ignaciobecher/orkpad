@@ -13,6 +13,7 @@ export interface Workspace {
   agencyAddress?: string | null
   agencyWebsite?: string | null
   taxId?: string | null
+  maxUploadMb?: number | null
   createdAt: string
   updatedAt: string
 }
@@ -29,4 +30,5 @@ export interface UpdateWorkspaceDto {
   agencyAddress?: string | null
   agencyWebsite?: string | null
   taxId?: string | null
+  maxUploadMb?: number | null
 }

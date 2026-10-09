@@ -691,7 +691,10 @@
       "agencyAddress": "Address",
       "agencyWebsite": "Website",
       "taxId": "Tax ID",
-      "agencySection": "Quote data (reused on create)"
+      "agencySection": "Quote data (reused on create)",
+      "filesTitle": "FILES & VIDEOS",
+      "filesDesc": "Per-file upload cap. Videos are stored on your server, not the database.",
+      "maxUploadMb": "Cap per file (MB)"
     }
   },
   "agenda": {

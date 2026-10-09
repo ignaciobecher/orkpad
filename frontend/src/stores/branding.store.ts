@@ -61,6 +61,7 @@ export const useBrandingStore = defineStore('branding', {
       agencyAddress?: string | null
       agencyWebsite?: string | null
       taxId?: string | null
+      maxUploadMb?: number | null
     }) {
       const { data } = await workspacesApi.updateMe(dto)
       this.workspace = data

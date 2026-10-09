@@ -71,6 +71,11 @@
           <div class="form-grid">
             <w-input :label="$t('settings.branding.taxId')" v-model="brandForm.taxId" :placeholder="$t('settings.branding.agencyPlaceholder.taxId')" />
           </div>
+          <p class="setting-description" style="margin-top:16px">{{ $t('settings.branding.filesTitle') }}</p>
+          <p class="setting-description">{{ $t('settings.branding.filesDesc') }}</p>
+          <div class="form-grid">
+            <w-input :label="$t('settings.branding.maxUploadMb')" v-model.number="brandForm.maxUploadMb" type="number" :min="1" :max="2048" placeholder="200" />
+          </div>
         </div>
       </w-card>
 
@@ -398,7 +403,7 @@ export default defineComponent({
     return {
       form: { name: '', phone: '' },
       profileLoading: false,
-      brandForm: { displayName: '', primaryColor: '#5B4EFF', defaultTheme: null as 'dark' | 'light' | null, agencyEmail: '', agencyPhone: '', agencyAddress: '', agencyWebsite: '', taxId: '' },
+      brandForm: { displayName: '', primaryColor: '#5B4EFF', defaultTheme: null as 'dark' | 'light' | null, agencyEmail: '', agencyPhone: '', agencyAddress: '', agencyWebsite: '', taxId: '', maxUploadMb: 200 as number | null },
       brandLogoFileId: null as string | null,
       brandLogoPreview: null as string | null,
       brandLoading: false,
@@ -487,6 +492,7 @@ export default defineComponent({
       this.brandForm.agencyAddress = (ws as any).agencyAddress ?? ''
       this.brandForm.agencyWebsite = (ws as any).agencyWebsite ?? ''
       this.brandForm.taxId = (ws as any).taxId ?? ''
+      this.brandForm.maxUploadMb = (ws as any).maxUploadMb ?? 200
       this.brandLogoFileId = ws.logoFileId ?? null
       this.brandLogoPreview = store.logoUrl
     },
@@ -540,6 +546,7 @@ export default defineComponent({
           agencyAddress: this.brandForm.agencyAddress?.trim() || null,
           agencyWebsite: this.brandForm.agencyWebsite?.trim() || null,
           taxId: this.brandForm.taxId?.trim() || null,
+          maxUploadMb: this.brandForm.maxUploadMb || null,
         } as any)
         showToast(this.$t('settings.branding.saved'), 'success')
       } catch {

@@ -16,15 +16,20 @@ import { ApiTags, ApiBearerAuth, ApiOperation, ApiConsumes, ApiBody } from '@nes
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { WorkspaceId } from '../../common/decorators/workspace-id.decorator';
 import { StorageService } from './storage.service';
+import { WorkspacesService } from '../workspaces/workspaces.service';
 
-const MAX_FILE_SIZE = 50 * 1024 * 1024;
+const MULTER_HARD_LIMIT = 1024 * 1024 * 1024;
+const DEFAULT_MAX_MB = 200;
 
 @ApiTags('Files')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 @Controller('files')
 export class StorageController {
-  constructor(private readonly storageService: StorageService) {}
+  constructor(
+    private readonly storageService: StorageService,
+    private readonly workspacesService: WorkspacesService,
+  ) {}
 
   @Post()
   @ApiOperation({ summary: 'Subir un archivo al storage del workspace' })
@@ -37,7 +42,7 @@ export class StorageController {
   })
   @UseInterceptors(
     FileInterceptor('file', {
-      limits: { fileSize: MAX_FILE_SIZE },
+      limits: { fileSize: MULTER_HARD_LIMIT },
     }),
   )
   async upload(
@@ -45,6 +50,13 @@ export class StorageController {
     @UploadedFile() file?: Express.Multer.File,
   ) {
     if (!file) throw new BadRequestException('Falta el archivo (campo file)');
+    const ws = await this.workspacesService.findById(workspaceId).catch(() => null);
+    const maxMb = (ws as any)?.maxUploadMb ?? DEFAULT_MAX_MB;
+    if (file.size > maxMb * 1024 * 1024) {
+      throw new BadRequestException(
+        `El archivo supera el tope de ${maxMb} MB configurado en este workspace`,
+      );
+    }
     return this.storageService.save(workspaceId, {
       buffer: file.buffer,
       originalName: file.originalname,

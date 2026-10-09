@@ -42,6 +42,9 @@ export class Workspace {
   @Prop({ type: String, trim: true, default: null })
   taxId: string | null;
 
+  @Prop({ type: Number, default: null })
+  maxUploadMb: number | null;
+
   @Prop({ default: 'active' })
   status: 'active' | 'suspended';
 

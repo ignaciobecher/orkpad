@@ -2,6 +2,9 @@ import {
   IsString,
   IsOptional,
   IsIn,
+  IsInt,
+  Min,
+  Max,
   MaxLength,
   Matches,
 } from 'class-validator';
@@ -77,4 +80,11 @@ export class CreateWorkspaceDto {
   @IsOptional()
   @MaxLength(40)
   taxId?: string;
+
+  @ApiPropertyOptional({ example: 200, description: 'Tope de subida en MB (default 200)' })
+  @IsInt()
+  @Min(1)
+  @Max(2048)
+  @IsOptional()
+  maxUploadMb?: number;
 }
