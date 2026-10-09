@@ -731,11 +731,23 @@ export default defineComponent({
     },
     async uploadFiles(files: File[]) {
       if (!files.length || this.uploading) return
+      const { showToast } = await import('@/composables/useToast')
+      const videos = files.filter((f) => VIDEO_EXTENSIONS.includes(getFileExtension(f.name)))
+      let docs = files.filter((f) => !VIDEO_EXTENSIONS.includes(getFileExtension(f.name)))
+      if (videos.length > 1) {
+        showToast('Los videos se suben de a 1 por vez', 'error')
+        return
+      }
+      if (docs.length > 15) {
+        showToast('Máximo 15 archivos por lote (se suben los primeros 15)', 'error')
+        docs = docs.slice(0, 15)
+      }
+      const queue = [...videos, ...docs]
       this.uploading = true
       this.uploadDone = 0
-      this.uploadTotal = files.length
+      this.uploadTotal = queue.length
       try {
-        for (const file of files) {
+        for (const file of queue) {
           const ext = getFileExtension(file.name)
           if (VIDEO_EXTENSIONS.includes(ext)) {
             // Videos van al storage del servidor (no a Mongo)
