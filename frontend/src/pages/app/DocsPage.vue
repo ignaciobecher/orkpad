@@ -5,7 +5,7 @@
         <h1 class="page-title">Archivos</h1>
       </div>
       <div class="header-right">
-        <input ref="fileInput" type="file" class="hidden-file-input" accept=".md,.doc,.docx,.xls,.xlsx,.pdf" multiple @change="handleFileUpload" />
+        <input ref="fileInput" type="file" class="hidden-file-input" accept=".md,.doc,.docx,.xls,.xlsx,.pdf,.png,.jpg,.jpeg,.gif,.webp" multiple @change="handleFileUpload" />
         <w-button variant="secondary" @click="openFolderModal = true">
           <span class="material-symbols-outlined mr-2">create_new_folder</span>
           NUEVA CARPETA
@@ -101,7 +101,17 @@
         </button>
       </aside>
 
-      <main class="explorer-main" @click="closeContextMenu">
+      <main class="explorer-main" @click="closeContextMenu" @dragenter.prevent="onDragEnter" @dragover.prevent>
+        <div
+          v-if="dragActive"
+          class="drop-overlay"
+          @dragover.prevent
+          @dragleave.prevent="dragActive = false"
+          @drop.prevent="handleDrop"
+        >
+          <span class="material-symbols-outlined">upload_file</span>
+          <p>Soltá para subir en {{ currentFolderPath || 'Inicio' }}</p>
+        </div>
         <!-- Vista detalles -->
         <div v-if="explorerView === 'details'" class="details-wrap">
           <div class="details-head">
@@ -342,6 +352,7 @@ export default defineComponent({
       uploading: false,
       uploadDone: 0,
       uploadTotal: 0,
+      dragActive: false,
     }
   },
   computed: {
@@ -672,6 +683,44 @@ export default defineComponent({
       this.newFolderName = ''
       this.openFolderModal = false
     },
+    onDragEnter(e: DragEvent) {
+      if (e.dataTransfer && [...(e.dataTransfer.types || [])].includes('Files')) {
+        this.dragActive = true
+      }
+    },
+    async handleDrop(e: DragEvent) {
+      this.dragActive = false
+      const allowed = ['md', 'doc', 'docx', 'xls', 'xlsx', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'webp']
+      const dropped = Array.from(e.dataTransfer?.files ?? [])
+      const files = dropped.filter((f) => allowed.includes(getFileExtension(f.name)))
+      const skipped = dropped.length - files.length
+      if (skipped > 0) {
+        const { showToast } = await import('@/composables/useToast')
+        showToast(`Se omitieron ${skipped} archivo(s) no soportados (solo documentos e imágenes)`, 'error')
+      }
+      if (!files.length || this.uploading) return
+      this.uploading = true
+      this.uploadDone = 0
+      this.uploadTotal = files.length
+      try {
+        for (const file of files) {
+          const payload = await fileToDocumentPayload(file)
+          await this.create({
+            title: file.name,
+            folderId: this.currentFolderPath,
+            tags: [
+              'system:file',
+              `extension:${getFileExtension(file.name)}`,
+              `mime:${payload.mimeType}`
+            ],
+            content: JSON.stringify(payload)
+          })
+          this.uploadDone += 1
+        }
+      } finally {
+        this.uploading = false
+      }
+    },
     async handleFileUpload(event: Event) {
       const input = event.target as HTMLInputElement
       const files = Array.from(input.files ?? [])
@@ -821,6 +870,28 @@ button.details-col:hover { color: var(--color-text-base); }
 .upload-box .material-symbols-outlined { font-size: 32px; color: var(--color-primary); }
 .upload-track { width: 100%; height: 8px; background: var(--color-bg-surface-high); }
 .upload-fill { height: 100%; background: var(--color-primary); transition: width 0.2s; }
+
+/* Overlay drag & drop */
+.drop-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: rgba(37, 99, 235, 0.1);
+  border: 2px dashed var(--color-primary);
+  font-size: 15px;
+  color: var(--color-text-base);
+  pointer-events: auto;
+}
+
+.drop-overlay .material-symbols-outlined {
+  font-size: 48px;
+  color: var(--color-primary);
+}
 
 /* Modales y preview (reutilizados) */
 .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 1000; }
