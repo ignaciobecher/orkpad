@@ -55,12 +55,13 @@
     <div class="planner-body">
       <!-- Main view -->
       <div class="planner-main">
-        <div v-if="blocksStore.loading" class="planner-loading">
+        <div v-if="blocksStore.loading && !hasBlocks" class="planner-loading">
           <span class="material-symbols-outlined spinning">sync</span>
           Cargando planner...
         </div>
+        <template v-else>
         <PlannerDayView
-          v-else-if="uiStore.view === 'day'"
+          v-if="uiStore.view === 'day'"
           :date="uiStore.selectedDate"
           @new-block="openCreateBlock"
           @edit-block="openEditBlock"
@@ -75,6 +76,7 @@
           <span class="material-symbols-outlined">construction</span>
           <p>Vista en construcción</p>
         </div>
+        </template>
       </div>
 
       <!-- Sidebar panel -->
@@ -165,8 +167,9 @@ export default defineComponent({
       { value: 'analytics' as const, icon: 'bar_chart', label: 'Analíticas' },
     ]
 
-    const currentLabel = computed(() => {
-      if (uiStore.view === 'day') {
+    const hasBlocks = computed(() => Object.keys(blocksStore.blocksByDate).length > 0)
+
+    const currentLabel = computed(() => {      if (uiStore.view === 'day') {
         return format(new Date(uiStore.selectedDate + 'T00:00:00'), "EEEE d 'de' MMMM yyyy", { locale: es })
       }
       if (uiStore.view === 'week') {
@@ -247,6 +250,7 @@ export default defineComponent({
       openEditBlock,
       onBlockSaved,
       onTemplateApplied,
+      hasBlocks,
     }
   },
 })
