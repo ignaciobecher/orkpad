@@ -5,7 +5,7 @@
         <h1 class="page-title">Archivos</h1>
       </div>
       <div class="header-right">
-        <input ref="fileInput" type="file" class="hidden-file-input" accept=".md,.doc,.docx,.xls,.xlsx,.pdf,.png,.jpg,.jpeg,.gif,.webp,.mp4,.webm,.ogg,.mov,.avi,.mkv" multiple @change="handleFileUpload" />
+        <input ref="fileInput" type="file" class="hidden-file-input" accept=".md,.doc,.docx,.xls,.xlsx,.pdf,.png,.jpg,.jpeg,.gif,.webp,.mp3,.wav,.flac,.m4a,.mp4,.webm,.ogg,.mov,.avi,.mkv" multiple @change="handleFileUpload" />
         <w-button variant="secondary" @click="openFolderModal = true">
           <span class="material-symbols-outlined mr-2">create_new_folder</span>
           NUEVA CARPETA
@@ -254,16 +254,33 @@
 
         <div class="doc-preview__body">
           <pre v-if="selectedDocumentPayload?.encoding === 'text'" class="doc-text-preview">{{ selectedDocumentPayload.text }}</pre>
+          <img
+            v-else-if="previewKind === 'image'"
+            class="doc-image-preview"
+            :src="previewSrc || undefined"
+            :alt="selectedDocument?.title"
+          />
+          <iframe
+            v-else-if="previewKind === 'pdf'"
+            class="doc-pdf-preview"
+            :src="previewSrc || undefined"
+          />
           <video
-            v-else-if="selectedDocumentPayload?.encoding === 'file-ref'"
+            v-else-if="previewKind === 'video'"
             class="doc-video-preview"
             controls
             preload="metadata"
-            :src="previewObjectUrl || undefined"
+            :src="previewSrc || undefined"
+          />
+          <audio
+            v-else-if="previewKind === 'audio'"
+            class="doc-audio-preview"
+            controls
+            :src="previewSrc || undefined"
           />
           <div v-else class="doc-binary-preview">
             <span class="material-symbols-outlined">{{ selectedDocument ? getDocumentIcon(selectedDocument) : 'draft' }}</span>
-            <p>Archivo importado correctamente.</p>
+            <p>Vista previa no disponible para este formato.</p>
             <p class="doc-preview__hint">Puedes descargarlo desde aquí cuando lo necesites.</p>
           </div>
         </div>
@@ -305,6 +322,8 @@ import {
   isFolderDocument,
   normalizeFolderPath,
   parseStoredFile,
+  AUDIO_EXTENSIONS,
+  IMAGE_EXTENSIONS,
   VIDEO_EXTENSIONS,
   type StoredFilePayload,
 } from '@/utils/docs-explorer'
@@ -459,6 +478,23 @@ export default defineComponent({
     },
     selectedDocumentPayload(): StoredFilePayload | null {
       return this.selectedDocument ? parseStoredFile(this.selectedDocument) : null
+    },
+    previewKind(): 'text' | 'image' | 'pdf' | 'video' | 'audio' | 'other' {
+      const payload = this.selectedDocumentPayload
+      if (!payload) return 'other'
+      if (payload.encoding === 'text') return 'text'
+      const ext = (payload.extension || '').toLowerCase()
+      if (IMAGE_EXTENSIONS.includes(ext)) return 'image'
+      if (ext === 'pdf') return 'pdf'
+      if (VIDEO_EXTENSIONS.includes(ext)) return 'video'
+      if (AUDIO_EXTENSIONS.includes(ext)) return 'audio'
+      return 'other'
+    },
+    previewSrc(): string | null {
+      const payload = this.selectedDocumentPayload
+      if (!payload || payload.encoding === 'text') return null
+      if (payload.encoding === 'file-ref') return this.previewObjectUrl
+      return payload.data ?? null
     },
     previewMeta() {
       if (!this.selectedDocument || !this.selectedDocumentPayload) return 'Documento interno'
@@ -713,7 +749,7 @@ export default defineComponent({
     },
     async handleDrop(e: DragEvent) {
       this.dragActive = false
-      const allowed = ['md', 'doc', 'docx', 'xls', 'xlsx', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'webp', 'mp4', 'webm', 'ogg', 'mov', 'avi', 'mkv']
+      const allowed = ['md', 'doc', 'docx', 'xls', 'xlsx', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'webp', 'svg', 'mp3', 'wav', 'flac', 'm4a', 'mp4', 'webm', 'ogg', 'mov', 'avi', 'mkv']
       const dropped = Array.from(e.dataTransfer?.files ?? [])
       const files = dropped.filter((f) => allowed.includes(getFileExtension(f.name)))
       const skipped = dropped.length - files.length
@@ -982,6 +1018,9 @@ button.details-col:hover { color: var(--color-text-base); }
 .doc-preview__body { min-height: 320px; border: 1px solid var(--color-border); background: var(--color-bg-surface-highest); padding: 16px; overflow: auto; }
 .doc-text-preview { white-space: pre-wrap; margin: 0; color: var(--color-text-base); font-family: var(--font-mono); line-height: 1.5; }
 .doc-video-preview { width: 100%; max-height: 60vh; background: #000; }
+.doc-image-preview { max-width: 100%; max-height: 60vh; object-fit: contain; display: block; margin: 0 auto; }
+.doc-pdf-preview { width: 100%; height: 60vh; border: none; background: #fff; }
+.doc-audio-preview { width: 100%; margin-top: 40px; }
 .doc-binary-preview { min-height: 280px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; color: var(--color-text-muted); }
 .doc-binary-preview .material-symbols-outlined { font-size: 48px; color: var(--color-primary); }
 .doc-preview__hint { margin: 0; font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; }

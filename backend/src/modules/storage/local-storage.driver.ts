@@ -25,6 +25,12 @@ const SAFE_MIME = new Set([
   'video/quicktime',
   'video/x-msvideo',
   'video/x-matroska',
+  'audio/mpeg',
+  'audio/wav',
+  'audio/x-wav',
+  'audio/flac',
+  'audio/mp4',
+  'audio/ogg',
 ]);
 
 export class LocalStorageDriver implements StorageDriver {

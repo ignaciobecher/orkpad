@@ -156,17 +156,20 @@ export function parseStoredFile(doc: Document): StoredFilePayload | null {
 }
 
 export const VIDEO_EXTENSIONS = ['mp4', 'webm', 'ogg', 'mov', 'avi', 'mkv']
+export const AUDIO_EXTENSIONS = ['mp3', 'wav', 'flac', 'm4a', 'oga']
+export const IMAGE_EXTENSIONS = ['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg']
 
 export function getDocumentIcon(doc: Document) {
   if (isFolderDocument(doc)) return 'folder'
   const payload = parseStoredFile(doc)
   const extension = payload?.extension || getFileExtension(doc.title)
   if (VIDEO_EXTENSIONS.includes(extension)) return 'movie'
+  if (AUDIO_EXTENSIONS.includes(extension)) return 'audio_file'
   if (extension === 'md') return 'description'
   if (extension === 'pdf') return 'picture_as_pdf'
   if (['doc', 'docx'].includes(extension)) return 'article'
   if (['xls', 'xlsx', 'csv'].includes(extension)) return 'table_chart'
-  if (['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg'].includes(extension)) return 'image'
+  if (IMAGE_EXTENSIONS.includes(extension)) return 'image'
   if (['zip', 'rar', '7z'].includes(extension)) return 'folder_zip'
   return 'draft'
 }
@@ -176,6 +179,7 @@ export function getFileKindLabel(doc: Document): string {
   const payload = parseStoredFile(doc)
   const extension = (payload?.extension || getFileExtension(doc.title)).toLowerCase()
   if (VIDEO_EXTENSIONS.includes(extension)) return 'Video'
+  if (AUDIO_EXTENSIONS.includes(extension)) return 'Audio'
   if (extension === 'pdf') return 'Documento PDF'
   if (['doc', 'docx'].includes(extension)) return 'Documento de Word'
   if (['xls', 'xlsx'].includes(extension)) return 'Hoja de cálculo'
@@ -192,6 +196,7 @@ export function getFileIconColor(doc: Document): string {
   const payload = parseStoredFile(doc)
   const extension = (payload?.extension || getFileExtension(doc.title)).toLowerCase()
   if (VIDEO_EXTENSIONS.includes(extension)) return '#FF5722'
+  if (AUDIO_EXTENSIONS.includes(extension)) return '#00BCD4'
   if (extension === 'pdf') return '#F44336'
   if (['doc', 'docx'].includes(extension)) return '#2196F3'
   if (['xls', 'xlsx', 'csv'].includes(extension)) return '#4CAF50'
