@@ -19,6 +19,3 @@ dist
 
 # Local-only compose overrides (e.g. alternative ports for dev)
 docker-compose.override.yml
-
-# Local-only reverse proxy config (commit only the .example template)
-/Caddyfile

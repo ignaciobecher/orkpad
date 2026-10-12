@@ -30,27 +30,6 @@ This is a **monorepo** with two applications:
 
 That's it. Node.js, MongoDB, and everything else runs inside Docker containers. No accounts, no API keys, no external services required.
 
-## Deploy with AI in 2 minutes 🤖
-
-Paste this to any AI agent (Claude Code, ChatGPT, Cursor, Copilot) on the target machine:
-
-> Clone https://github.com/ignaciobecher/orkpad.git and deploy it by following
-> `AGENTS.md`. Verify with `docker compose ps` and report the App URL.
-
-Or run the installer yourself — it generates secrets, builds, starts, and
-health-checks everything:
-
-```bash
-git clone https://github.com/ignaciobecher/orkpad.git
-cd orkpad
-./scripts/setup.sh                                    # local PC
-./scripts/setup.sh --domain app.tudominio.com --api api.tudominio.com   # VPS
-```
-
-For VPS + HTTPS, copy `Caddyfile.example` to `Caddyfile` (git-ignored) and
-follow the 3 steps inside. The full machine-readable contract lives in
-[`AGENTS.md`](./AGENTS.md).
-
 ## Clone & Run with Docker
 
 ### 1. Clone the repository
