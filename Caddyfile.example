@@ -1,0 +1,33 @@
+# ────────────────────────────────────────────────────────────────
+# ORKPAD — Caddy reverse proxy template (VPS with HTTPS)
+#   1. cp Caddyfile.example Caddyfile
+#   2. Replace app.example.com / api.example.com with your domains
+#   3. Run (from the repo root):
+#      docker run -d --name caddy --restart unless-stopped \
+#        -p 80:80 -p 443:443 \
+#        -v "$PWD/Caddyfile:/etc/caddy/Caddyfile:ro" \
+#        -v caddy_data:/data -v caddy_config:/config \
+#        caddy:2
+# Caddy obtains + renews Let's Encrypt certificates automatically.
+# ────────────────────────────────────────────────────────────────
+
+# Option A — two subdomains (recommended)
+app.example.com {
+	reverse_proxy localhost:8080
+}
+
+api.example.com {
+	reverse_proxy localhost:3000
+}
+
+# Option B — single domain (comment out Option A and use this instead).
+# The API is served under /api/*; requires VITE_API_URL=https://app.example.com/api
+# and API_URL=https://app.example.com/api in .env BEFORE building.
+# app.example.com {
+# 	handle /api/* {
+# 		reverse_proxy localhost:3000
+# 	}
+# 	handle {
+# 		reverse_proxy localhost:8080
+# 	}
+# }
