@@ -37,7 +37,9 @@ export default defineComponent({
       if (props.version === 'white') return '/logo-white.png'
       if (props.version === 'black') return '/logo-black.png'
 
-      // Auto based on theme
+      // Win95: fondo face claro -> siempre logo negro.
+      // Clásica: según tema oscuro/claro.
+      if (uiStore.appearance === 'win95') return '/logo-black.png'
       return uiStore.theme === 'dark' ? '/logo-white.png' : '/logo-black.png'
     })
 
@@ -63,5 +65,29 @@ export default defineComponent({
   .w-logo {
     max-height: 40px;
   }
+}
+</style>
+
+<!-- Win95: overrides encapsulados por data-appearance -->
+<style>
+html[data-appearance="win95"] .w-logo {
+display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border-radius: 0;
+}
+
+html[data-appearance="win95"] .logo-img {
+height: 100%;
+  width: auto;
+  object-fit: contain;
+  image-rendering: auto;
+}
+
+@media (max-width: 768px) {
+html[data-appearance="win95"] .w-logo {
+max-height: 40px;
+}
 }
 </style>

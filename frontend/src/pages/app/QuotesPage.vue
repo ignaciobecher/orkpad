@@ -6,7 +6,7 @@
         <h1 class="page-title">Presupuestos</h1>
         <div class="header-filters">
           <div class="search-box">
-            <span class="material-symbols-outlined">search</span>
+            <win-icon name="search" :size="16" />
             <input type="text" v-model="filters.search" placeholder="Buscar presupuestos..." @input="onSearch" />
           </div>
           <select v-model="filters.status" class="filter-select" @change="onFilterChange">
@@ -21,8 +21,8 @@
       </div>
       <div class="header-right">
         <w-button variant="primary" @click="openNewQuote">
-          <span class="material-symbols-outlined mr-2">add</span>
-          Nuevo Presupuesto
+          +
+          Nuevo presupuesto
         </w-button>
       </div>
     </header>
@@ -30,21 +30,21 @@
     <!-- Summary Cards -->
     <div class="summary-cards">
       <w-card class="summary-card accepted">
-        <div class="summary-icon"><span class="material-symbols-outlined">check_circle</span></div>
+        <div class="summary-icon"><win-icon name="check" :size="32" /></div>
         <div class="summary-content">
           <span class="summary-label">Aceptados</span>
           <span class="summary-value">{{ formatCurrency(totalAccepted) }}</span>
         </div>
       </w-card>
       <w-card class="summary-card pending">
-        <div class="summary-icon"><span class="material-symbols-outlined">hourglass_empty</span></div>
+        <div class="summary-icon"><win-icon name="hourglass" :size="32" /></div>
         <div class="summary-content">
           <span class="summary-label">En curso</span>
           <span class="summary-value">{{ formatCurrency(totalPending) }}</span>
         </div>
       </w-card>
       <w-card class="summary-card total-count">
-        <div class="summary-icon"><span class="material-symbols-outlined">description</span></div>
+        <div class="summary-icon"><win-icon name="wordpad" :size="32" /></div>
         <div class="summary-content">
           <span class="summary-label">Total presupuestos</span>
           <span class="summary-value">{{ total }}</span>
@@ -82,16 +82,16 @@
                 title="Convertir a Factura"
                 @click.stop="handleConvertToInvoice(item)"
               >
-                <span class="material-symbols-outlined">receipt_long</span>
+                <win-icon name="file-lines" :size="16" />
               </button>
               <button class="action-btn" title="Descargar PDF" @click.stop="handleDownloadPdf(item)">
-                <span class="material-symbols-outlined">picture_as_pdf</span>
+                <win-icon name="printer" :size="16" />
               </button>
               <button class="action-btn" title="Editar" @click.stop="openEditQuote(item)">
-                <span class="material-symbols-outlined">edit</span>
+                <win-icon name="paint" :size="16" />
               </button>
               <button class="action-btn text-error" title="Eliminar" @click.stop="confirmDelete(item)">
-                <span class="material-symbols-outlined">delete</span>
+                <win-icon name="recycle" :size="16" />
               </button>
             </div>
           </template>
@@ -101,8 +101,8 @@
       <div v-if="!loading && items.length === 0" class="empty-cta">
         <p class="empty-cta-text">Cotizá tu primer trabajo para un cliente y seguilo hasta que lo acepte.</p>
         <w-button variant="primary" @click="openNewQuote">
-          <span class="material-symbols-outlined mr-2">add</span>
-          Nuevo Presupuesto
+          +
+          Nuevo presupuesto
         </w-button>
       </div>
     </main>
@@ -110,13 +110,14 @@
     <!-- Quote Builder Modal -->
     <teleport to="body">
       <transition name="modal-fade">
-        <div v-if="showModal" class="modal-backdrop" @click.self="closeModal">
-          <div class="quote-modal">
-            <div class="modal-header">
-              <h2 class="modal-title">{{ editingId ? 'Editar Presupuesto' : 'Nuevo Presupuesto' }}</h2>
-              <button class="modal-close" @click="closeModal">
-                <span class="material-symbols-outlined">close</span>
-              </button>
+        <div v-if="showModal" class="modal-backdrop w95-dialog-overlay" @click.self="closeModal">
+          <div class="quote-modal w95-window">
+            <div class="w95-titlebar">
+              <win-icon name="newspaper" :size="16" alt="" />
+              <span class="title-text">{{ editingId ? 'Editar presupuesto' : 'Nuevo presupuesto' }} — Orkpad95</span>
+              <div class="w95-titlebar-buttons">
+                <button class="w95-title-btn" @click="closeModal" title="Cerrar"><span class="tbtn-close" aria-hidden="true">×</span></button>
+              </div>
             </div>
 
             <div class="modal-body">
@@ -128,7 +129,7 @@
                   :class="['tab-btn', { 'tab-btn--active': activeTab === tab.id }]"
                   @click="activeTab = tab.id"
                 >
-                  <span class="material-symbols-outlined">{{ tab.icon }}</span>
+                  <win-icon :name="materialToWinIcon(tab.icon)" :size="16" />
                   {{ tab.label }}
                 </button>
               </div>
@@ -269,11 +270,11 @@
                       <input v-model.number="item.unitPrice" type="number" min="0" step="0.01" class="field-input" @input="recalcItem(item)" />
                       <input v-model.number="item.amount" type="number" min="0" step="0.01" class="field-input amount-field" />
                       <button class="remove-btn" @click="removeItem(form.items, idx)">
-                        <span class="material-symbols-outlined">remove_circle</span>
+                        <span aria-hidden="true">–</span>
                       </button>
                     </div>
                     <button class="add-row-btn" @click="addItem(form.items)">
-                      <span class="material-symbols-outlined">add</span> Agregar ítem
+                      + Agregar ítem
                     </button>
                   </div>
 
@@ -286,7 +287,7 @@
                           <input v-model="section.description" class="field-input section-desc-input" placeholder="Descripción opcional" />
                         </div>
                         <button class="remove-btn" @click="form.sections.splice(si, 1)">
-                          <span class="material-symbols-outlined">delete</span>
+                          <win-icon name="recycle" :size="16" />
                         </button>
                       </div>
                       <div class="items-header">
@@ -304,15 +305,15 @@
                         <input v-model.number="item.unitPrice" type="number" min="0" step="0.01" class="field-input" @input="recalcItem(item)" />
                         <input v-model.number="item.amount" type="number" min="0" step="0.01" class="field-input amount-field" />
                         <button class="remove-btn" @click="removeItem(section.items, ii)">
-                          <span class="material-symbols-outlined">remove_circle</span>
+                          <span aria-hidden="true">–</span>
                         </button>
                       </div>
                       <button class="add-row-btn" @click="addItem(section.items)">
-                        <span class="material-symbols-outlined">add</span> Agregar ítem
+                        + Agregar ítem
                       </button>
                     </div>
                     <button class="add-section-btn" @click="addSection">
-                      <span class="material-symbols-outlined">add_box</span> Agregar sección
+                      + Agregar sección
                     </button>
                   </div>
 
@@ -359,7 +360,7 @@
               <button class="btn-secondary" @click="closeModal">Cancelar</button>
               <div class="footer-right">
                 <button v-if="editingId" class="btn-pdf" @click="handleDownloadPdfFromModal" title="Generar PDF">
-                  <span class="material-symbols-outlined">picture_as_pdf</span>
+                  <win-icon name="printer" :size="16" />
                   PDF
                 </button>
                 <button class="btn-primary" :disabled="loading" @click="saveQuote">
@@ -371,6 +372,23 @@
         </div>
       </transition>
     </teleport>
+    <w-confirm-modal
+      :is-open="!!deleteTarget"
+      title="Eliminar presupuesto"
+      :message="`¿Eliminar el presupuesto &quot;${deleteTarget?.title}&quot;?`"
+      confirm-text="Eliminar"
+      :is-danger="true"
+      @confirm="doDelete"
+      @cancel="deleteTarget = null"
+    />
+    <w-confirm-modal
+      :is-open="!!convertTarget"
+      title="Convertir a factura"
+      :message="`¿Convertir &quot;${convertTarget?.title}&quot; a factura borrador en Finanzas?`"
+      confirm-text="Convertir"
+      @confirm="doConvert"
+      @cancel="convertTarget = null"
+    />
   </div>
 </template>
 
@@ -386,6 +404,9 @@ import WButton from '@/components/ui/WButton.vue'
 import WTable from '@/components/ui/WTable.vue'
 import WCard from '@/components/ui/WCard.vue'
 import WBadge from '@/components/ui/WBadge.vue'
+import WinIcon from '@/components/win95/WinIcon.vue'
+import { materialToWinIcon } from '@/components/win95/icons'
+import WConfirmModal from '@/components/ui/WConfirmModal.vue'
 
 const emptyForm = () => ({
   title: '',
@@ -420,9 +441,11 @@ const emptyForm = () => ({
 
 export default defineComponent({
   name: 'QuotesPage',
-  components: { WButton, WTable, WCard, WBadge },
+  components: { WButton, WTable, WCard, WBadge, WConfirmModal, WinIcon },
   data() {
     return {
+      deleteTarget: null as any,
+      convertTarget: null as any,
       showModal: false,
       editingId: null as string | null,
       activeTab: 'general',
@@ -472,6 +495,7 @@ export default defineComponent({
     },
   },
   methods: {
+    materialToWinIcon,
     ...mapActions(useQuotesStore, ['fetchAll', 'setFilters', 'create', 'update', 'remove', 'downloadPdf', 'convertToInvoice']),
     formatCurrency(amount: number, currency?: string) {
       return formatCurrency(amount, currency)
@@ -652,15 +676,21 @@ export default defineComponent({
       const title = this.form.title
       await this.downloadPdf(this.editingId, title)
     },
-    async confirmDelete(item: any) {
-      if (confirm(`¿Eliminar el presupuesto "${item.title}"?`)) {
-        await this.remove(item._id)
-      }
+    confirmDelete(item: any) {
+      this.deleteTarget = item
     },
-    async handleConvertToInvoice(item: any) {
-      if (confirm(`¿Convertir "${item.title}" a factura borrador en Finanzas?`)) {
-        await this.convertToInvoice(item._id)
-      }
+    async doDelete() {
+      if (!this.deleteTarget) return
+      await this.remove(this.deleteTarget._id)
+      this.deleteTarget = null
+    },
+    handleConvertToInvoice(item: any) {
+      this.convertTarget = item
+    },
+    async doConvert() {
+      if (!this.convertTarget) return
+      await this.convertToInvoice(this.convertTarget._id)
+      this.convertTarget = null
     },
   },
   async mounted() {
@@ -679,7 +709,7 @@ export default defineComponent({
 .page-title { font-family: var(--font-body); font-size: 24px; font-weight: 600; color: var(--color-text-base); }
 .header-filters { display: flex; align-items: center; gap: 16px; }
 .search-box { position: relative; width: 260px; }
-.search-box span { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 18px; color: var(--color-text-muted); }
+.search-box span, .search-box .win-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 18px; color: var(--color-text-muted); }
 .search-box input { width: 100%; background-color: var(--color-bg-surface); border: 1px solid var(--color-border); padding: 8px 12px 8px 36px; font-family: var(--font-mono); font-size: 11px; color: var(--color-text-base); outline: none; }
 .filter-select { background-color: var(--color-bg-surface); border: 1px solid var(--color-border); padding: 8px 12px; font-family: var(--font-mono); font-size: 11px; color: var(--color-text-base); outline: none; }
 
@@ -810,5 +840,388 @@ textarea.field-input { resize: vertical; }
   .modal-tabs { overflow-x: auto; }
   .items-header, .item-row { grid-template-columns: 1fr 50px 60px 75px 32px; }
   .items-header .col-price, .item-row input:nth-child(4) { display: none; }
+}
+</style>
+
+<!-- Win95: overrides encapsulados por data-appearance -->
+<style>
+html[data-appearance="win95"] .quotes-page {
+padding: 32px; flex-grow: 1; min-width: 0; display: flex; flex-direction: column;
+}
+
+html[data-appearance="win95"] .page-header {
+display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; flex-shrink: 0;
+}
+
+html[data-appearance="win95"] .header-left {
+display: flex; align-items: center; gap: 32px;
+}
+
+html[data-appearance="win95"] .page-title {
+font-family: var(--font-body); font-size: 24px; font-weight: 600; color: var(--color-text-base);
+}
+
+html[data-appearance="win95"] .header-filters {
+display: flex; align-items: center; gap: 16px;
+}
+
+html[data-appearance="win95"] .search-box {
+position: relative; width: 260px;
+}
+
+html[data-appearance="win95"] .search-box span {
+position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 18px; color: var(--color-text-muted);
+}
+
+html[data-appearance="win95"] .search-box input {
+width: 100%;
+  box-sizing: border-box; background-color: var(--color-bg-surface); border: 1px solid var(--color-border); padding: 8px 12px 8px 36px; font-family: var(--font-mono); font-size: 11px; color: var(--color-text-base); outline: none;
+}
+
+html[data-appearance="win95"] .filter-select {
+background-color: var(--color-bg-surface); border: 1px solid var(--color-border); padding: 8px 12px; font-family: var(--font-mono); font-size: 11px; color: var(--color-text-base); outline: none;
+}
+
+html[data-appearance="win95"] .summary-cards {
+display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 32px; flex-shrink: 0;
+}
+
+html[data-appearance="win95"] .summary-card {
+display: flex; align-items: center; gap: 20px; padding: 24px; border: 1px solid var(--color-border);
+}
+
+html[data-appearance="win95"] .summary-icon {
+width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.05);
+}
+
+html[data-appearance="win95"] .summary-icon span {
+font-size: 24px;
+}
+
+html[data-appearance="win95"] .summary-content {
+display: flex; flex-direction: column;
+}
+
+html[data-appearance="win95"] .summary-label {
+font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; color: var(--color-text-muted); letter-spacing: 1px;
+}
+
+html[data-appearance="win95"] .summary-value {
+font-family: var(--font-body); font-size: 24px; font-weight: 600; color: var(--color-text-base); margin-top: 4px;
+}
+
+html[data-appearance="win95"] .summary-card.accepted .summary-icon {
+color: var(--color-success); background: rgba(16,185,129,0.1);
+}
+
+html[data-appearance="win95"] .summary-card.pending .summary-icon {
+color: var(--color-warning); background: rgba(245,158,11,0.1);
+}
+
+html[data-appearance="win95"] .summary-card.total-count .summary-icon {
+color: var(--color-primary); background: rgba(37,99,235,0.1);
+}
+
+html[data-appearance="win95"] .page-content {
+flex-grow: 1; min-width: 0; display: flex; flex-direction: column;
+}
+
+html[data-appearance="win95"] .empty-cta {
+display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 16px;
+  padding: 20px;
+  border: 1px dashed var(--color-border);
+}
+
+html[data-appearance="win95"] .empty-cta-text {
+font-size: 13px;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+html[data-appearance="win95"] .no-padding {
+display: flex; flex-direction: column; min-width: 0;
+}
+
+html[data-appearance="win95"] .no-padding .w-card__body {
+padding: 0 !important; display: flex; flex-direction: column; flex-grow: 1; min-width: 0;
+}
+
+html[data-appearance="win95"] .title-cell {
+display: flex; flex-direction: column; gap: 2px;
+}
+
+html[data-appearance="win95"] .quote-title {
+font-weight: 500; color: var(--color-text-base);
+}
+
+html[data-appearance="win95"] .quote-number {
+font-family: var(--font-mono); font-size: 10px; color: var(--color-text-muted);
+}
+
+html[data-appearance="win95"] .total-amount {
+font-weight: 600; color: var(--color-text-base);
+}
+
+html[data-appearance="win95"] .table-actions {
+display: flex; gap: 8px;
+}
+
+html[data-appearance="win95"] .action-btn {
+background: none; border: none; color: var(--color-text-muted); cursor: pointer; display: flex; padding: 4px;
+}
+
+html[data-appearance="win95"] .action-btn:hover {
+color: var(--color-text-base);
+}
+
+html[data-appearance="win95"] .action-btn.text-error:hover {
+color: var(--color-error);
+}
+
+html[data-appearance="win95"] .action-btn--convert:hover {
+color: var(--color-success);
+}
+
+html[data-appearance="win95"] .mr-2 {
+margin-right: 8px;
+}
+
+html[data-appearance="win95"] .modal-backdrop {
+position: fixed; inset: 0; background: var(--color-overlay); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 24px;
+}
+
+html[data-appearance="win95"] .modal-fade-enter-active, html[data-appearance="win95"] .modal-fade-leave-active {
+transition: opacity 0.2s;
+}
+
+html[data-appearance="win95"] .modal-fade-enter-from, html[data-appearance="win95"] .modal-fade-leave-to {
+opacity: 0;
+}
+
+html[data-appearance="win95"] .quote-modal {
+width: 100%; max-width: 860px; max-height: 88vh; display: flex; flex-direction: column; padding: 2px;
+}
+
+html[data-appearance="win95"] .modal-header {
+display: none;
+}
+
+html[data-appearance="win95"] .modal-tabs {
+display: flex; gap: 2px; padding: 6px 8px 0 8px; flex-shrink: 0; background: var(--w95-face);
+}
+
+html[data-appearance="win95"] .tab-btn {
+display: flex; align-items: center; gap: 6px; background: var(--w95-face); border: 2px solid; border-color: var(--w95-highlight) var(--w95-darkshadow) var(--w95-darkshadow) var(--w95-highlight); border-bottom: none; color: #000; cursor: pointer; font-family: Tahoma, Verdana, sans-serif; font-size: 11px; padding: 4px 12px;
+}
+
+html[data-appearance="win95"] .tab-btn--active {
+font-weight: bold; background: var(--w95-face-light); position: relative; top: 1px; padding-bottom: 5px; color: #000; border-bottom: none;
+}
+
+html[data-appearance="win95"] .modal-body {
+flex: 1; overflow-y: auto; display: flex; flex-direction: column;
+}
+
+html[data-appearance="win95"] .tab-content {
+padding: 24px; flex: 1;
+}
+
+html[data-appearance="win95"] .form-grid {
+display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+}
+
+html[data-appearance="win95"] .form-field {
+display: flex; flex-direction: column; gap: 6px;
+}
+
+html[data-appearance="win95"] .form-field.full-width {
+grid-column: 1 / -1;
+}
+
+html[data-appearance="win95"] .form-section-title {
+font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--color-text-muted); padding-bottom: 8px; border-bottom: 1px solid var(--color-border-subtle); display: flex; align-items: center; justify-content: space-between; gap: 8px;
+}
+
+html[data-appearance="win95"] .link-btn {
+background: none; border: none; color: var(--color-primary); font-size: 10px; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 1px; cursor: pointer; padding: 0;
+}
+
+html[data-appearance="win95"] .link-btn:hover {
+text-decoration: underline;
+}
+
+html[data-appearance="win95"] .field-label {
+font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--color-text-muted);
+}
+
+html[data-appearance="win95"] .field-input {
+background: var(--color-bg-surface-low); border: 1px solid var(--color-border); padding: 8px 12px; font-family: var(--font-mono); font-size: 12px; color: var(--color-text-base); outline: none; width: 100%; box-sizing: border-box;
+}
+
+html[data-appearance="win95"] .field-input:focus {
+border-color: var(--color-border-focus);
+}
+
+html[data-appearance="win95"] textarea.field-input {
+resize: vertical;
+}
+
+html[data-appearance="win95"] .items-tab {
+display: flex; flex-direction: column; gap: 16px;
+}
+
+html[data-appearance="win95"] .items-mode-toggle {
+display: flex; gap: 0; border: 1px solid var(--color-border); width: fit-content;
+}
+
+html[data-appearance="win95"] .mode-btn {
+background: none; border: none; padding: 7px 16px; font-family: var(--font-mono); font-size: 11px; color: var(--color-text-muted); cursor: pointer;
+}
+
+html[data-appearance="win95"] .mode-btn.active {
+background: var(--color-bg-surface-high); color: var(--color-text-base);
+}
+
+html[data-appearance="win95"] .items-header {
+display: grid; grid-template-columns: 1fr 60px 60px 90px 90px 32px; gap: 6px; font-family: var(--font-mono); font-size: 9px; text-transform: uppercase; letter-spacing: 1px; color: var(--color-text-muted); padding: 6px 0 4px; border-bottom: 1px solid var(--color-border-subtle);
+}
+
+html[data-appearance="win95"] .item-row {
+display: grid; grid-template-columns: 1fr 60px 60px 90px 90px 32px; gap: 6px; margin-bottom: 6px;
+}
+
+html[data-appearance="win95"] .amount-field {
+font-weight: 600;
+}
+
+html[data-appearance="win95"] .remove-btn {
+background: none; border: none; color: var(--color-text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0;
+}
+
+html[data-appearance="win95"] .remove-btn:hover {
+color: var(--color-error);
+}
+
+html[data-appearance="win95"] .add-row-btn {
+display: flex; align-items: center; gap: 6px; background: none; border: 1px dashed var(--color-border); color: var(--color-text-muted); cursor: pointer; font-family: var(--font-mono); font-size: 11px; padding: 7px 12px; margin-top: 4px; width: fit-content;
+}
+
+html[data-appearance="win95"] .add-row-btn:hover {
+color: var(--color-text-base); border-color: var(--color-text-muted);
+}
+
+html[data-appearance="win95"] .add-section-btn {
+display: flex; align-items: center; gap: 6px; background: none; border: 1px dashed var(--color-primary); color: var(--color-primary); cursor: pointer; font-family: var(--font-mono); font-size: 11px; padding: 8px 16px; margin-top: 8px;
+}
+
+html[data-appearance="win95"] .add-section-btn:hover {
+background: rgba(37,99,235,0.06);
+}
+
+html[data-appearance="win95"] .section-block {
+border: 1px solid var(--color-border-subtle); padding: 14px; margin-bottom: 16px;
+}
+
+html[data-appearance="win95"] .section-header {
+display: flex; align-items: flex-start; gap: 8px; margin-bottom: 12px;
+}
+
+html[data-appearance="win95"] .section-header-inputs {
+display: flex; flex-direction: column; gap: 6px; flex: 1;
+}
+
+html[data-appearance="win95"] .section-title-input {
+font-weight: 600;
+}
+
+html[data-appearance="win95"] .section-desc-input {
+font-size: 11px;
+}
+
+html[data-appearance="win95"] .totals-preview {
+border-top: 1px solid var(--color-border); padding-top: 16px; margin-top: 8px; display: flex; flex-direction: column; gap: 8px; max-width: 320px; align-self: flex-end; width: 100%;
+}
+
+html[data-appearance="win95"] .totals-row {
+display: flex; justify-content: space-between; align-items: center; font-family: var(--font-mono); font-size: 12px; color: var(--color-text-muted);
+}
+
+html[data-appearance="win95"] .totals-row.total-row {
+color: var(--color-text-base); font-size: 14px; font-weight: 600; border-top: 1px solid var(--color-border); padding-top: 8px; margin-top: 4px;
+}
+
+html[data-appearance="win95"] .small-input {
+background: var(--color-bg-surface-low); border: 1px solid var(--color-border); padding: 4px 8px; font-family: var(--font-mono); font-size: 12px; color: var(--color-text-base); outline: none; width: 80px; text-align: right;
+}
+
+html[data-appearance="win95"] .modal-footer {
+display: flex; align-items: center; justify-content: space-between; padding: 16px 24px; border-top: 1px solid var(--color-border); flex-shrink: 0;
+}
+
+html[data-appearance="win95"] .footer-right {
+display: flex; align-items: center; gap: 10px;
+}
+
+html[data-appearance="win95"] .btn-secondary {
+background: none; border: 1px solid var(--color-border); color: var(--color-text-muted); cursor: pointer; font-family: var(--font-mono); font-size: 11px; padding: 9px 20px; text-transform: uppercase; letter-spacing: 0.5px;
+}
+
+html[data-appearance="win95"] .btn-secondary:hover {
+color: var(--color-text-base); border-color: var(--color-text-muted);
+}
+
+html[data-appearance="win95"] .btn-primary {
+background: var(--color-primary); border: none; color: #ffffff; cursor: pointer; font-family: var(--font-mono); font-size: 11px; padding: 9px 20px; text-transform: uppercase; letter-spacing: 0.5px;
+}
+
+html[data-appearance="win95"] .btn-primary:hover {
+background: var(--color-primary-hover);
+}
+
+html[data-appearance="win95"] .btn-primary:disabled {
+opacity: 0.5; cursor: not-allowed;
+}
+
+html[data-appearance="win95"] .btn-pdf {
+display: flex; align-items: center; gap: 6px; background: none; border: 1px solid var(--color-border); color: var(--color-text-muted); cursor: pointer; font-family: var(--font-mono); font-size: 11px; padding: 9px 16px; text-transform: uppercase; letter-spacing: 0.5px;
+}
+
+html[data-appearance="win95"] .btn-pdf:hover {
+color: var(--color-text-base); border-color: var(--color-text-muted);
+}
+
+html[data-appearance="win95"] .btn-pdf span {
+font-size: 16px;
+}
+
+@media (max-width: 768px) {
+html[data-appearance="win95"] .quotes-page {
+padding: 16px;
+}
+html[data-appearance="win95"] .page-header {
+flex-direction: column; align-items: stretch; gap: 16px; margin-bottom: 24px;
+}
+html[data-appearance="win95"] .header-left {
+flex-direction: column; align-items: stretch; gap: 12px;
+}
+html[data-appearance="win95"] .summary-cards {
+grid-template-columns: 1fr; gap: 12px;
+}
+html[data-appearance="win95"] .form-grid {
+grid-template-columns: 1fr;
+}
+html[data-appearance="win95"] .modal-tabs {
+overflow-x: auto;
+}
+html[data-appearance="win95"] .items-header, html[data-appearance="win95"] .item-row {
+grid-template-columns: 1fr 50px 60px 75px 32px;
+}
+html[data-appearance="win95"] .items-header .col-price, html[data-appearance="win95"] .item-row input:nth-child(4) {
+display: none;
+}
 }
 </style>

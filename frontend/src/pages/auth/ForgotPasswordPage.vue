@@ -10,7 +10,7 @@
 
       <div v-if="sent" class="success-state">
         <div class="icon-wrapper">
-          <span class="material-symbols-outlined">mark_email_unread</span>
+          <win-icon name="envelope" :size="32" />
         </div>
         <span class="badge">EMAIL ENVIADO</span>
         <p class="success-desc">
@@ -18,7 +18,7 @@
           Revisá también tu carpeta de spam.
         </p>
         <router-link to="/login" class="back-link">
-          <span class="material-symbols-outlined">arrow_back</span>
+          ←
           Volver al inicio de sesión
         </router-link>
       </div>
@@ -38,12 +38,12 @@
         <div class="form-actions">
           <w-button variant="primary" block :loading="loading" type="submit">
             Enviar enlace
-            <span class="material-symbols-outlined ml-2">send</span>
+            <win-icon name="mail" :size="16" />
           </w-button>
         </div>
         <div class="footer">
           <router-link to="/login" class="back-link">
-            <span class="material-symbols-outlined">arrow_back</span>
+            ←
             Volver al inicio de sesión
           </router-link>
         </div>
@@ -59,10 +59,11 @@ import AuthLayout from '@/components/layout/AuthLayout.vue'
 import WButton from '@/components/ui/WButton.vue'
 import WInput from '@/components/ui/WInput.vue'
 import WLogo from '@/components/ui/WLogo.vue'
+import WinIcon from '@/components/win95/WinIcon.vue'
 
 export default defineComponent({
   name: 'ForgotPasswordPage',
-  components: { AuthLayout, WButton, WInput, WLogo },
+  components: { AuthLayout, WButton, WInput, WLogo, WinIcon },
   setup() {
     const email = ref('')
     const loading = ref(false)

@@ -17,7 +17,7 @@
       </div>
 
       <button type="button" class="wc-close" @click="$emit('close')" aria-label="Cerrar">
-        <span class="material-symbols-outlined">close</span>
+        <span aria-hidden="true">×</span>
       </button>
 
       <div v-if="loading" class="wc-state-wrap">

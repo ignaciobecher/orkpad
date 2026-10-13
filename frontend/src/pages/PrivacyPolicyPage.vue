@@ -1,9 +1,11 @@
 <template>
-  <div class="privacy-page" :class="themeClass">
-    <header class="privacy-header">
+  <div class="privacy-page w95-desktop">
+    <div class="w95-window privacy-win">
+      <div class="w95-titlebar"><span class="title-text">Privacidad — Orkpad95</span></div>
+      <header class="privacy-header">
       <div class="privacy-header-inner">
         <router-link to="/" class="privacy-back">
-          <span class="material-symbols-outlined">arrow_back</span>
+          ←
           {{ $t('privacy.back') }}
         </router-link>
         <w-logo :height="36" />
@@ -68,21 +70,21 @@
               <div class="provider-name font-mono">GITHUB</div>
               <p>{{ $t('privacy.s3.githubDesc') }}</p>
               <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" target="_blank" rel="noopener noreferrer" class="provider-link">
-                {{ $t('privacy.s3.githubLink') }} <span class="material-symbols-outlined">open_in_new</span>
+                {{ $t('privacy.s3.githubLink') }} <win-icon name="search" :size="16" />
               </a>
             </div>
             <div class="provider-card">
               <div class="provider-name font-mono">RESEND</div>
               <p>{{ $t('privacy.s3.resendDesc') }}</p>
               <a href="https://resend.com/legal/privacy-policy" target="_blank" rel="noopener noreferrer" class="provider-link">
-                {{ $t('privacy.s3.resendLink') }} <span class="material-symbols-outlined">open_in_new</span>
+                {{ $t('privacy.s3.resendLink') }} <win-icon name="search" :size="16" />
               </a>
             </div>
             <div class="provider-card">
               <div class="provider-name font-mono">MONGODB ATLAS</div>
               <p>{{ $t('privacy.s3.mongoDesc') }}</p>
               <a href="https://www.mongodb.com/legal/privacy-policy" target="_blank" rel="noopener noreferrer" class="provider-link">
-                {{ $t('privacy.s3.mongoLink') }} <span class="material-symbols-outlined">open_in_new</span>
+                {{ $t('privacy.s3.mongoLink') }} <win-icon name="search" :size="16" />
               </a>
             </div>
           </div>
@@ -166,21 +168,20 @@
         </section>
       </div>
     </main>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from 'vue'
+import { defineComponent } from 'vue'
 import WLogo from '@/components/ui/WLogo.vue'
-import { useUIStore } from '@/stores/ui.store'
+import WinIcon from '@/components/win95/WinIcon.vue'
 
 export default defineComponent({
   name: 'PrivacyPolicyPage',
-  components: { WLogo },
+  components: { WLogo, WinIcon },
   setup() {
-    const uiStore = useUIStore()
-    const themeClass = computed(() => (uiStore.theme === 'dark' ? 'theme-dark' : 'theme-light'))
-    return { themeClass }
+    return {}
   },
 })
 </script>

@@ -10,13 +10,13 @@
         :disabled="currentCount <= 0"
         @click="$emit('decrement')"
       >
-        <span class="material-symbols-outlined">remove</span>
+        <span aria-hidden="true" class="counter-glyph">–</span>
       </button>
       <span class="counter-value" :class="{ 'is-completed': isCompleted }">
         {{ currentCount }}<span class="counter-target">/{{ targetCount }}</span>
       </span>
       <button class="counter-btn counter-btn--primary" @click="$emit('increment')">
-        <span class="material-symbols-outlined">add</span>
+        <span aria-hidden="true" class="counter-glyph">+</span>
       </button>
     </div>
   </div>

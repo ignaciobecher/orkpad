@@ -93,3 +93,48 @@ export default defineComponent({
   100% { margin-left: 100%; }
 }
 </style>
+
+<!-- Win95: overrides encapsulados por data-appearance -->
+<style>
+html[data-appearance="win95"] .top-loading-bar {
+position: fixed;
+  top: var(--w95-titlebar-height, 26px);
+  left: 0;
+  right: 0;
+  height: 16px;
+  z-index: 9999;
+  background: var(--w95-face);
+  border-top: 2px solid;
+  border-bottom: 2px solid;
+  border-left: none;
+  border-right: none;
+  border-top-color: var(--w95-highlight);
+  border-bottom-color: var(--w95-darkshadow);
+  pointer-events: none;
+  padding: 2px;
+  border-radius: 0;
+}
+
+html[data-appearance="win95"] .top-loading-bar__fill {
+height: 100%;
+  width: 30%;
+  background: repeating-linear-gradient(
+    to right,
+    var(--w95-navy) 0 8px,
+    var(--w95-face) 8px 10px
+  );
+  border-radius: 0;
+  animation: w95-top-loading-slide 1s linear infinite;
+}
+
+html[data-appearance="win95"] .top-loading-bar--done .top-loading-bar__fill {
+animation: none;
+  width: 100%;
+  background: var(--w95-navy);
+}
+
+@keyframes w95-top-loading-slide {
+0% { margin-left: -30%; }
+  100% { margin-left: 100%; }
+}
+</style>

@@ -4,6 +4,9 @@
 @import './layout.css';
 @import './components.css';
 @import './vuetify.css';
+@import './win95-tokens.css';
+@import './win95.css';
+@import './classic-compat.css';
 
 @tailwind base;
 @tailwind components;

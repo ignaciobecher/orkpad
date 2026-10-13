@@ -5,7 +5,7 @@
         <h1 class="page-title">{{ $t('clients.title') }}</h1>
         <div class="header-filters">
           <div class="search-box">
-            <span class="material-symbols-outlined">search</span>
+            <win-icon name="search" :size="16" />
             <input type="text" v-model="filters.search" :placeholder="$t('clients.searchPlaceholder')" @input="handleSearch" />
           </div>
           <select v-model="filters.status" class="filter-select" @change="onFilterChange">
@@ -17,7 +17,7 @@
       </div>
       <div class="header-right">
         <w-button variant="primary" @click="openNewClientModal">
-          <span class="material-symbols-outlined mr-2">person_add</span>
+          <win-icon name="users" :size="16" class="mr-2" />
           {{ $t('clients.newClient') }}
         </w-button>
       </div>
@@ -44,10 +44,10 @@
           <template #item-actions="{ item }">
             <div class="table-actions">
               <button class="action-btn" @click.stop="editClient(item)">
-                <span class="material-symbols-outlined">edit</span>
+                <win-icon name="paint" :size="16" />
               </button>
               <button class="action-btn text-error" @click.stop="confirmDelete(item)">
-                <span class="material-symbols-outlined">delete</span>
+                <win-icon name="recycle" :size="16" />
               </button>
             </div>
           </template>
@@ -57,7 +57,7 @@
       <div v-if="!loading && items.length === 0" class="empty-cta">
         <p class="empty-cta-text">{{ $t('clients.emptyHint') }}</p>
         <w-button variant="primary" @click="openNewClientModal">
-          <span class="material-symbols-outlined mr-2">person_add</span>
+          <win-icon name="users" :size="16" class="mr-2" />
           {{ $t('clients.newClient') }}
         </w-button>
       </div>
@@ -76,6 +76,15 @@
 
     <!-- CRUD Modal -->
     <w-crud-modal v-model="showCrudModal" :schema="crudSchema" :initial-data="crudData" :loading="loading" @save="onSaveCrud" />
+    <w-confirm-modal
+      :is-open="!!deleteTarget"
+      title="Eliminar cliente"
+      :message="$t('clients.deleteConfirm', { name: deleteTarget?.name || '' })"
+      confirm-text="Eliminar"
+      :is-danger="true"
+      @confirm="doDelete"
+      @cancel="deleteTarget = null"
+    />
   </div>
 </template>
 
@@ -91,13 +100,16 @@ import WBadge from '@/components/ui/WBadge.vue'
 import WAvatar from '@/components/ui/WAvatar.vue'
 import WDrawer from '@/components/ui/WDrawer.vue'
 import WCrudModal from '@/components/ui/WCrudModal.vue'
+import WConfirmModal from '@/components/ui/WConfirmModal.vue'
 import Client360View from '@/components/clients/Client360View.vue'
+import WinIcon from '@/components/win95/WinIcon.vue'
 
 export default defineComponent({
   name: 'ClientsPage',
-  components: { WButton, WTable, WCard, WBadge, WAvatar, WDrawer, Client360View, WCrudModal },
+  components: { WButton, WTable, WCard, WBadge, WAvatar, WDrawer, Client360View, WCrudModal, WConfirmModal, WinIcon },
   data() {
     return {
+      deleteTarget: null as any,
       showDrawer: false,
       showCrudModal: false,
       crudData: {} as any
@@ -149,9 +161,12 @@ export default defineComponent({
       this.showCrudModal = true
     },
     confirmDelete(client: any) {
-      if (confirm(this.$t('clients.deleteConfirm', { name: client.name }))) {
-        this.remove(client._id)
-      }
+      this.deleteTarget = client
+    },
+    async doDelete() {
+      if (!this.deleteTarget) return
+      await this.remove(this.deleteTarget._id)
+      this.deleteTarget = null
     },
     openNewClientModal() {
       this.crudData = { status: 'active' }
@@ -267,7 +282,7 @@ export default defineComponent({
   width: 280px;
 }
 
-.search-box span {
+.search-box span, .search-box .win-icon {
   position: absolute;
   left: 12px;
   top: 50%;
@@ -278,6 +293,7 @@ export default defineComponent({
 
 .search-box input {
   width: 100%;
+  box-sizing: border-box;
   background-color: var(--color-bg-surface);
   border: 1px solid var(--color-border);
   padding: 8px 12px 8px 36px;

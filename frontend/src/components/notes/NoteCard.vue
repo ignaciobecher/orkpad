@@ -19,9 +19,7 @@
           :title="note.isPinned ? 'Desfijar' : 'Fijar'"
           @click="$emit('pin', note._id)"
         >
-          <span class="material-symbols-outlined" :style="{ color: note.isPinned ? 'var(--color-primary)' : '' }">
-            {{ note.isPinned ? 'keep' : 'keep_off' }}
-          </span>
+          <win-icon :name="materialToWinIcon(note.isPinned ? 'keep' : 'keep_off')" :size="16" />
         </button>
       </div>
     </div>
@@ -37,9 +35,7 @@
         class="checklist-item"
         @click.prevent="$emit('toggle-checklist', note._id, item.id)"
       >
-        <span class="material-symbols-outlined checklist-icon">
-          {{ item.completed ? 'check_box' : 'check_box_outline_blank' }}
-        </span>
+        <win-icon :name="materialToWinIcon(item.completed ? 'check_box' : 'check_box_outline_blank')" :size="16" class="checklist-icon" />
         <span :class="['checklist-text', { 'checklist-text--done': item.completed }]">{{ item.text }}</span>
       </label>
       <span v-if="note.checklist.length > 5" class="checklist-more">
@@ -59,12 +55,10 @@
           :title="note.status === 'done' ? 'Reactivar' : 'Completar'"
           @click="$emit('toggle', note._id)"
         >
-          <span class="material-symbols-outlined" :style="{ color: note.status === 'done' ? 'var(--color-success)' : '' }">
-            {{ note.status === 'done' ? 'undo' : 'check_circle' }}
-          </span>
+          <win-icon :name="materialToWinIcon(note.status === 'done' ? 'undo' : 'check_circle')" :size="16" />
         </button>
         <button class="note-action-btn note-action-btn--danger" title="Eliminar" @click="$emit('remove', note._id)">
-          <span class="material-symbols-outlined">delete</span>
+          <win-icon name="recycle" :size="16" />
         </button>
       </div>
     </div>
@@ -75,9 +69,12 @@
 import { defineComponent, computed } from 'vue'
 import type { PropType } from 'vue'
 import type { Note } from '@/api/notes/notes.types'
+import WinIcon from '../win95/WinIcon.vue'
+import { materialToWinIcon } from '../win95/icons'
 
 export default defineComponent({
   name: 'NoteCard',
+  components: { WinIcon },
   props: {
     note: {
       type: Object as PropType<Note>,
@@ -104,7 +101,7 @@ export default defineComponent({
       return d.toLocaleDateString('es-AR', { day: '2-digit', month: 'short' })
     }
 
-    return { cardStyle, renderedContent, formatDate }
+    return { cardStyle, renderedContent, formatDate, materialToWinIcon }
   },
 })
 </script>

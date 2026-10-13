@@ -1,13 +1,13 @@
 <template>
   <div class="goal-item" :style="{ '--goal-color': goal.color }">
-    <span class="goal-icon material-symbols-outlined">{{ goal.icon || defaultIcon }}</span>
+    <win-icon :name="materialToWinIcon(goal.icon || defaultIcon)" :size="16" :alt="goal.title" />
 
     <div class="goal-main">
       <div class="goal-title-row">
         <span class="goal-title">{{ goal.title }}</span>
         <w-badge :color="goal.color">{{ typeLabel }}</w-badge>
         <w-badge v-if="goal.currentStreak > 0" color="var(--color-warning)">
-          🔥 {{ goal.currentStreak }}
+          ★ {{ goal.currentStreak }}
         </w-badge>
       </div>
       <div v-if="goal.type === 'target'" class="goal-target-progress">
@@ -36,13 +36,13 @@
 
     <div class="goal-actions">
       <button class="icon-btn" title="Ver estadísticas" @click="$emit('stats', goal._id)">
-        <span class="material-symbols-outlined">bar_chart</span>
+        <win-icon name="chart" :size="15" />
       </button>
       <button class="icon-btn" title="Editar" @click="$emit('edit', goal)">
-        <span class="material-symbols-outlined">edit</span>
+        <win-icon name="paint" :size="15" />
       </button>
       <button class="icon-btn icon-btn--danger" title="Eliminar" @click="$emit('remove', goal._id)">
-        <span class="material-symbols-outlined">delete</span>
+        <win-icon name="recycle" :size="15" />
       </button>
     </div>
   </div>
@@ -52,6 +52,8 @@
 import { defineComponent, PropType } from 'vue'
 import WBadge from '@/components/ui/WBadge.vue'
 import GoalQuickProgress from './GoalQuickProgress.vue'
+import WinIcon from '@/components/win95/WinIcon.vue'
+import { materialToWinIcon } from '@/components/win95/icons'
 import type { Goal } from '@/api/goals/goals.types'
 
 const TYPE_LABELS: Record<string, string> = {
@@ -77,7 +79,8 @@ const STATUS_LABELS: Record<string, string> = {
 
 export default defineComponent({
   name: 'GoalListItem',
-  components: { WBadge, GoalQuickProgress },
+  components: { WBadge, GoalQuickProgress, WinIcon },
+  methods: { materialToWinIcon },
   props: {
     goal: { type: Object as PropType<Goal>, required: true },
   },

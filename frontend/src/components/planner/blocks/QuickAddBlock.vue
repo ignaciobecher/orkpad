@@ -9,10 +9,10 @@
       @keydown.esc="$emit('cancel')"
     />
     <button class="quick-add-block__btn" @click="submit">
-      <span class="material-symbols-outlined">add</span>
+      <span aria-hidden="true">+</span>
     </button>
     <button class="quick-add-block__cancel" @click="$emit('cancel')">
-      <span class="material-symbols-outlined">close</span>
+      <span aria-hidden="true">×</span>
     </button>
   </div>
 </template>

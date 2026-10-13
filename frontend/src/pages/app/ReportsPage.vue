@@ -7,11 +7,11 @@
       </div>
       <div class="reports-actions">
         <button class="btn-secondary" :disabled="!data || exporting" @click="doExport('csv')">
-          <span class="material-symbols-outlined">download</span>
+          <win-icon name="file-lines" :size="16" />
           CSV
         </button>
         <button class="btn-secondary" :disabled="!data || exporting" @click="doExport('pdf')">
-          <span class="material-symbols-outlined">picture_as_pdf</span>
+          <win-icon name="printer" :size="16" />
           PDF
         </button>
       </div>
@@ -38,7 +38,7 @@
     </section>
 
     <div v-if="loading" class="loading-state">
-      <span class="material-symbols-outlined spinning">sync</span>
+      <win-icon name="hourglass" :size="16" />
       Generando reporte...
     </div>
 
@@ -130,9 +130,11 @@ import { defineComponent, ref, onMounted } from 'vue'
 import { reportsApi } from '@/api/reports/reports.api'
 import { useClientsStore } from '@/stores/clients.store'
 import { useProjectsStore } from '@/stores/projects.store'
+import WinIcon from '@/components/win95/WinIcon.vue'
 
 export default defineComponent({
   name: 'ReportsPage',
+  components: { WinIcon },
   setup() {
     const clientsStore = useClientsStore()
     const projectsStore = useProjectsStore()

@@ -4,13 +4,16 @@
       <div
         v-for="toast in toasts"
         :key="toast.id"
-        class="toast-message"
+        class="toast-message w95-toast w95-outset"
         :class="`toast-${toast.type}`"
         @click="removeToast(toast.id)"
       >
-        <span class="material-symbols-outlined toast-icon">{{ getIcon(toast.type) }}</span>
-        <span class="toast-text">{{ toast.message }}</span>
-        <span class="material-symbols-outlined toast-close">close</span>
+        <span class="toast-titlebar">{{ toastTitle(toast.type) }}</span>
+        <div class="toast-row">
+          <win-icon :name="toastIcon(toast.type)" :size="32" :alt="toast.type" />
+          <span class="toast-text">{{ toast.message }}</span>
+          <button class="w95-title-btn" @click.stop="removeToast(toast.id)" title="Cerrar"><span class="tbtn-close" aria-hidden="true">×</span></button>
+        </div>
       </div>
     </transition-group>
   </div>
@@ -19,22 +22,30 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { useToast } from '@/composables/useToast'
+import WinIcon from '@/components/win95/WinIcon.vue'
 
 export default defineComponent({
   name: 'WToastContainer',
+  components: { WinIcon },
   setup() {
     const { toasts, removeToast } = useToast()
-
-    const getIcon = (type: string) => {
+    const toastTitle = (type: string) => {
       switch (type) {
-        case 'success': return 'check_circle'
+        case 'success': return 'Éxito'
+        case 'error': return 'Error'
+        case 'warning': return 'Aviso'
+        default: return 'Orkpad95'
+      }
+    }
+    const toastIcon = (type: string) => {
+      switch (type) {
+        case 'success': return 'check'
         case 'error': return 'error'
         case 'warning': return 'warning'
         default: return 'info'
       }
     }
-
-    return { toasts, removeToast, getIcon }
+    return { toasts, removeToast, toastTitle, toastIcon }
   }
 })
 </script>
@@ -101,5 +112,74 @@ export default defineComponent({
 .toast-list-leave-to {
   opacity: 0;
   transform: translateX(40px);
+}
+</style>
+
+<!-- Win95: overrides encapsulados por data-appearance -->
+<style>
+html[data-appearance="win95"] .toast-container {
+position: fixed;
+  bottom: calc(var(--w95-taskbar-height) + 10px);
+  right: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 9999;
+  pointer-events: none;
+  max-width: 340px;
+}
+
+html[data-appearance="win95"] .toast-message {
+pointer-events: auto;
+  cursor: pointer;
+  min-width: 260px;
+  padding: 2px 2px 6px 2px;
+}
+
+html[data-appearance="win95"] .toast-titlebar {
+display: block;
+  background: linear-gradient(90deg, var(--w95-navy), var(--w95-navy-light));
+  color: #fff;
+  font-size: 11px;
+  font-weight: bold;
+  padding: 2px 6px;
+  margin-bottom: 6px;
+}
+
+html[data-appearance="win95"] .toast-row {
+display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 6px;
+}
+
+html[data-appearance="win95"] .toast-ico {
+flex-shrink: 0;
+}
+
+html[data-appearance="win95"] .tbtn-close {
+font-family: Tahoma, Verdana, sans-serif;
+  font-size: 11px;
+  font-weight: bold;
+  line-height: 1;
+  color: #000;
+}
+
+html[data-appearance="win95"] .toast-text {
+flex: 1; line-height: 1.3; font-size: 12px; color: #000;
+}
+
+html[data-appearance="win95"] .toast-list-enter-active, html[data-appearance="win95"] .toast-list-leave-active {
+transition: all 0.15s ease;
+}
+
+html[data-appearance="win95"] .toast-list-enter-from {
+opacity: 0;
+  transform: translateY(8px);
+}
+
+html[data-appearance="win95"] .toast-list-leave-to {
+opacity: 0;
+  transform: translateY(8px);
 }
 </style>

@@ -1,10 +1,10 @@
 <template>
   <button
     :class="[
-      'w-btn',
+      'w-btn w95-btn',
       `w-btn--${variant}`,
       `w-btn--${size}`,
-      { 'w-btn--loading': loading, 'w-btn--block': block }
+      { 'w-btn--loading': loading, 'w-btn--block': block, 'w95-btn--default': variant === 'primary' }
     ]"
     :disabled="disabled || loading"
     @click="$emit('click', $event)"
@@ -144,5 +144,96 @@ export default defineComponent({
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+</style>
+
+<!-- Win95: overrides encapsulados por data-appearance -->
+<style>
+html[data-appearance="win95"] .w-btn {
+display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: Tahoma, Verdana, sans-serif;
+  font-size: 11px;
+  min-height: 23px;
+  min-width: 75px;
+  padding: 4px 14px;
+  background: var(--w95-face);
+  color: #000;
+  border: 2px solid;
+  border-color: var(--w95-highlight) var(--w95-darkshadow) var(--w95-darkshadow) var(--w95-highlight);
+  box-shadow: inset 1px 1px 0 var(--w95-face-light), inset -1px -1px 0 var(--w95-shadow);
+  cursor: pointer;
+  border-radius: 0;
+  text-transform: none;
+  letter-spacing: 0;
+  height: auto;
+  position: relative;
+  user-select: none;
+}
+
+html[data-appearance="win95"] .w-btn:active:not(:disabled) {
+border-color: var(--w95-darkshadow) var(--w95-highlight) var(--w95-highlight) var(--w95-darkshadow);
+  box-shadow: inset 1px 1px 0 var(--w95-shadow);
+  padding: 5px 13px 3px 15px;
+}
+
+html[data-appearance="win95"] .w-btn:focus-visible {
+outline: 1px dotted #000;
+  outline-offset: -4px;
+}
+
+html[data-appearance="win95"] .w-btn--block {
+display: flex;
+  width: 100%;
+}
+
+html[data-appearance="win95"] .w-btn--lg {
+min-height: 28px;
+  padding: 5px 20px;
+  font-size: 12px;
+  min-width: 100px;
+}
+
+html[data-appearance="win95"] .w-btn--primary {
+font-weight: bold;
+  box-shadow: inset 1px 1px 0 var(--w95-highlight), inset -1px -1px 0 var(--w95-shadow), 0 0 0 1px #000;
+}
+
+html[data-appearance="win95"] .w-btn--secondary, html[data-appearance="win95"] .w-btn--outline {
+background: var(--w95-face);
+  color: #000;
+}
+
+html[data-appearance="win95"] .w-btn--ghost {
+background: var(--w95-face);
+  color: #000;
+  border-color: var(--w95-highlight) var(--w95-darkshadow) var(--w95-darkshadow) var(--w95-highlight);
+}
+
+html[data-appearance="win95"] .w-btn--danger {
+background: var(--w95-face);
+  color: var(--w95-error);
+  border: 2px solid;
+  border-color: var(--w95-highlight) var(--w95-darkshadow) var(--w95-darkshadow) var(--w95-highlight);
+}
+
+html[data-appearance="win95"] .w-btn:disabled {
+color: var(--w95-shadow);
+  text-shadow: 1px 1px 0 var(--w95-highlight);
+  cursor: not-allowed;
+}
+
+html[data-appearance="win95"] .w-btn__spinner {
+width: 12px;
+  height: 12px;
+  border: 2px solid var(--w95-shadow);
+  border-top-color: var(--w95-navy);
+  border-radius: 0;
+  animation: w95-spin 0.8s linear infinite;
+}
+
+@keyframes w95-spin {
+to { transform: rotate(360deg); }
 }
 </style>

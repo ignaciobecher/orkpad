@@ -141,3 +141,101 @@ export default defineComponent({
 .py-10 { padding-top: 40px; padding-bottom: 40px; }
 .text-muted { color: var(--color-text-muted); }
 </style>
+
+<!-- Win95: overrides encapsulados por data-appearance -->
+<style>
+html[data-appearance="win95"] .w-table-container {
+width: 100%;
+  overflow-x: auto;
+  min-width: 0;
+  background: var(--w95-face);
+  border: 2px solid;
+  border-color: var(--w95-shadow) var(--w95-highlight) var(--w95-highlight) var(--w95-shadow);
+  box-shadow: inset 1px 1px 0 var(--w95-darkshadow);
+  padding: 2px;
+  border-radius: 0;
+}
+
+html[data-appearance="win95"] .w-table {
+width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+}
+
+@media (max-width: 640px) {
+html[data-appearance="win95"] .w-table-container {
+-webkit-overflow-scrolling: touch;
+}
+html[data-appearance="win95"] .w-table {
+min-width: 480px;
+}
+}
+
+html[data-appearance="win95"] .w-table thead th {
+background-color: var(--w95-face);
+  color: #000;
+  font-family: Tahoma, Verdana, sans-serif;
+  font-size: 11px;
+  font-weight: normal;
+  text-transform: none;
+  letter-spacing: 0;
+  text-align: left;
+  padding: 4px 8px;
+  border: 2px solid;
+  border-color: var(--w95-highlight) var(--w95-darkshadow) var(--w95-darkshadow) var(--w95-highlight);
+  border-radius: 0;
+}
+
+html[data-appearance="win95"] .w-table tbody tr {
+background-color: #fff;
+  cursor: pointer;
+}
+
+html[data-appearance="win95"] .w-table tbody tr:nth-child(even) {
+background-color: #fff;
+}
+
+html[data-appearance="win95"] .w-table tbody tr:hover td {
+background-color: var(--w95-navy) !important;
+  color: #fff !important;
+}
+
+html[data-appearance="win95"] .w-table tbody td {
+padding: 4px 8px;
+  border-bottom: 1px dotted var(--w95-face);
+  font-family: Tahoma, Verdana, sans-serif;
+  font-size: 12px;
+  color: #000;
+  border-radius: 0;
+}
+
+html[data-appearance="win95"] .skeleton-bar {
+height: 12px;
+  width: 100%;
+  background: repeating-linear-gradient(
+    to right,
+    var(--w95-navy) 0 8px,
+    #fff 8px 10px
+  );
+  animation: w95-pulse 1.5s infinite ease-in-out;
+  border-radius: 0;
+}
+
+@keyframes w95-pulse {
+0% { opacity: 0.5; }
+  50% { opacity: 1; }
+  100% { opacity: 0.5; }
+}
+
+html[data-appearance="win95"] .text-center {
+text-align: center;
+}
+
+html[data-appearance="win95"] .py-10 {
+padding-top: 40px; padding-bottom: 40px;
+}
+
+html[data-appearance="win95"] .text-muted {
+color: #000; font-family: Tahoma, Verdana, sans-serif; font-size: 12px;
+}
+</style>

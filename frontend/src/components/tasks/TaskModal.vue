@@ -1,41 +1,34 @@
 <template>
-  <div v-if="modelValue" class="task-modal-overlay" @click.self="close">
-    <div class="task-modal-box">
-      <!-- Header -->
-      <div class="task-modal-header">
-        <div class="header-left">
-          <span class="material-symbols-outlined header-icon">web_asset</span>
-          <input
-            v-model="form.title"
-            type="text"
-            class="task-title-input"
-            placeholder="Título de la tarea"
-          />
-        </div>
-        <div class="header-right">
-          <button v-if="!viewMode" class="icon-btn icon-btn--save" title="Guardar" :disabled="loading" @click="save">
-            <span class="material-symbols-outlined">save</span>
-          </button>
-          <button class="icon-btn" @click="close">
-            <span class="material-symbols-outlined">close</span>
-          </button>
+  <div v-if="modelValue" class="task-modal-overlay w95-dialog-overlay" @click.self="close">
+    <div class="task-modal-box w95-window">
+      <div class="w95-titlebar">
+        <win-icon name="check" :size="16" alt="" />
+        <span class="title-text">{{ form.title || 'Tarea' }} — Orkpad95</span>
+        <div class="w95-titlebar-buttons">
+          <button class="w95-title-btn" @click="close" title="Cerrar"><span class="tbtn-close" aria-hidden="true">×</span></button>
         </div>
       </div>
 
       <!-- Draft banner -->
       <div v-if="hasDraft" class="draft-banner">
-        <span class="material-symbols-outlined" style="font-size:15px">history</span>
+        <win-icon name="clock" :size="16" alt="" />
         Borrador restaurado
         <button class="draft-discard" @click="discardDraft">Descartar</button>
       </div>
 
       <div class="task-modal-body custom-scrollbar">
         <div class="task-main-col">
+          <input
+            v-model="form.title"
+            type="text"
+            class="task-title-input"
+            placeholder="Título de la tarea"
+          />
 
           <!-- Labels -->
           <div class="task-section">
             <h3 class="section-title">
-              <span class="material-symbols-outlined">sell</span> Etiquetas
+              Etiquetas
             </h3>
             <div class="labels-list">
               <span
@@ -46,11 +39,11 @@
               >
                 {{ label.name }}
                 <button v-if="!viewMode" class="remove-label" @click="removeLabel(i)">
-                  <span class="material-symbols-outlined">close</span>
+                  ×
                 </button>
               </span>
               <button v-if="!viewMode" class="add-btn add-label-btn" @click.stop.prevent="showLabelPopover = !showLabelPopover">
-                <span class="material-symbols-outlined">add</span> Agregar
+                + Agregar
               </button>
             </div>
 
@@ -66,14 +59,14 @@
                   @click.stop.prevent="newLabelColor = c"
                 ></button>
               </div>
-              <button class="btn-primary" style="width:100%;margin-top:8px" @click.stop.prevent="addLabel">Guardar</button>
+              <button class="w95-btn w95-btn--default" style="width:100%;margin-top:8px" @click.stop.prevent="addLabel">Guardar</button>
             </div>
           </div>
 
           <!-- Description -->
           <div class="task-section">
             <h3 class="section-title">
-              <span class="material-symbols-outlined">subject</span> Descripción
+              Descripción
             </h3>
             <div v-if="!viewMode || editingDescription" class="editor-container">
               <QuillEditor
@@ -83,8 +76,8 @@
                 placeholder="Añadir una descripción más detallada..."
               />
               <div v-if="viewMode && editingDescription" class="description-edit-actions">
-                <button class="btn-primary" style="padding:6px 14px;font-size:12px" @click="saveInViewMode">Listo</button>
-                <button class="btn-secondary" style="padding:6px 14px;font-size:12px" @click="cancelDescriptionEdit">Cancelar</button>
+                <button class="w95-btn w95-btn--default" style="padding:6px 14px;font-size:12px" @click="saveInViewMode">Listo</button>
+                <button class="w95-btn" style="padding:6px 14px;font-size:12px" @click="cancelDescriptionEdit">Cancelar</button>
               </div>
             </div>
             <div
@@ -105,7 +98,7 @@
           <div class="task-section">
             <div class="section-title-row">
               <h3 class="section-title">
-                <span class="material-symbols-outlined">checklist</span> Checklist
+                Checklist
               </h3>
               <span v-if="form.checklist && form.checklist.length" class="checklist-pct">
                 {{ checklistProgress }}%
@@ -147,13 +140,13 @@
                 />
                 <span v-else class="checklist-text" :class="{ completed: item.completed }">{{ item.text }}</span>
                 <button v-if="!viewMode" class="icon-btn checklist-delete-btn" @click="removeChecklistItem(idx)">
-                  <span class="material-symbols-outlined">close</span>
+                  ×
                 </button>
               </div>
             </div>
 
             <button v-if="!viewMode" class="add-btn mt-2" @click="addChecklistItemAndFocus">
-              <span class="material-symbols-outlined">add</span> Añadir un elemento
+              + Añadir un elemento
             </button>
           </div>
 
@@ -196,7 +189,7 @@
           </div>
 
           <div class="meta-card actions-card" v-if="!viewMode">
-            <button class="btn-primary w-full" :disabled="loading" @click="save">
+            <button class="w95-btn w95-btn--default w-full" :disabled="loading" @click="save">
               {{ loading ? 'Guardando...' : 'Guardar tarea' }}
             </button>
           </div>
@@ -211,13 +204,14 @@ import { defineComponent, ref, watch, nextTick } from 'vue'
 import { QuillEditor } from '@vueup/vue-quill'
 import '@vueup/vue-quill/dist/vue-quill.snow.css'
 import WRemoteSelect from '@/components/ui/WRemoteSelect.vue'
+import WinIcon from '@/components/win95/WinIcon.vue'
 import { loadUserOptions, loadUserOptionById } from '@/utils/remote-entity-options'
 
 const COLORS = ['#2563EB', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899']
 
 export default defineComponent({
   name: 'TaskModal',
-  components: { QuillEditor, WRemoteSelect },
+  components: { QuillEditor, WRemoteSelect, WinIcon },
   props: {
     modelValue: { type: Boolean, required: true },
     viewMode:   { type: Boolean, default: false },
@@ -942,4 +936,542 @@ export default defineComponent({
 .custom-scrollbar::-webkit-scrollbar { width: 6px; }
 .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
 .custom-scrollbar::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 3px; }
+</style>
+
+<!-- Win95: overrides encapsulados por data-appearance -->
+<style>
+html[data-appearance="win95"] .task-modal-overlay {
+position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+html[data-appearance="win95"] .task-modal-box {
+width: 768px;
+  max-width: 95vw;
+  max-height: 90vh;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 2px;
+  animation: w95-slideUp 0.2s ease-out;
+}
+
+@keyframes w95-slideUp {
+from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+html[data-appearance="win95"] .task-modal-header {
+display: none;
+}
+
+html[data-appearance="win95"] .task-title-input {
+width: 100%;
+  background: var(--color-bg-surface-low);
+  border: 1px solid var(--color-border);
+  padding: 10px 12px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-text-base);
+  outline: none;
+  font-family: var(--font-body);
+  line-height: 1.3;
+  box-sizing: border-box;
+}
+
+html[data-appearance="win95"] .task-title-input:focus {
+border-color: var(--color-border-focus);
+}
+
+html[data-appearance="win95"] .task-title-input::placeholder {
+color: var(--color-text-muted);
+  font-weight: 400;
+}
+
+html[data-appearance="win95"] .header-right {
+display: none;
+}
+
+html[data-appearance="win95"] .icon-btn {
+background: transparent;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 0;
+  transition: background 0.15s, color 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+html[data-appearance="win95"] .icon-btn:hover {
+background: var(--color-bg-base); color: var(--color-text-base);
+}
+
+html[data-appearance="win95"] .icon-btn:disabled {
+opacity: 0.4; cursor: not-allowed;
+}
+
+html[data-appearance="win95"] .icon-btn .material-symbols-outlined {
+font-size: 20px;
+}
+
+html[data-appearance="win95"] .draft-banner {
+display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 24px;
+  background: rgba(245, 158, 11, 0.1);
+  border-bottom: 1px solid rgba(245, 158, 11, 0.25);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-warning);
+  flex-shrink: 0;
+}
+
+html[data-appearance="win95"] .draft-discard {
+margin-left: auto;
+  background: none;
+  border: 1px solid currentColor;
+  color: inherit;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 2px 8px;
+  cursor: pointer;
+  opacity: 0.8;
+}
+
+html[data-appearance="win95"] .draft-discard:hover {
+opacity: 1;
+}
+
+html[data-appearance="win95"] .task-modal-body {
+display: flex;
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+  gap: 24px;
+  max-height: calc(90vh - 72px);
+}
+
+html[data-appearance="win95"] .task-main-col {
+flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  min-width: 0;
+}
+
+html[data-appearance="win95"] .task-side-col {
+width: 200px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+html[data-appearance="win95"] .task-section {
+display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+html[data-appearance="win95"] .section-title {
+font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-base);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+html[data-appearance="win95"] .section-title .material-symbols-outlined {
+font-size: 18px;
+  color: var(--color-text-muted);
+}
+
+html[data-appearance="win95"] .section-title-row {
+display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+html[data-appearance="win95"] .checklist-pct {
+font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-text-muted);
+}
+
+html[data-appearance="win95"] .labels-list {
+display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  position: relative;
+}
+
+html[data-appearance="win95"] .task-label {
+padding: 3px 10px;
+  border-radius: 0;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid transparent;
+}
+
+html[data-appearance="win95"] .remove-label {
+background: transparent;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  display: flex;
+  opacity: 0.6;
+  padding: 0;
+}
+
+html[data-appearance="win95"] .remove-label:hover {
+opacity: 1;
+}
+
+html[data-appearance="win95"] .remove-label .material-symbols-outlined {
+font-size: 13px;
+}
+
+html[data-appearance="win95"] .add-btn {
+background: rgba(255, 255, 255, 0.05);
+  border: 1px dashed var(--color-border);
+  color: var(--color-text-muted);
+  border-radius: 0;
+  padding: 4px 12px;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: background 0.15s, color 0.15s;
+}
+
+html[data-appearance="win95"] .add-btn:hover {
+background: rgba(255, 255, 255, 0.1); color: var(--color-text-base);
+}
+
+html[data-appearance="win95"] .add-btn .material-symbols-outlined {
+font-size: 14px;
+}
+
+html[data-appearance="win95"] .mt-2 {
+margin-top: 4px;
+}
+
+html[data-appearance="win95"] .label-popover {
+position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  padding: 12px;
+  border-radius: 0;
+  z-index: 10;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  width: 200px;
+}
+
+html[data-appearance="win95"] .popover-input {
+width: 100%;
+  background: var(--color-bg-base);
+  border: 1px solid var(--color-border);
+  padding: 6px 10px;
+  border-radius: 0;
+  font-size: 12px;
+  color: var(--color-text-base);
+  margin-bottom: 8px;
+  outline: none;
+  font-family: var(--font-body);
+  box-sizing: border-box;
+}
+
+html[data-appearance="win95"] .popover-input:focus {
+border-color: var(--color-primary);
+}
+
+html[data-appearance="win95"] .color-picker {
+display: flex; gap: 6px; flex-wrap: wrap;
+}
+
+html[data-appearance="win95"] .color-swatch {
+width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+
+html[data-appearance="win95"] .color-swatch:hover {
+transform: scale(1.15);
+}
+
+html[data-appearance="win95"] .color-swatch.active {
+border-color: white; transform: scale(1.15);
+}
+
+html[data-appearance="win95"] .editor-container {
+border: 1px solid var(--color-border);
+  border-radius: 0;
+  overflow: hidden;
+}
+
+html[data-appearance="win95"]:deep(.ql-toolbar) {
+background: var(--color-bg-surface);
+  border-color: var(--color-border) !important;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+}
+
+html[data-appearance="win95"]:deep(.ql-container) {
+background: var(--color-bg-base);
+  border: none !important;
+  font-family: var(--font-body);
+  font-size: 14px;
+  min-height: 120px;
+}
+
+html[data-appearance="win95"]:deep(.ql-editor) {
+color: var(--color-text-base);
+}
+
+html[data-appearance="win95"]:deep(.ql-stroke) {
+stroke: var(--color-text-muted);
+}
+
+html[data-appearance="win95"]:deep(.ql-fill) {
+fill:   var(--color-text-muted);
+}
+
+html[data-appearance="win95"]:deep(.ql-picker) {
+color:  var(--color-text-muted);
+}
+
+html[data-appearance="win95"] .description-view {
+background: var(--color-bg-base);
+  padding: 12px 16px;
+  border-radius: 0;
+  border: 1px solid var(--color-border);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--color-text-base);
+}
+
+html[data-appearance="win95"] .description-view--clickable {
+cursor: pointer;
+  min-height: 60px;
+  transition: background 0.15s;
+  border: 1px solid transparent;
+}
+
+html[data-appearance="win95"] .description-view--clickable:hover {
+background: var(--color-bg-surface-high);
+  border-color: var(--color-border);
+}
+
+html[data-appearance="win95"] .description-placeholder {
+color: var(--color-text-muted);
+  font-size: 14px;
+  margin: 0;
+  padding: 4px 0;
+}
+
+html[data-appearance="win95"] .description-edit-actions {
+display: flex;
+  gap: 8px;
+  padding: 8px;
+  border-top: 1px solid var(--color-border);
+  background: var(--color-bg-surface);
+}
+
+html[data-appearance="win95"] .checklist-progress-container {
+margin-bottom: 4px;
+}
+
+html[data-appearance="win95"] .progress-bar {
+flex: 1;
+  height: 6px;
+  background: var(--color-bg-base);
+  border-radius: 0;
+  overflow: hidden;
+}
+
+html[data-appearance="win95"] .progress-fill {
+height: 100%;
+  background: var(--color-primary);
+  transition: width 0.3s, background 0.3s;
+}
+
+html[data-appearance="win95"] .progress-fill--done {
+background: var(--color-success);
+}
+
+html[data-appearance="win95"] .checklist-items {
+display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+html[data-appearance="win95"] .checklist-item {
+display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 0;
+}
+
+html[data-appearance="win95"] .checklist-checkbox {
+width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+html[data-appearance="win95"] .checklist-text-input {
+flex: 1;
+  background: transparent;
+  border: 1px solid transparent;
+  padding: 6px 8px;
+  color: var(--color-text-base);
+  font-size: 14px;
+  font-family: var(--font-body);
+  outline: none;
+  border-radius: 0;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+html[data-appearance="win95"] .checklist-text-input:focus {
+background: var(--color-bg-base);
+  border-color: var(--color-border);
+}
+
+html[data-appearance="win95"] .checklist-item.completed .checklist-text-input {
+text-decoration: line-through;
+  color: var(--color-text-muted);
+}
+
+html[data-appearance="win95"] .checklist-text {
+flex: 1;
+  font-size: 14px;
+  padding: 6px 0;
+  color: var(--color-text-base);
+}
+
+html[data-appearance="win95"] .checklist-text.completed {
+text-decoration: line-through;
+  color: var(--color-text-muted);
+}
+
+html[data-appearance="win95"] .checklist-delete-btn {
+padding: 4px;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+html[data-appearance="win95"] .checklist-item:hover .checklist-delete-btn {
+opacity: 1;
+}
+
+html[data-appearance="win95"] .meta-card {
+background: none;
+  border: none;
+  padding: 0;
+}
+
+html[data-appearance="win95"] .meta-title {
+font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-muted);
+  margin-bottom: 6px;
+  font-family: var(--font-mono);
+  font-weight: 600;
+}
+
+html[data-appearance="win95"] .task-select, html[data-appearance="win95"] .task-date {
+width: 100%;
+  background: var(--color-bg-surface-high);
+  border: none;
+  padding: 8px 10px;
+  border-radius: 0;
+  color: var(--color-text-base);
+  font-size: 13px;
+  outline: none;
+  font-family: var(--font-body);
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+html[data-appearance="win95"] .task-select:hover, html[data-appearance="win95"] .task-date:hover {
+background: var(--color-bg-surface-highest);
+}
+
+html[data-appearance="win95"] .task-select:focus, html[data-appearance="win95"] .task-date:focus {
+outline: 2px solid var(--color-primary);
+  outline-offset: -2px;
+}
+
+html[data-appearance="win95"] .meta-value {
+font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-base);
+}
+
+html[data-appearance="win95"] .priority-low {
+color: var(--color-success);
+}
+
+html[data-appearance="win95"] .priority-medium {
+color: var(--color-warning);
+}
+
+html[data-appearance="win95"] .priority-high {
+color: var(--color-error);
+}
+
+html[data-appearance="win95"] .priority-urgent {
+color: var(--color-error); font-weight: 700; text-transform: uppercase;
+}
+
+html[data-appearance="win95"] .actions-card {
+margin-top: auto;
+}
+
+html[data-appearance="win95"] .w-full {
+width: 100%;
+}
+
+html[data-appearance="win95"] .custom-scrollbar::-webkit-scrollbar {
+width: 6px;
+}
+
+html[data-appearance="win95"] .custom-scrollbar::-webkit-scrollbar-track {
+background: transparent;
+}
+
+html[data-appearance="win95"] .custom-scrollbar::-webkit-scrollbar-thumb {
+background: var(--color-border); border-radius: 3px;
+}
 </style>

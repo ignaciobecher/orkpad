@@ -24,7 +24,7 @@
         </div>
 
         <div v-else-if="store.items.length === 0" class="empty-state">
-          <span class="material-symbols-outlined empty-icon">notifications_active</span>
+          <win-icon name="mail" :size="32" />
           <h3 class="empty-title">Bandeja de entrada limpia</h3>
           <p class="empty-text">No tienes notificaciones por el momento.</p>
         </div>
@@ -37,7 +37,7 @@
             :class="{ 'unread': !item.isRead }"
           >
             <div class="notification-icon-wrap" :class="item.type">
-              <span class="material-symbols-outlined">{{ getIcon(item.type) }}</span>
+              <win-icon :name="getIcon(item.type)" :size="32" />
             </div>
 
             <div class="notification-body">
@@ -88,19 +88,22 @@
 import { defineComponent, onMounted } from 'vue'
 import { useNotificationsStore } from '@/stores/notifications.store'
 import { useRouter } from 'vue-router'
+import WinIcon from '@/components/win95/WinIcon.vue'
 
 export default defineComponent({
   name: 'NotificationsPage',
+  components: { WinIcon },
   setup() {
     const store = useNotificationsStore()
     const router = useRouter()
 
     const getIcon = (type: string) => {
       switch (type) {
-        case 'success': return 'check_circle'
+        case 'info': return 'info'
+        case 'success': return 'check'
         case 'warning': return 'warning'
         case 'error': return 'error'
-        default: return 'info'
+        default: return 'mail'
       }
     }
 

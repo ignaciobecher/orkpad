@@ -5,13 +5,13 @@
       <aside class="help-sidebar">
         <div class="help-sidebar-header">
           <div class="help-logo">
-            <span class="material-symbols-outlined logo-icon">auto_awesome</span>
+            <span class="logo-icon">★</span>
             <span class="logo-text">ORKPAD <span class="text-primary">DOCS</span></span>
           </div>
         </div>
 
         <div class="help-search-box">
-          <span class="material-symbols-outlined">search</span>
+          <span><win-icon name="search" :size="16" /></span>
           <input v-model="searchQuery" type="text" placeholder="BUSCAR EN LA DOCS..." />
         </div>
 
@@ -25,7 +25,7 @@
                   :class="['nav-item', { active: activeSection === item.id }]"
                   @click.prevent="scrollToSection(item.id)"
                 >
-                  <span class="material-symbols-outlined">{{ item.icon }}</span>
+                  <win-icon :name="materialToWinIcon(item.icon)" :size="16" />
                   {{ item.label }}
                 </a>
               </li>
@@ -43,13 +43,13 @@
             <span class="active">{{ currentSectionTitle }}</span>
           </div>
           <div class="header-actions">
-            <button @click="toggleTheme" class="theme-toggle">
+            <button v-if="uiStore.appearance === 'classic'" @click="toggleTheme" class="theme-toggle" title="Tema">
               <span class="material-symbols-outlined">{{
                 uiStore.theme === 'dark' ? 'light_mode' : 'dark_mode'
               }}</span>
             </button>
             <button class="close-btn" @click="closeWindow" title="CERRAR">
-              <span class="material-symbols-outlined">close</span>
+              ×
             </button>
           </div>
         </header>
@@ -65,17 +65,17 @@
 
             <div class="feature-grid">
               <div class="feature-card">
-                <span class="material-symbols-outlined icon">bolt</span>
+                <span class="icon">★</span>
                 <h3>VELOCIDAD EXTREMA</h3>
                 <p>ARQUITECTURA OPTIMIZADA PARA QUE NUNCA PIERDAS UN SEGUNDO ENTRE TAREAS.</p>
               </div>
               <div class="feature-card">
-                <span class="material-symbols-outlined icon">security</span>
+                <win-icon name="key" :size="32" />
                 <h3>SEGURIDAD ENTERPRISE</h3>
                 <p>TUS DATOS ESTÁN ENCRIPTADOS Y PROTEGIDOS CON LOS ESTÁNDARES MÁS ALTOS.</p>
               </div>
               <div class="feature-card">
-                <span class="material-symbols-outlined icon">dashboard_customize</span>
+                <win-icon name="programs" :size="32" />
                 <h3>MODULAR Y FLEXIBLE</h3>
                 <p>ACTIVA SOLO LO QUE NECESITES PARA TU NEGOCIO EN CADA MOMENTO.</p>
               </div>
@@ -89,7 +89,7 @@
             </p>
 
             <div class="info-box tip">
-              <span class="material-symbols-outlined">info</span>
+              <win-icon name="info" :size="20" />
               <p>
                 <strong>DATO CURIOSO:</strong> EL NOMBRE VIENE DE "ORCHESTRATION PAD", SIMBOLIZANDO
                 LA ORQUESTACIÓN PERFECTA DE TU NEGOCIO.
@@ -113,7 +113,7 @@
 
             <div class="tutorial-box">
               <h4>
-                <span class="material-symbols-outlined">play_circle</span> CÓMO USAR EL DASHBOARD
+                ► CÓMO USAR EL DASHBOARD
               </h4>
               <p>
                 USA LOS FILTROS SUPERIORES PARA CAMBIAR EL RANGO DE TIEMPO. CADA TARJETA DE KPI ES
@@ -131,7 +131,7 @@
             </p>
 
             <div class="info-box info">
-              <span class="material-symbols-outlined">group</span>
+              <win-icon name="users" :size="20" />
               <p>
                 EL CRM PERMITE VINCULAR CONTACTOS, NOTAS INTERNAS Y DOCUMENTOS ESPECÍFICOS PARA CADA
                 CLIENTE.
@@ -156,7 +156,7 @@
 
             <div class="tutorial-box">
               <h4>
-                <span class="material-symbols-outlined">play_circle</span> TUTORIAL: CREAR UN
+                ► TUTORIAL: CREAR UN
                 CLIENTE
               </h4>
               <ol>
@@ -197,7 +197,7 @@
             </div>
 
             <div class="info-box tip">
-              <span class="material-symbols-outlined">payments</span>
+              <win-icon name="calculator" :size="20" />
               <p>
                 <strong>PLAN DE COBRO:</strong> AL CREAR O EDITAR UN PROYECTO ELEGÍ ENTRE PAGO
                 TOTAL O EN CUOTAS. CON CUOTAS, LA PESTAÑA FINANZAS DEL PROYECTO TE PERMITE
@@ -207,7 +207,7 @@
 
             <div class="tutorial-box">
               <h4>
-                <span class="material-symbols-outlined">play_circle</span> TUTORIAL: GESTIÓN DE
+                ► TUTORIAL: GESTIÓN DE
                 TAREAS
               </h4>
               <ol>
@@ -232,7 +232,7 @@
             </p>
 
             <div class="info-box tip">
-              <span class="material-symbols-outlined">view_day</span>
+              <win-icon name="user-calendar" :size="20" />
               <p>
                 ACTIVÁ EL <strong>MODO FOCO</strong> (TECLA "F") PARA CONCENTRARTE EN EL BLOQUE
                 ACTUAL SIN DISTRACCIONES.
@@ -241,7 +241,7 @@
 
             <div class="tutorial-box">
               <h4>
-                <span class="material-symbols-outlined">play_circle</span> CÓMO USAR EL PLANNER
+                ► CÓMO USAR EL PLANNER
               </h4>
               <p>
                 CREÁ BLOQUES ARRASTRANDO SOBRE LA LÍNEA DE TIEMPO, ASIGNALES UNA TAREA O
@@ -273,7 +273,7 @@
 
             <div class="tutorial-box">
               <h4>
-                <span class="material-symbols-outlined">play_circle</span> TUTORIAL: CREAR UN
+                ► TUTORIAL: CREAR UN
                 OBJETIVO
               </h4>
               <ol>
@@ -295,17 +295,17 @@
 
             <div class="finance-grid">
               <div class="finance-item">
-                <span class="material-symbols-outlined">trending_up</span>
+                <win-icon name="chart" :size="32" />
                 <h4>INGRESOS</h4>
                 <p>FACTURA TUS SERVICIOS Y REGISTRA PAGOS RECIBIDOS.</p>
               </div>
               <div class="finance-item">
-                <span class="material-symbols-outlined">trending_down</span>
+                <win-icon name="chart" :size="32" />
                 <h4>GASTOS</h4>
                 <p>CONTROLA TUS COSTOS OPERATIVOS Y PAGOS A PROVEEDORES.</p>
               </div>
               <div class="finance-item">
-                <span class="material-symbols-outlined">description</span>
+                <win-icon name="wordpad" :size="32" />
                 <h4>FACTURAS PDF</h4>
                 <p>GENERA COMPROBANTES CON TU LOGO Y DATOS LEGALES AL INSTANTE.</p>
               </div>
@@ -313,7 +313,7 @@
 
             <div class="tutorial-box">
               <h4>
-                <span class="material-symbols-outlined">play_circle</span> TUTORIAL: CREAR UNA
+                ► TUTORIAL: CREAR UNA
                 FACTURA
               </h4>
               <ol>
@@ -337,7 +337,7 @@
             </p>
 
             <div class="info-box info">
-              <span class="material-symbols-outlined">request_quote</span>
+              <win-icon name="newspaper" :size="20" />
               <p>
                 EL BUILDER TE PERMITE DEFINIR ALCANCE, ENTREGABLES, ÍTEMS Y SECCIONES CON PRECIOS,
                 DATOS DEL CLIENTE Y TUYOS, CONDICIONES DE PAGO Y VALIDEZ DE LA OFERTA.
@@ -346,7 +346,7 @@
 
             <div class="tutorial-box">
               <h4>
-                <span class="material-symbols-outlined">play_circle</span> TUTORIAL: CREAR UN
+                ► TUTORIAL: CREAR UN
                 PRESUPUESTO
               </h4>
               <ol>
@@ -378,7 +378,7 @@
             </p>
 
             <div class="info-box tip">
-              <span class="material-symbols-outlined">rebase_edit</span>
+              <win-icon name="sched-tasks" :size="20" />
               <p>
                 LA TABLA RESALTA AUTOMÁTICAMENTE LAS SUSCRIPCIONES PRÓXIMAS A VENCER O ATRASADAS,
                 PARA QUE NUNCA TE OLVIDES DE FACTURAR UN COBRO RECURRENTE.
@@ -387,7 +387,7 @@
 
             <div class="tutorial-box">
               <h4>
-                <span class="material-symbols-outlined">play_circle</span> TUTORIAL: CREAR UNA
+                ► TUTORIAL: CREAR UNA
                 SUSCRIPCIÓN DE CLIENTE
               </h4>
               <ol>
@@ -410,7 +410,7 @@
             </p>
 
             <div class="info-box tip">
-              <span class="material-symbols-outlined">timer</span>
+              <win-icon name="clock" :size="20" />
               <p>
                 PUEDES USAR EL TEMPORIZADOR EN TIEMPO REAL O INGRESAR LAS HORAS MANUALMENTE AL FINAL
                 DEL DÍA.
@@ -419,7 +419,7 @@
 
             <div class="tutorial-box">
               <h4>
-                <span class="material-symbols-outlined">play_circle</span> CÓMO REGISTRAR TIEMPO
+                ► CÓMO REGISTRAR TIEMPO
               </h4>
               <p>
                 SELECCIONA UNA TAREA ACTIVA Y HAZ CLIC EN EL BOTÓN DE <strong>PLAY</strong>. EL
@@ -452,7 +452,7 @@
             </p>
 
             <div class="info-box tip">
-              <span class="material-symbols-outlined">edit_note</span>
+              <win-icon name="note" :size="20" />
               <p>
                 A DIFERENCIA DE LOS DOCUMENTOS, LAS NOTAS DE LA PIZARRA SON LIGERAS Y ESTÁN PENSADAS
                 PARA EL DÍA A DÍA: CAPTURAR UNA IDEA, ANOTAR UN NÚMERO DE TELÉFONO O REDACTAR UN
@@ -473,7 +473,7 @@
             </ul>
 
             <div class="tutorial-box">
-              <h4><span class="material-symbols-outlined">play_circle</span> CREAR UNA NOTA</h4>
+              <h4>► CREAR UNA NOTA</h4>
               <ol>
                 <li>VE A <strong>PIZARRA</strong> EN EL MENÚ LATERAL.</li>
                 <li>HAZ CLIC EN <strong>+ NUEVA NOTA</strong>.</li>
@@ -491,7 +491,7 @@
             </p>
 
             <div class="info-box info">
-              <span class="material-symbols-outlined">commit</span>
+              <win-icon name="console" :size="20" />
               <p>
                 LA INTEGRACIÓN CON GITHUB FUNCIONA VÍA OAUTH. CONECTÁ TU CUENTA DESDE
                 INTEGRACIONES UNA VEZ Y ORKPAD TENDRÁ ACCESO A TUS REPOSITORIOS.
@@ -528,7 +528,7 @@
 
             <div class="tutorial-box">
               <h4>
-                <span class="material-symbols-outlined">play_circle</span> TUTORIAL: CONECTAR GITHUB
+                ► TUTORIAL: CONECTAR GITHUB
               </h4>
               <ol>
                 <li>
@@ -546,7 +546,7 @@
 
             <div class="tutorial-box">
               <h4>
-                <span class="material-symbols-outlined">play_circle</span> TUTORIAL: VINCULAR UN
+                ► TUTORIAL: VINCULAR UN
                 REPOSITORIO A UN PROYECTO
               </h4>
               <ol>
@@ -569,7 +569,7 @@
 
             <div class="tutorial-box">
               <h4>
-                <span class="material-symbols-outlined">play_circle</span> TUTORIAL: CREAR UN BRANCH
+                ► TUTORIAL: CREAR UN BRANCH
                 DESDE UNA TAREA
               </h4>
               <ol>
@@ -583,7 +583,7 @@
             </div>
 
             <div class="info-box tip">
-              <span class="material-symbols-outlined">info</span>
+              <win-icon name="info" :size="20" />
               <p>
                 <strong>CONSEJO:</strong> PODÉS VINCULAR REPOSITORIOS PÚBLICOS Y PRIVADOS. LOS REPOS
                 PRIVADOS APARECEN CON UN ÍCONO DE CANDADO EN EL BUSCADOR.
@@ -600,12 +600,12 @@
 
             <div class="finance-grid">
               <div class="finance-item">
-                <span class="material-symbols-outlined">commit</span>
+                <win-icon name="console" :size="32" />
                 <h4>GITHUB</h4>
                 <p>REPOSITORIOS, COMMITS Y PULL REQUESTS VINCULADOS A PROYECTOS.</p>
               </div>
               <div class="finance-item">
-                <span class="material-symbols-outlined">add_circle</span>
+                +
                 <h4>PRÓXIMAMENTE</h4>
                 <p>MÁS INTEGRACIONES EN CAMINO.</p>
               </div>
@@ -613,7 +613,7 @@
 
             <div class="tutorial-box">
               <h4>
-                <span class="material-symbols-outlined">play_circle</span> ACCEDER A INTEGRACIONES
+                ► ACCEDER A INTEGRACIONES
               </h4>
               <p>
                 VE AL MENÚ LATERAL Y HACÉ CLIC EN <strong>INTEGRACIONES</strong>.
@@ -632,7 +632,7 @@
 
             <div class="tutorial-box">
               <h4>
-                <span class="material-symbols-outlined">play_circle</span> AGENDAR UNA REUNIÓN
+                ► AGENDAR UNA REUNIÓN
               </h4>
               <p>
                 HAZ CLIC EN CUALQUIER DÍA DEL CALENDARIO. COMPLETA EL TÍTULO, HORA Y VINCULA UN
@@ -670,9 +670,12 @@
 <script lang="ts">
 import { defineComponent, ref, computed, onMounted } from 'vue'
 import { useUIStore } from '@/stores/ui.store'
+import WinIcon from '@/components/win95/WinIcon.vue'
+import { materialToWinIcon } from '@/components/win95/icons'
 
 export default defineComponent({
   name: 'HelpPage',
+  components: { WinIcon },
   setup() {
     const uiStore = useUIStore()
     const activeSection = ref('intro')
@@ -802,6 +805,7 @@ export default defineComponent({
 
     return {
       uiStore,
+      materialToWinIcon,
       activeSection,
       searchQuery,
       filteredNav,

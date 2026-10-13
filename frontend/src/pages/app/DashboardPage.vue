@@ -35,12 +35,10 @@
               class="onboarding-step"
               :class="{ 'onboarding-step--done': step.completed }"
             >
-              <span
-                class="material-symbols-outlined onboarding-step-icon"
-                :class="step.completed ? 'onboarding-step-icon--done' : ''"
-              >
-                {{ step.completed ? 'check_circle' : stepIcon(step.id) }}
-              </span>
+              <win-icon
+                :name="materialToWinIcon(step.completed ? 'check_circle' : stepIcon(step.id))"
+                :size="16"
+              />
               <div class="onboarding-step-text">
                 <span class="onboarding-step-title">{{ step.title }}</span>
                 <span class="onboarding-step-why">{{ step.description }}</span>
@@ -63,7 +61,7 @@
               :loading="onboardingStore.demoLoading"
               @click="onboardingStore.seedDemoData()"
             >
-              <span class="material-symbols-outlined mr-1">auto_awesome</span>
+              ★
               Probar con datos de ejemplo
             </w-button>
             <w-button
@@ -72,7 +70,7 @@
               :loading="onboardingStore.demoLoading"
               @click="onboardingStore.removeDemoData()"
             >
-              <span class="material-symbols-outlined mr-1">delete_sweep</span>
+              <win-icon name="recycle" :size="16" />
               Quitar datos de ejemplo
             </w-button>
           </div>
@@ -90,12 +88,12 @@
       <!-- Quick Access -->
       <section class="quick-access">
         <router-link to="/app/notes" class="quick-access-card">
-          <span class="material-symbols-outlined quick-access-icon">edit_note</span>
+          <win-icon name="note" :size="20" />
           <div class="quick-access-text">
             <span class="quick-access-title">Pizarra</span>
             <span class="quick-access-sub">Notas, ideas y pendientes</span>
           </div>
-          <span class="material-symbols-outlined quick-access-arrow">arrow_forward</span>
+          <span class="quick-access-arrow">→</span>
         </router-link>
       </section>
 
@@ -144,6 +142,8 @@ import WTable from '@/components/ui/WTable.vue'
 import WCard from '@/components/ui/WCard.vue'
 import WBadge from '@/components/ui/WBadge.vue'
 import WButton from '@/components/ui/WButton.vue'
+import WinIcon from '@/components/win95/WinIcon.vue'
+import { materialToWinIcon } from '@/components/win95/icons'
 
 const WorkloadConstellation = defineAsyncComponent(
   () => import('@/components/dashboard/WorkloadConstellation.vue'),
@@ -154,7 +154,7 @@ const WorkloadConstellationPreview = defineAsyncComponent(
 
 export default defineComponent({
   name: 'DashboardPage',
-  components: { WKpiCard, WTable, WCard, WBadge, WButton, WorkloadConstellation, WorkloadConstellationPreview },
+  components: { WKpiCard, WTable, WCard, WBadge, WButton, WorkloadConstellation, WorkloadConstellationPreview, WinIcon },
   setup() {
     return { onboardingStore: useOnboardingStore() }
   },
@@ -223,6 +223,7 @@ export default defineComponent({
     },
   },
   methods: {
+    materialToWinIcon,
     stepIcon(key: keyof OnboardingSteps): string {
       return ONBOARDING_STEP_ICONS[key] ?? 'radio_button_unchecked'
     },

@@ -2,21 +2,21 @@
   <div class="github-page">
     <header class="page-header">
       <button class="back-btn" @click="$router.push({ name: 'project-detail', params: { id: projectId } })">
-        <span class="material-symbols-outlined">arrow_back</span>
+        <span>←</span>
         <span>Volver al proyecto</span>
       </button>
       <div v-if="activeRepo" class="header-info">
-        <span class="material-symbols-outlined" style="font-size:18px;color:var(--color-text-muted)">commit</span>
+        <win-icon name="console" :size="16" />
         <a :href="activeRepo.htmlUrl" target="_blank" class="repo-link">{{ activeRepo.owner }}/{{ activeRepo.repo }}</a>
       </div>
     </header>
 
     <div v-if="loading" class="loading-state">
-      <span class="material-symbols-outlined loading-icon">progress_activity</span>
+      <win-icon name="hourglass" :size="32" class="loading-icon" />
     </div>
 
     <div v-else-if="!connectedRepos.length" class="empty-state">
-      <span class="material-symbols-outlined" style="font-size:48px;color:var(--color-text-muted)">link_off</span>
+      <win-icon name="network" :size="32" />
       <p>Este proyecto no tiene repositorios de GitHub conectados.</p>
       <w-button variant="ghost" @click="$router.push({ name: 'project-detail', params: { id: projectId } })">
         Conectar desde el detalle del proyecto
@@ -33,7 +33,7 @@
           :class="{ active: activeRepo?.owner === r.owner && activeRepo?.repo === r.repo }"
           @click="selectRepo(r)"
         >
-          <span class="material-symbols-outlined" style="font-size:14px">commit</span>
+          <win-icon name="console" :size="16" />
           {{ r.owner }}/{{ r.repo }}
         </button>
       </div>
@@ -55,7 +55,7 @@
                 <span class="commit-meta">{{ commit.author }} · {{ formatDate(commit.date) }}</span>
               </div>
               <a :href="commit.url" target="_blank" class="row-link" title="Ver en GitHub">
-                <span class="material-symbols-outlined">open_in_new</span>
+                <win-icon name="search" :size="16" />
               </a>
             </div>
           </w-card>
@@ -77,7 +77,7 @@
                 <span class="commit-meta">{{ pr.user }} · {{ formatDate(pr.createdAt) }}</span>
               </div>
               <a :href="pr.url" target="_blank" class="row-link" title="Ver en GitHub">
-                <span class="material-symbols-outlined">open_in_new</span>
+                <win-icon name="search" :size="16" />
               </a>
             </div>
           </w-card>
@@ -94,6 +94,7 @@ import { useGithubStore } from '@/stores/github.store'
 import { mapActions } from 'pinia'
 import WButton from '@/components/ui/WButton.vue'
 import WCard from '@/components/ui/WCard.vue'
+import WinIcon from '@/components/win95/WinIcon.vue'
 
 interface ConnectedRepo {
   owner: string
@@ -104,7 +105,7 @@ interface ConnectedRepo {
 
 export default defineComponent({
   name: 'ProjectGithubPage',
-  components: { WButton, WCard },
+  components: { WButton, WCard, WinIcon },
   data() {
     return {
       loading: false,

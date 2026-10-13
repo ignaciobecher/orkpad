@@ -6,6 +6,51 @@
 
     <main class="settings-layout">
 
+      <!-- Apariencia de la interfaz -->
+      <w-card>
+        <div class="settings-section">
+          <h3 class="section-title">Apariencia de la interfaz</h3>
+          <p class="setting-description">Elegí entre la interfaz clásica o el escritorio retro Orkpad95. El cambio es instantáneo.</p>
+          <div class="appearance-options">
+            <button
+              class="appearance-option"
+              :class="{ 'appearance-option--active': appearance === 'win95' }"
+              @click="setAppearance('win95')"
+            >
+              <win-icon name="windows" :size="32" alt="Windows 95" />
+              <span class="appearance-name">Orkpad95</span>
+              <span class="appearance-desc">Escritorio retro con ventanas, taskbar y menú Inicio</span>
+            </button>
+            <button
+              class="appearance-option"
+              :class="{ 'appearance-option--active': appearance === 'classic' }"
+              @click="setAppearance('classic')"
+            >
+              <win-icon name="computer" :size="32" alt="Clásica" />
+              <span class="appearance-name">Clásica</span>
+              <span class="appearance-desc">Sidebar y barra superior, tema oscuro o claro</span>
+            </button>
+          </div>
+          <div v-if="appearance === 'classic'" class="theme-row">
+            <span class="theme-label">Tema:</span>
+            <button
+              class="theme-option"
+              :class="{ 'theme-option--active': theme === 'dark' }"
+              @click="setTheme('dark')"
+            >
+              Oscuro
+            </button>
+            <button
+              class="theme-option"
+              :class="{ 'theme-option--active': theme === 'light' }"
+              @click="setTheme('light')"
+            >
+              Claro
+            </button>
+          </div>
+        </div>
+      </w-card>
+
       <!-- Profile -->
       <w-card>
         <div class="settings-section">
@@ -27,7 +72,7 @@
           <h3 class="section-title">{{ $t('settings.branding.title') }}</h3>
           <p class="setting-description">{{ $t('settings.branding.description') }}</p>
           <div class="form-grid">
-            <w-input :label="$t('settings.branding.agencyName')" v-model="brandForm.displayName" :placeholder="$t('settings.branding.agencyPlaceholder')" />
+            <w-input :label="$t('settings.branding.agencyName')" v-model="brandForm.displayName" :placeholder="$t('settings.branding.agencyNamePlaceholder')" />
             <div>
               <label class="w-input-label">{{ $t('settings.branding.color') }}</label>
               <input v-model="brandForm.primaryColor" type="color" class="brand-color-input" />
@@ -184,7 +229,7 @@
           <p class="setting-description">{{ $t('settings.paymentMethods.description') }}</p>
 
           <div v-if="paymentMethodsStore.loading" class="loading-state">
-            <span class="material-symbols-outlined spinning">sync</span>
+            <win-icon name="hourglass" :size="16" />
             Cargando...
           </div>
 
@@ -204,10 +249,10 @@
                 />
                 <div class="pm-row-actions">
                   <button class="action-btn" :title="$t('common.save')" @click="saveRename(m)">
-                    <span class="material-symbols-outlined">check</span>
+                    <win-icon name="check" :size="16" />
                   </button>
                   <button class="action-btn" :title="$t('common.cancel')" @click="cancelRename">
-                    <span class="material-symbols-outlined">close</span>
+                    ×
                   </button>
                 </div>
               </template>
@@ -218,17 +263,17 @@
                 </w-badge>
                 <div class="pm-row-actions">
                   <button class="action-btn" :title="$t('common.edit')" @click="startRename(m)">
-                    <span class="material-symbols-outlined">edit</span>
+                    <win-icon name="paint" :size="16" />
                   </button>
                   <button
                     class="action-btn"
                     :title="m.active ? $t('settings.paymentMethods.disable') : $t('settings.paymentMethods.enable')"
                     @click="toggleMethod(m)"
                   >
-                    <span class="material-symbols-outlined">{{ m.active ? 'visibility_off' : 'visibility' }}</span>
+                    Ver
                   </button>
                   <button class="action-btn action-btn--danger" :title="$t('common.delete')" @click="deleteMethod(m)">
-                    <span class="material-symbols-outlined">delete</span>
+                    <win-icon name="recycle" :size="16" />
                   </button>
                 </div>
               </template>
@@ -302,7 +347,7 @@
         <div class="qr-container">
           <img v-if="qrCode" :src="qrCode" alt="QR 2FA" class="qr-code" />
           <div v-else class="qr-placeholder">
-            <span class="material-symbols-outlined rotating">sync</span>
+            <win-icon name="hourglass" :size="32" />
           </div>
         </div>
         <p class="setup-step">{{ $t('settings.twoFactor.step2') }}</p>
@@ -343,6 +388,33 @@
         </div>
       </div>
     </w-drawer>
+    <w-confirm-modal
+      :is-open="showDisable2FAModal"
+      title="Deshabilitar 2FA"
+      :message="$t('settings.twoFactor.disableConfirm')"
+      confirm-text="Deshabilitar"
+      :is-danger="true"
+      @confirm="handleDisable2FA"
+      @cancel="showDisable2FAModal = false"
+    />
+    <w-confirm-modal
+      :is-open="!!deleteMethodTarget"
+      title="Eliminar método"
+      :message="`¿Eliminar &quot;${deleteMethodTarget?.name}&quot;? Las facturas existentes conservan el nombre como texto.`"
+      confirm-text="Eliminar"
+      :is-danger="true"
+      @confirm="deleteMethod(deleteMethodTarget)"
+      @cancel="deleteMethodTarget = null"
+    />
+    <w-confirm-modal
+      :is-open="!!removeCredTarget"
+      title="Eliminar credencial"
+      message="¿Eliminar esta credencial biométrica?"
+      confirm-text="Eliminar"
+      :is-danger="true"
+      @confirm="handleRemoveCredential(removeCredTarget)"
+      @cancel="removeCredTarget = null"
+    />
   </div>
 </template>
 
@@ -350,6 +422,7 @@
 import { defineComponent } from 'vue'
 import { mapState, mapActions } from 'pinia'
 import { useAuthStore } from '@/stores/auth.store'
+import { useUIStore } from '@/stores/ui.store'
 import { authApi } from '@/api/auth/auth.api'
 import { showToast } from '@/composables/useToast'
 import { usePushNotifications } from '@/composables/usePushNotifications'
@@ -363,10 +436,12 @@ import WCard from '@/components/ui/WCard.vue'
 import WInput from '@/components/ui/WInput.vue'
 import WBadge from '@/components/ui/WBadge.vue'
 import WDrawer from '@/components/ui/WDrawer.vue'
+import WConfirmModal from '@/components/ui/WConfirmModal.vue'
+import WinIcon from '@/components/win95/WinIcon.vue'
 
 export default defineComponent({
   name: 'SettingsPage',
-  components: { WButton, WCard, WInput, WBadge, WDrawer },
+  components: { WButton, WCard, WInput, WBadge, WDrawer, WConfirmModal, WinIcon },
   setup() {
     const { isSupported, isSubscribed, loading, permissionState, checkStatus, subscribe, unsubscribe } =
       usePushNotifications()
@@ -401,6 +476,9 @@ export default defineComponent({
   },
   data() {
     return {
+      showDisable2FAModal: false,
+      deleteMethodTarget: null as { _id: string; name: string } | null,
+      removeCredTarget: null as string | null,
       form: { name: '', phone: '' },
       profileLoading: false,
       brandForm: { displayName: '', primaryColor: '#5B4EFF', defaultTheme: null as 'dark' | 'light' | null, agencyEmail: '', agencyPhone: '', agencyAddress: '', agencyWebsite: '', taxId: '', maxUploadMb: 200 as number | null },
@@ -430,6 +508,7 @@ export default defineComponent({
   },
   computed: {
     ...mapState(useAuthStore, ['user']),
+    ...mapState(useUIStore, ['appearance', 'theme']),
   },
   watch: {
     user: {
@@ -453,6 +532,7 @@ export default defineComponent({
   },
   methods: {
     ...mapActions(useAuthStore, ['fetchMe', 'logout']),
+    ...mapActions(useUIStore, ['setAppearance', 'setTheme']),
 
     async handleEnablePush() {
       await this.pushSubscribe()
@@ -599,7 +679,8 @@ export default defineComponent({
     },
 
     async handleDisable2FA() {
-      if (!confirm(this.$t('settings.twoFactor.disableConfirm'))) return
+      if (!this.showDisable2FAModal) { this.showDisable2FAModal = true; return }
+      this.showDisable2FAModal = false
       this.twoFALoading = true
       try {
         await authApi.disable2FA()
@@ -672,7 +753,9 @@ export default defineComponent({
     },
 
     async deleteMethod(item: { _id: string; name: string }) {
-      if (!confirm(`¿Eliminar "${item.name}"? Las facturas existentes conservan el nombre como texto.`)) return
+      if (!this.deleteMethodTarget) { this.deleteMethodTarget = item; return }
+      item = this.deleteMethodTarget
+      this.deleteMethodTarget = null
       try {
         await this.paymentMethodsStore.remove(item._id)
       } catch {
@@ -712,7 +795,9 @@ export default defineComponent({
     },
 
     async handleRemoveCredential(credentialId: string) {
-      if (!confirm('¿Eliminar esta credencial biométrica?')) return
+      if (!this.removeCredTarget) { this.removeCredTarget = credentialId; return }
+      credentialId = this.removeCredTarget
+      this.removeCredTarget = null
       const success = await this.removeWebAuthnCredential(credentialId)
       if (success) {
         await this.loadWebAuthnCredentials()
@@ -734,6 +819,56 @@ export default defineComponent({
   flex-grow: 1;
   max-width: 760px;
   margin: 0 auto;
+}
+
+/* Selector de apariencia (ambos temas: usa vars) */
+.appearance-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 12px;
+}
+@media (max-width: 640px) {
+  .appearance-options { grid-template-columns: 1fr; }
+}
+.appearance-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 16px 12px;
+  background: var(--color-bg-surface);
+  border: 2px solid var(--color-border);
+  cursor: pointer;
+  color: var(--color-text-base);
+  font-family: var(--font-body);
+}
+.appearance-option--active {
+  border-color: var(--color-primary);
+  box-shadow: inset 0 0 0 1px var(--color-primary);
+}
+.appearance-name { font-weight: 700; font-size: 14px; }
+.appearance-desc { font-size: 11px; color: var(--color-text-muted); text-align: center; line-height: 1.4; }
+.theme-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+.theme-label { font-size: 12px; color: var(--color-text-muted); }
+.theme-option {
+  padding: 4px 14px;
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-base);
+  cursor: pointer;
+  font-size: 12px;
+}
+.theme-option--active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+  font-weight: 700;
 }
 
 @media (max-width: 768px) {

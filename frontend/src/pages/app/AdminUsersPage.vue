@@ -5,19 +5,19 @@
       <span class="user-count">{{ usersData.total }} usuarios</span>
       <div class="header-actions">
         <button class="header-btn" @click="openAnnouncementModal">
-          <span class="material-symbols-outlined btn-icon">notifications_active</span>
+          <win-icon name="mail" :size="16" class="btn-icon" />
           Nuevo Anuncio
         </button>
       </div>
     </header>
 
     <div v-if="loading" class="loading-state">
-      <span class="material-symbols-outlined spinning">sync</span>
+      <win-icon name="hourglass" :size="16" class="spinning" />
       Cargando...
     </div>
 
     <div v-else-if="usersData.data.length === 0" class="empty-state">
-      <span class="material-symbols-outlined empty-icon">group_remove</span>
+      <win-icon name="users" :size="32" class="empty-icon" />
       <p>No hay usuarios registrados</p>
     </div>
 
@@ -58,9 +58,9 @@
                 :disabled="sendingId === user._id || sentIds.has(user._id)"
                 @click="sendFollowUp(user._id)"
               >
-                <span v-if="sendingId === user._id" class="material-symbols-outlined spinning btn-icon">sync</span>
-                <span v-else-if="sentIds.has(user._id)" class="material-symbols-outlined btn-icon">check</span>
-                <span v-else class="material-symbols-outlined btn-icon">forward_to_inbox</span>
+                <win-icon v-if="sendingId === user._id" name="hourglass" :size="16" class="spinning btn-icon" />
+                <win-icon v-else-if="sentIds.has(user._id)" name="check" :size="16" class="btn-icon" />
+                <win-icon v-else name="mail" :size="16" class="btn-icon" />
                 {{ sentIds.has(user._id) ? 'Enviado' : 'Seguimiento' }}
               </button>
             </td>
@@ -85,11 +85,12 @@ import { usersApi } from '@/api/users/users.api'
 import { useAuthStore } from '@/stores/auth.store'
 import { isAdminUser } from '@/utils/admin'
 import AnnouncementComposerModal from '@/components/notifications/AnnouncementComposerModal.vue'
+import WinIcon from '@/components/win95/WinIcon.vue'
 import type { User, PaginatedResponse } from '@/api/users/users.types'
 
 export default defineComponent({
   name: 'AdminUsersPage',
-  components: { AnnouncementComposerModal },
+  components: { AnnouncementComposerModal, WinIcon },
   setup() {
     const router = useRouter()
     const authStore = useAuthStore()

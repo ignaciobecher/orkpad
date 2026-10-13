@@ -692,7 +692,8 @@
       "agencySection": "Datos para presupuestos (se reutilizan al crear)",
       "filesTitle": "ARCHIVOS Y VIDEOS",
       "filesDesc": "Tope de subida por archivo. Los videos se guardan en tu servidor, no en la base de datos.",
-      "maxUploadMb": "Tope por archivo (MB)"
+      "maxUploadMb": "Tope por archivo (MB)",
+      "agencyNamePlaceholder": "Ej: Mi agencia"
     }
   },
   "agenda": {

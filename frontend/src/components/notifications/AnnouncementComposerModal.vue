@@ -1,14 +1,12 @@
 <template>
-  <div class="modal-overlay" @click.self="handleClose">
-    <div class="modal">
-      <div class="modal-header">
-        <div>
-          <p class="modal-label">COMUNICADOS</p>
-          <h2 class="modal-title">Nuevo Anuncio</h2>
+  <div class="modal-overlay w95-dialog-overlay" @click.self="handleClose">
+    <div class="modal w95-window">
+      <div class="w95-titlebar">
+        <win-icon name="mail" :size="16" alt="" />
+        <span class="title-text">Nuevo anuncio — Orkpad95</span>
+        <div class="w95-titlebar-buttons">
+          <button class="w95-title-btn" @click="handleClose" title="Cerrar"><span class="tbtn-close" aria-hidden="true">×</span></button>
         </div>
-        <button class="modal-close" @click="handleClose">
-          <span class="material-symbols-outlined">close</span>
-        </button>
       </div>
 
       <div class="modal-body">
@@ -42,7 +40,7 @@
                 v-for="opt in typeOptions"
                 :key="opt.value"
                 class="type-pill"
-                :class="[`type-pill--${opt.value}`, { 'type-pill--selected': form.type === opt.value }]"
+                :class="{ 'type-pill--selected': form.type === opt.value }"
                 @click="form.type = opt.value"
               >
                 {{ opt.label }}
@@ -62,14 +60,14 @@
         </template>
 
         <div v-else-if="confirming" class="confirm-box">
-          <span class="material-symbols-outlined confirm-icon">warning</span>
+          <win-icon name="warning" :size="16" class="confirm-icon" />
           <p class="confirm-text">
             ¿Confirmás el envío a todos los usuarios ({{ totalUsers }})? Esta acción no se puede deshacer.
           </p>
         </div>
 
         <div v-else-if="result" class="send-result">
-          <span class="material-symbols-outlined result-icon">check_circle</span>
+          <win-icon name="check" :size="16" class="result-icon" />
           {{ result.sent }} anuncios enviados de {{ result.total }} usuarios
         </div>
       </div>
@@ -77,20 +75,20 @@
       <div class="modal-footer">
         <div class="modal-actions">
           <template v-if="result">
-            <button class="cancel-btn" @click="handleClose">Cerrar</button>
+            <button class="w95-btn" @click="handleClose">Cerrar</button>
           </template>
           <template v-else-if="confirming">
-            <button class="cancel-btn" :disabled="sending" @click="confirming = false">Volver</button>
-            <button class="send-btn" :disabled="sending" @click="sendAnnouncement">
-              <span v-if="sending" class="material-symbols-outlined spinning btn-icon">sync</span>
-              <span v-else class="material-symbols-outlined btn-icon">send</span>
+            <button class="w95-btn" :disabled="sending" @click="confirming = false">Volver</button>
+            <button class="w95-btn w95-btn--default" :disabled="sending" @click="sendAnnouncement">
+              <win-icon v-if="sending" name="hourglass" :size="16" class="spinning btn-icon" />
+              <win-icon v-else name="mail" :size="16" class="btn-icon" />
               {{ sending ? 'Enviando...' : 'Confirmar envío' }}
             </button>
           </template>
           <template v-else>
-            <button class="cancel-btn" @click="handleClose">Cancelar</button>
-            <button class="send-btn" :disabled="!canSubmit" @click="confirming = true">
-              <span class="material-symbols-outlined btn-icon">campaign</span>
+            <button class="w95-btn" @click="handleClose">Cancelar</button>
+            <button class="w95-btn w95-btn--default" :disabled="!canSubmit" @click="confirming = true">
+              <win-icon name="mail" :size="16" class="btn-icon" />
               {{ `Enviar a todos (${totalUsers})` }}
             </button>
           </template>
@@ -102,11 +100,13 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed } from 'vue'
+import WinIcon from '@/components/win95/WinIcon.vue'
 import { notificationsApi } from '@/api/notifications/notifications.api'
 import type { BroadcastNotificationResponse } from '@/api/notifications/notifications.types'
 
 export default defineComponent({
   name: 'AnnouncementComposerModal',
+  components: { WinIcon },
   props: {
     totalUsers: {
       type: Number,
@@ -416,5 +416,159 @@ export default defineComponent({
 
 .result-icon {
   font-size: 20px;
+}
+</style>
+
+<!-- Win95: overrides encapsulados por data-appearance -->
+<style>
+html[data-appearance="win95"] .modal-overlay {
+position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 24px;
+}
+
+html[data-appearance="win95"] .modal {
+width: 100%;
+  max-width: 560px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  padding: 2px;
+}
+
+html[data-appearance="win95"] .modal-header {
+display: none;
+}
+
+html[data-appearance="win95"] .modal-body {
+padding: 24px 28px;
+  overflow-y: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+html[data-appearance="win95"] .section-label {
+margin: 0 0 8px 0;
+  font-size: 10px;
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+html[data-appearance="win95"] .text-input, html[data-appearance="win95"] .textarea-input {
+width: 100%;
+  padding: 10px 12px;
+  background: var(--color-bg-base);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  color: var(--color-text-base);
+  font-size: 14px;
+  font-family: var(--font-body);
+  box-sizing: border-box;
+}
+
+html[data-appearance="win95"] .textarea-input {
+resize: vertical;
+}
+
+html[data-appearance="win95"] .text-input:focus, html[data-appearance="win95"] .textarea-input:focus {
+outline: none;
+  border-color: var(--color-primary);
+}
+
+html[data-appearance="win95"] .type-list {
+display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+html[data-appearance="win95"] .type-pill {
+padding: 6px 14px;
+  font-size: 12px;
+  font-family: Tahoma, Verdana, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-radius: 0;
+  background: var(--w95-face);
+  border: 2px solid;
+  border-color: var(--w95-highlight) var(--w95-darkshadow) var(--w95-darkshadow) var(--w95-highlight);
+  box-shadow: inset 1px 1px 0 var(--w95-face-light), inset -1px -1px 0 var(--w95-shadow);
+  color: #000;
+  cursor: pointer;
+}
+
+html[data-appearance="win95"] .type-pill--selected {
+font-weight: bold;
+  border-color: var(--w95-darkshadow) var(--w95-darkshadow) var(--w95-darkshadow) var(--w95-darkshadow);
+  box-shadow: inset 1px 1px 0 var(--w95-highlight), inset -1px -1px 0 var(--w95-shadow), 0 0 0 1px #000;
+}
+
+html[data-appearance="win95"] .confirm-box {
+display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: 4px;
+}
+
+html[data-appearance="win95"] .confirm-icon {
+color: #f59e0b;
+  font-size: 22px;
+}
+
+html[data-appearance="win95"] .confirm-text {
+margin: 0;
+  font-size: 14px;
+  color: var(--color-text-base);
+  line-height: 1.5;
+}
+
+html[data-appearance="win95"] .modal-footer {
+padding: 8px;
+  border-top: 1px solid var(--w95-shadow);
+  box-shadow: inset 0 1px 0 var(--w95-highlight);
+  background: var(--w95-face);
+}
+
+html[data-appearance="win95"] .modal-actions {
+display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+html[data-appearance="win95"] .btn-icon {
+font-size: 16px;
+}
+
+html[data-appearance="win95"] .spinning {
+animation: w95-spin 2s linear infinite;
+}
+
+@keyframes w95-spin {
+from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+html[data-appearance="win95"] .send-result {
+display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--color-success, #10b981);
+  font-weight: 500;
+}
+
+html[data-appearance="win95"] .result-icon {
+font-size: 20px;
 }
 </style>

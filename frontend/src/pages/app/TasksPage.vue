@@ -9,9 +9,9 @@
           class="change-project-btn"
           @click="backToProjectPicker"
         >
-          <span class="material-symbols-outlined">folder</span>
+          <win-icon name="folder" :size="16" />
           {{ activeProjectName || 'Cambiar proyecto' }}
-          <span class="material-symbols-outlined change-project-icon">swap_horiz</span>
+          <span class="change-project-icon">↔</span>
         </button>
       </div>
 
@@ -20,8 +20,8 @@
         class="add-column-btn"
         @click="openAddColumn"
       >
-        <span class="material-symbols-outlined">view_column</span>
-        NUEVA COLUMNA
+        <win-icon name="folder" :size="16" />
+        Nueva columna
       </button>
 
       <div v-if="activeProjectId" class="board-view-toggle" role="group" aria-label="Vista del tablero">
@@ -30,21 +30,21 @@
           title="Vista kanban"
           @click="setBoardView('kanban')"
         >
-          <span class="material-symbols-outlined">view_kanban</span>
+          <win-icon name="folder" :size="16" />
         </button>
         <button
           :class="['view-btn', { 'view-btn--active': boardView === 'list' }]"
           title="Vista lista"
           @click="setBoardView('list')"
         >
-          <span class="material-symbols-outlined">view_list</span>
+          <win-icon name="file-lines" :size="16" />
         </button>
       </div>
     </header>
 
     <div v-if="!activeProjectId" class="project-picker">
       <div class="project-picker-search">
-        <span class="material-symbols-outlined">search</span>
+        <win-icon name="search" :size="16" />
         <input
           type="text"
           v-model="projectSearch"
@@ -57,7 +57,7 @@
         v-if="projectPickerLoading && !projectPickerOptions.length"
         class="project-picker-state"
       >
-        <span class="material-symbols-outlined spinning">sync</span>
+        <win-icon name="hourglass" :size="16" class="spinning" />
         Cargando proyectos...
       </div>
 
@@ -65,7 +65,7 @@
         v-else-if="!projectPickerOptions.length"
         class="project-picker-state"
       >
-        <span class="material-symbols-outlined empty-icon">folder_off</span>
+        <win-icon name="folder" :size="32" class="empty-icon" />
         <h2>No se encontraron proyectos</h2>
       </div>
 
@@ -77,19 +77,19 @@
           class="project-card"
           @click="onProjectChange(project._id, project.name)"
         >
-          <span class="material-symbols-outlined project-card-icon">folder</span>
+          <win-icon name="folder" :size="24" class="project-card-icon" />
           <span class="project-card-name">{{ project.name }}</span>
           <w-badge :color="getStatusColor(project.status)">{{ getStatusLabel(project.status) }}</w-badge>
         </button>
         <div v-if="projectPickerLoadingMore" class="project-picker-state project-picker-state--inline">
-          <span class="material-symbols-outlined spinning">sync</span>
+          <win-icon name="hourglass" :size="16" class="spinning" />
           Cargando más...
         </div>
       </div>
     </div>
 
     <div v-else-if="columnsStore.loading" class="kanban-loading">
-      <span class="material-symbols-outlined spinning">sync</span>
+      <win-icon name="hourglass" :size="16" class="spinning" />
       Cargando tablero...
     </div>
 
@@ -104,7 +104,7 @@
           <span class="task-list-group-name">{{ column.name }}</span>
           <span class="column-count">{{ columnsData[column._id]?.length || 0 }}</span>
           <button class="col-btn" title="Agregar tarea" @click="startQuickAdd(column._id)">
-            <span class="material-symbols-outlined">add</span>
+            <span>+</span>
           </button>
         </div>
         <div v-if="quickAddColumnId === column._id" class="quick-add-card quick-add-card--list">
@@ -120,7 +120,7 @@
           <div class="quick-add-actions">
             <button class="btn-primary" @click="confirmQuickAdd">Agregar tarjeta</button>
             <button class="col-btn" @click="cancelQuickAdd">
-              <span class="material-symbols-outlined">close</span>
+              <span>×</span>
             </button>
           </div>
         </div>
@@ -136,9 +136,7 @@
             :title="task.status === 'done' ? 'Desmarcar completada' : 'Marcar como completada'"
             @click.stop="toggleCompleteTask(task)"
           >
-            <span class="material-symbols-outlined">
-              {{ task.status === 'done' ? 'check_circle' : 'radio_button_unchecked' }}
-            </span>
+<win-icon :name="materialToWinIcon(task.status === 'done' ? 'check_circle' : 'radio_button_unchecked')" :size="16" />
           </button>
           <span class="task-list-title">{{ task.title }}</span>
           <span
@@ -149,11 +147,11 @@
           >{{ label.name }}</span>
           <span class="card-priority" :class="`priority-${task.priority}`">{{ task.priority }}</span>
           <span v-if="task.dueDate" class="card-due" :class="getDueDateClass(task)">
-            <span class="material-symbols-outlined">schedule</span>
+            <win-icon name="clock" :size="16" />
             {{ formatCalendarDate(task.dueDate) }}
           </span>
           <button class="card-action-btn" title="Eliminar" @click.stop="confirmDeleteTask(task)">
-            <span class="material-symbols-outlined">delete</span>
+            <win-icon name="recycle" :size="16" />
           </button>
         </div>
       </div>
@@ -179,10 +177,10 @@
               </div>
               <div class="column-header-actions">
                 <button class="col-btn" title="Agregar tarea" @click.stop="startQuickAdd(column._id)">
-                  <span class="material-symbols-outlined">add</span>
+                  <span>+</span>
                 </button>
                 <button class="col-btn" title="Opciones" @click.stop="toggleColumnMenu(column)">
-                  <span class="material-symbols-outlined">more_horiz</span>
+                  <span>•••</span>
                 </button>
               </div>
             </div>
@@ -190,10 +188,10 @@
             <!-- Column dropdown menu -->
             <div v-if="columnMenuColumn?._id === column._id" class="column-menu-dropdown" @click.stop>
               <button class="dropdown-item" @click="openEditColumn(column); columnMenuColumn = null">
-                <span class="material-symbols-outlined">edit</span> Editar columna
+                <win-icon name="paint" :size="16" /> Editar columna
               </button>
               <button class="dropdown-item dropdown-item--danger" @click="confirmDeleteColumn(column); columnMenuColumn = null">
-                <span class="material-symbols-outlined">delete</span> Eliminar columna
+                <win-icon name="recycle" :size="16" /> Eliminar columna
               </button>
             </div>
 
@@ -235,7 +233,7 @@
                     <span class="card-title">{{ task.title }}</span>
                     <div class="card-menu">
                       <button class="card-action-btn" @click.stop="openCardMenu(task)">
-                        <span class="material-symbols-outlined">more_horiz</span>
+                        <span>•••</span>
                       </button>
                     </div>
                   </div>
@@ -243,17 +241,17 @@
                   <!-- Card dropdown menu -->
                   <div v-if="cardMenuTask?._id === task._id" class="card-menu-dropdown" @click.stop>
                     <button class="dropdown-item" @click="openEditTask(task, column._id); cardMenuTask = null">
-                      <span class="material-symbols-outlined">edit</span> Editar
+                      <win-icon name="paint" :size="16" /> Editar
                     </button>
                     <button
                       v-if="activeProjectHasRepo"
                       class="dropdown-item"
                       @click="createBranchForTask(task); cardMenuTask = null"
                     >
-                      <span class="material-symbols-outlined">account_tree</span> Crear branch
+                      <win-icon name="network" :size="16" /> Crear branch
                     </button>
                     <button class="dropdown-item dropdown-item--danger" @click="confirmDeleteTask(task); cardMenuTask = null">
-                      <span class="material-symbols-outlined">delete</span> Eliminar
+                      <win-icon name="recycle" :size="16" /> Eliminar
                     </button>
                   </div>
 
@@ -285,17 +283,15 @@
                       :title="task.status === 'done' ? 'Desmarcar completada' : 'Marcar como completada'"
                       @click.stop="toggleCompleteTask(task)"
                     >
-                      <span class="material-symbols-outlined">
-                        {{ task.status === 'done' ? 'check_circle' : 'radio_button_unchecked' }}
-                      </span>
+<win-icon :name="materialToWinIcon(task.status === 'done' ? 'check_circle' : 'radio_button_unchecked')" :size="16" />
                     </button>
                     <span class="card-priority" :class="`priority-${task.priority}`">{{ task.priority }}</span>
                     <div class="card-footer-right">
                       <span v-if="task.description" class="card-desc-icon" title="Tiene descripción">
-                        <span class="material-symbols-outlined">subject</span>
+                        <win-icon name="file-lines" :size="16" />
                       </span>
                       <span v-if="task.dueDate" class="card-due" :class="getDueDateClass(task)">
-                        <span class="material-symbols-outlined">schedule</span>
+                        <win-icon name="clock" :size="16" />
                         {{ formatCalendarDate(task.dueDate) }}
                       </span>
                     </div>
@@ -318,12 +314,11 @@
               <div class="quick-add-actions">
                 <button class="btn-primary" @click="confirmQuickAdd">Agregar tarjeta</button>
                 <button class="col-btn" @click="cancelQuickAdd">
-                  <span class="material-symbols-outlined">close</span>
+                  <span>×</span>
                 </button>
               </div>
             </div>
             <button v-else class="add-card-btn" @click="startQuickAdd(column._id)">
-              <span class="material-symbols-outlined">add</span>
               Agregar una tarjeta
             </button>
           </div>
@@ -331,16 +326,15 @@
       </draggable>
 
       <div v-if="columnsStore.columns.length === 0" class="empty-board">
-        <span class="material-symbols-outlined empty-icon">view_week</span>
+        <win-icon name="calendar" :size="32" class="empty-icon" />
         <h3>Sin columnas</h3>
         <p>Creá la primera columna para este tablero o copialas de otro proyecto</p>
         <div class="empty-board-actions">
           <button class="add-column-btn" @click="openAddColumn">
-            <span class="material-symbols-outlined">add</span>
             CREAR COLUMNA
           </button>
           <button class="btn-secondary" @click="openCopyColumns">
-            <span class="material-symbols-outlined">content_copy</span>
+            <win-icon name="notepad-file" :size="16" />
             COPIAR DE OTRO PROYECTO
           </button>
         </div>
@@ -351,7 +345,6 @@
         class="add-column-placeholder"
         @click="openAddColumn"
       >
-        <span class="material-symbols-outlined">add</span>
         <span>Nueva columna</span>
       </div>
     </div>
@@ -365,7 +358,7 @@
             <label>Nombre <span class="required-mark">*</span></label>
             <input v-model="columnForm.name" type="text" placeholder="Ej: En revisión" @input="columnErrors.name = ''" />
             <span v-if="columnErrors.name" class="field-error">
-              <span class="material-symbols-outlined">error</span>{{ columnErrors.name }}
+              <win-icon name="error" :size="16" />{{ columnErrors.name }}
             </span>
           </div>
           <div class="form-group">
@@ -401,7 +394,7 @@
             <input v-model="copySearch" type="text" placeholder="Nombre del proyecto..." @input="onCopySearch" />
           </div>
           <div v-if="copyLoading" class="copy-loading">
-            <span class="material-symbols-outlined spinning">sync</span>
+            <win-icon name="hourglass" :size="16" class="spinning" />
             Cargando proyectos...
           </div>
           <div v-else-if="!copyOptions.length" class="copy-empty">Sin proyectos para copiar</div>
@@ -413,7 +406,7 @@
               :class="['copy-item', { 'copy-item--active': copySourceId === p._id }]"
               @click="copySourceId = p._id"
             >
-              <span class="material-symbols-outlined">folder</span>
+              <win-icon name="folder" :size="16" />
               {{ p.name }}
             </button>
           </div>
@@ -435,12 +428,12 @@
             <span class="done-icon"></span> Tarea completada
           </h3>
           <button class="col-btn" @click="showReportModal = false">
-            <span class="material-symbols-outlined">close</span>
+            <span>×</span>
           </button>
         </div>
 
         <div v-if="reportLoading" class="report-loading">
-          <span class="material-symbols-outlined spinning">sync</span>
+          <win-icon name="hourglass" :size="16" class="spinning" />
           Generando reporte...
         </div>
 
@@ -448,14 +441,14 @@
           <div class="report-task-info">
             <span class="report-task-title">{{ reportData.task.title }}</span>
             <span v-if="reportData.project" class="report-project">
-              <span class="material-symbols-outlined">folder</span>{{ reportData.project.name }}
+              <win-icon name="folder" :size="16" />{{ reportData.project.name }}
             </span>
           </div>
 
           <!-- WhatsApp -->
           <div class="report-section">
             <div class="report-section-label">
-              <span class="material-symbols-outlined report-section-icon whatsapp-icon">chat</span>
+              <win-icon name="mail" :size="16" class="report-section-icon whatsapp-icon" />
               <span>Mensaje para WhatsApp</span>
               <span v-if="!reportData.client?.phone" class="report-no-contact">Sin teléfono registrado</span>
               <span v-else class="report-contact-info">{{ reportData.client.phone }}</span>
@@ -463,7 +456,7 @@
             <textarea v-model="editableWhatsappText" class="report-textarea" rows="8" />
             <div class="report-section-actions">
               <button class="btn-secondary btn-icon" @click="copyWhatsapp">
-                <span class="material-symbols-outlined">content_copy</span>
+                <win-icon name="notepad-file" :size="16" />
                 {{ whatsappCopied ? '¡Copiado!' : 'Copiar' }}
               </button>
               <a
@@ -473,7 +466,7 @@
                 rel="noopener noreferrer"
                 class="btn-primary btn-icon whatsapp-btn"
               >
-                <span class="material-symbols-outlined">open_in_new</span>
+                <win-icon name="search" :size="16" />
                 Abrir WhatsApp
               </a>
             </div>
@@ -482,13 +475,13 @@
           <!-- Email -->
           <div class="report-section">
             <div class="report-section-label">
-              <span class="material-symbols-outlined report-section-icon">mail</span>
+              <win-icon name="mail" :size="16" class="report-section-icon" />
               <span>Email al cliente</span>
               <span v-if="reportData.client?.email" class="report-contact-info">{{ reportData.client.email }}</span>
               <span v-else class="report-no-contact">Sin email registrado</span>
             </div>
             <div v-if="reportData.emailSent" class="report-email-sent">
-              <span class="material-symbols-outlined">check_circle</span>
+              <win-icon name="check" :size="16" />
               Email enviado correctamente
             </div>
             <button
@@ -497,7 +490,7 @@
               :disabled="sendingEmail"
               @click="sendEmail"
             >
-              <span class="material-symbols-outlined">send</span>
+              <win-icon name="mail" :size="16" />
               {{ sendingEmail ? 'Enviando...' : 'Enviar email al cliente' }}
             </button>
             <p v-else class="report-no-action">Agregá el email del cliente desde la sección Clientes para poder enviarle un email.</p>
@@ -513,6 +506,24 @@
       :loading="savingTask"
       @save="saveTaskFromModal"
     />
+    <w-confirm-modal
+      :is-open="!!deleteColumnTarget"
+      title="Eliminar columna"
+      :message="deleteColumnMsg"
+      confirm-text="Eliminar"
+      :is-danger="true"
+      @confirm="doDeleteColumn"
+      @cancel="deleteColumnTarget = null"
+    />
+    <w-confirm-modal
+      :is-open="!!deleteTaskTarget"
+      title="Eliminar tarea"
+      :message="`¿Eliminar &quot;${deleteTaskTarget?.title}&quot;?`"
+      confirm-text="Eliminar"
+      :is-danger="true"
+      @confirm="doDeleteTask"
+      @cancel="deleteTaskTarget = null"
+    />
   </div>
 </template>
 
@@ -522,7 +533,10 @@ import draggable from 'vuedraggable'
 import { tasksApi } from '@/api/tasks/tasks.api'
 import { taskColumnsApi } from '@/api/task-columns/task-columns.api'
 import TaskModal from '@/components/tasks/TaskModal.vue'
+import WConfirmModal from '@/components/ui/WConfirmModal.vue'
 import WBadge from '@/components/ui/WBadge.vue'
+import WinIcon from '@/components/win95/WinIcon.vue'
+import { materialToWinIcon } from '@/components/win95/icons'
 import { useToast } from '@/composables/useToast'
 import type { TaskColumn } from '@/api/task-columns/task-columns.types'
 import type { Task, CompleteTaskResponse } from '@/api/tasks/tasks.types'
@@ -543,7 +557,7 @@ const COLUMN_COLORS = [
 
 export default defineComponent({
   name: 'TasksPage',
-  components: { draggable, TaskModal, WBadge },
+  components: { draggable, TaskModal, WBadge, WConfirmModal, WinIcon },
   setup() {
     const columnsStore = useTaskColumnsStore()
     const tasksStore = useTasksStore()
@@ -789,14 +803,21 @@ export default defineComponent({
       }
     }
 
+    const deleteColumnTarget = ref<TaskColumn | null>(null)
+    const deleteColumnMsg = ref('')
     const confirmDeleteColumn = (col: TaskColumn) => {
       const count = columnsData.value[col._id]?.length || 0
-      const msg = count > 0
+      deleteColumnMsg.value = count > 0
         ? `¿Eliminar "${col.name}"? Las ${count} tarea(s) quedarán sin columna.`
         : `¿Eliminar la columna "${col.name}"?`
-      if (!confirm(msg)) return
+      deleteColumnTarget.value = col
+    }
+    const doDeleteColumn = () => {
+      const col = deleteColumnTarget.value
+      if (!col) return
       void columnsStore.remove(col._id)
       delete columnsData.value[col._id]
+      deleteColumnTarget.value = null
     }
 
     // ── Column dropdown menu ──
@@ -962,8 +983,13 @@ export default defineComponent({
       }
     }
 
+    const deleteTaskTarget = ref<Task | null>(null)
     const confirmDeleteTask = async (task: Task) => {
-      if (!confirm(`¿Eliminar "${task.title}"?`)) return
+      deleteTaskTarget.value = task
+    }
+    const doDeleteTask = async () => {
+      const task = deleteTaskTarget.value
+      if (!task) return
       try {
         await tasksApi.remove(task._id)
         if (task.columnId) {
@@ -972,6 +998,8 @@ export default defineComponent({
         toast.success('Tarea eliminada')
       } catch {
         toast.error('Error al eliminar la tarea')
+      } finally {
+        deleteTaskTarget.value = null
       }
     }
 
@@ -1116,6 +1144,11 @@ export default defineComponent({
       saveTaskFromModal,
       getChecklistProgress,
       confirmDeleteTask,
+      doDeleteTask,
+      deleteTaskTarget,
+      doDeleteColumn,
+      deleteColumnTarget,
+      deleteColumnMsg,
       // report modal
       showReportModal,
       reportLoading,
@@ -1132,6 +1165,7 @@ export default defineComponent({
       getLabelTextColor,
       formatDate,
       formatCalendarDate,
+      materialToWinIcon,
       // github
       activeProjectHasRepo,
       createBranchForTask,
@@ -1225,7 +1259,7 @@ export default defineComponent({
   flex-shrink: 0;
 }
 
-.project-picker-search span {
+.project-picker-search span, .project-picker-search .win-icon {
   position: absolute;
   left: 12px;
   top: 50%;
@@ -2285,6 +2319,1302 @@ export default defineComponent({
 
 .report-no-action {
   font-size: 12px;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+  margin: 0;
+}
+</style>
+
+<!-- Win95: overrides encapsulados por data-appearance -->
+<style>
+html[data-appearance="win95"] .kanban-page {
+display: flex;
+  flex-direction: column;
+  height: calc(100vh - var(--topbar-height));
+  padding: 24px 32px 0;
+  overflow: hidden;
+}
+
+html[data-appearance="win95"] .kanban-header {
+display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  flex-shrink: 0;
+  gap: 24px;
+}
+
+@media (max-width: 768px) {
+html[data-appearance="win95"] .kanban-header {
+flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+}
+}
+
+html[data-appearance="win95"] .header-left {
+display: flex;
+  align-items: center;
+  gap: 24px;
+  flex: 1;
+  min-width: 0;
+}
+
+@media (max-width: 1024px) {
+html[data-appearance="win95"] .header-left {
+flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+}
+}
+
+html[data-appearance="win95"] .page-title {
+font-family: var(--font-body);
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--color-text-base);
+  flex-shrink: 0;
+}
+
+html[data-appearance="win95"] .change-project-btn {
+display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 0;
+  color: var(--color-text-base);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+
+html[data-appearance="win95"] .change-project-btn:hover {
+border-color: var(--color-primary);
+}
+
+html[data-appearance="win95"] .change-project-btn .material-symbols-outlined {
+font-size: 18px; color: var(--color-text-muted);
+}
+
+html[data-appearance="win95"] .change-project-icon {
+margin-left: 4px;
+}
+
+html[data-appearance="win95"] .project-picker {
+flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  gap: 20px;
+}
+
+html[data-appearance="win95"] .project-picker-search {
+position: relative;
+  max-width: 360px;
+  flex-shrink: 0;
+}
+
+html[data-appearance="win95"] .project-picker-search span {
+position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 18px;
+  color: var(--color-text-muted);
+}
+
+html[data-appearance="win95"] .project-picker-search input {
+width: 100%;
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  padding: 10px 12px 10px 40px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--color-text-base);
+  outline: none;
+  box-sizing: border-box;
+}
+
+html[data-appearance="win95"] .project-picker-search input:focus {
+border-color: var(--color-primary);
+}
+
+html[data-appearance="win95"] .project-picker-state {
+display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 48px;
+  color: var(--color-text-muted);
+  text-align: center;
+  flex: 1;
+}
+
+html[data-appearance="win95"] .project-picker-state--inline {
+flex: none;
+  flex-direction: row;
+  padding: 16px;
+  grid-column: 1 / -1;
+}
+
+html[data-appearance="win95"] .project-picker-state h2 {
+font-size: 16px; color: var(--color-text-base); margin: 0;
+}
+
+html[data-appearance="win95"] .project-cards-grid {
+flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+  align-content: start;
+  padding: 6px 6px 24px;
+  margin: -6px -6px 0;
+}
+
+html[data-appearance="win95"] .project-card {
+display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 20px;
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 0;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.12s;
+}
+
+html[data-appearance="win95"] .project-card:hover {
+border-color: var(--color-primary);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+  transform: translateY(-2px);
+}
+
+html[data-appearance="win95"] .project-card-icon {
+font-size: 28px;
+  color: var(--color-primary);
+}
+
+html[data-appearance="win95"] .project-card-name {
+font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text-base);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+html[data-appearance="win95"] .add-column-btn {
+display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: opacity 0.15s;
+}
+
+html[data-appearance="win95"] .add-column-btn:hover {
+opacity: 0.85;
+}
+
+html[data-appearance="win95"] .add-column-btn .material-symbols-outlined {
+font-size: 18px;
+}
+
+html[data-appearance="win95"] .board-view-toggle {
+display: flex;
+  border: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+html[data-appearance="win95"] .view-btn {
+display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 34px;
+  background: var(--color-bg-surface-low);
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+html[data-appearance="win95"] .view-btn + .view-btn {
+border-left: 1px solid var(--color-border);
+}
+
+html[data-appearance="win95"] .view-btn:hover {
+background: var(--color-bg-surface-high);
+  color: var(--color-text-base);
+}
+
+html[data-appearance="win95"] .view-btn--active {
+background: var(--color-primary);
+  color: white;
+}
+
+html[data-appearance="win95"] .view-btn .material-symbols-outlined {
+font-size: 18px;
+}
+
+html[data-appearance="win95"] .task-list-container {
+flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding-bottom: 24px;
+}
+
+html[data-appearance="win95"] .task-list-group-header {
+display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+html[data-appearance="win95"] .column-dot {
+width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+html[data-appearance="win95"] .task-list-group-name {
+font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--color-text-base);
+}
+
+html[data-appearance="win95"] .task-list-row {
+display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-bottom: none;
+  cursor: pointer;
+}
+
+html[data-appearance="win95"] .task-list-group .task-list-row:last-of-type {
+border-bottom: 1px solid var(--color-border);
+}
+
+html[data-appearance="win95"] .task-list-row:hover {
+background: var(--color-bg-surface-low);
+}
+
+html[data-appearance="win95"] .task-list-row.is-done .task-list-title {
+text-decoration: line-through;
+  color: var(--color-text-disabled);
+}
+
+html[data-appearance="win95"] .task-list-title {
+flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+  color: var(--color-text-base);
+}
+
+html[data-appearance="win95"] .quick-add-card--list {
+border: 1px solid var(--color-border);
+  border-top: none;
+  padding: 8px;
+}
+
+html[data-appearance="win95"] .empty-board-actions {
+display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+html[data-appearance="win95"] .copy-loading, html[data-appearance="win95"] .copy-empty {
+display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-text-muted);
+  padding: 16px 0;
+}
+
+html[data-appearance="win95"] .copy-list {
+display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+html[data-appearance="win95"] .copy-item {
+display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-base);
+  font-size: 13px;
+  cursor: pointer;
+  text-align: left;
+}
+
+html[data-appearance="win95"] .copy-item:hover {
+background: var(--color-bg-surface-low);
+}
+
+html[data-appearance="win95"] .copy-item--active {
+border-color: var(--color-primary);
+}
+
+html[data-appearance="win95"] .copy-item .material-symbols-outlined {
+font-size: 18px;
+  color: var(--color-text-muted);
+}
+
+html[data-appearance="win95"] .kanban-board-container {
+flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+html[data-appearance="win95"] .kanban-board {
+display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  flex: 1;
+  min-height: 0;
+  padding: 4px 4px 24px 4px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+  align-items: stretch;
+}
+
+html[data-appearance="win95"] .kanban-board::-webkit-scrollbar {
+height: 6px;
+}
+
+html[data-appearance="win95"] .kanban-board::-webkit-scrollbar-thumb {
+background: var(--color-border);
+}
+
+html[data-appearance="win95"] .kanban-column {
+flex-shrink: 0;
+  width: 272px;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-kanban-column-bg);
+  border: none;
+  border-radius: 0;
+  border-top: 3px solid var(--col-color, var(--color-primary));
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  height: 100%;
+  max-height: calc(100vh - var(--topbar-height) - 100px);
+  min-height: 0;
+  position: relative;
+  transition: box-shadow 0.15s;
+}
+
+@media (max-width: 768px) {
+html[data-appearance="win95"] .kanban-page {
+padding: 16px 16px 0;
+}
+html[data-appearance="win95"] .kanban-column {
+width: 260px;
+    max-height: calc(100vh - var(--topbar-height) - 180px);
+}
+}
+
+@media (max-width: 480px) {
+html[data-appearance="win95"] .kanban-column {
+width: 240px;
+}
+}
+
+html[data-appearance="win95"] .column-header {
+display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 10px 6px;
+  flex-shrink: 0;
+  cursor: grab;
+}
+
+html[data-appearance="win95"] .column-title-row {
+display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0;
+}
+
+html[data-appearance="win95"] .column-name {
+font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-base);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+html[data-appearance="win95"] .column-count {
+font-family: Tahoma, Verdana, sans-serif;
+  font-size: 11px;
+  color: #000;
+  background: #fff;
+  border: 1px solid;
+  border-color: var(--w95-shadow) var(--w95-highlight) var(--w95-highlight) var(--w95-shadow);
+  padding: 0 6px;
+  flex-shrink: 0;
+}
+
+html[data-appearance="win95"] .column-header-actions {
+display: flex;
+  align-items: center;
+  gap: 2px;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+html[data-appearance="win95"] .kanban-column:hover .column-header-actions {
+opacity: 1;
+}
+
+html[data-appearance="win95"] .col-btn {
+background: none;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+html[data-appearance="win95"] .col-btn:hover {
+background: var(--color-bg-surface-highest); color: var(--color-text-base);
+}
+
+html[data-appearance="win95"] .col-btn .material-symbols-outlined {
+font-size: 18px;
+}
+
+html[data-appearance="win95"] .column-menu-dropdown {
+position: absolute;
+  top: 44px;
+  right: 8px;
+  z-index: 200;
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 0;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  min-width: 160px;
+  overflow: hidden;
+}
+
+html[data-appearance="win95"] .dropdown-item {
+display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  width: 100%;
+  background: none;
+  border: none;
+  color: var(--color-text-base);
+  font-size: 13px;
+  font-family: var(--font-body);
+  cursor: pointer;
+  text-align: left;
+}
+
+html[data-appearance="win95"] .dropdown-item:hover {
+background: var(--color-bg-surface-high);
+}
+
+html[data-appearance="win95"] .dropdown-item--danger:hover {
+color: var(--color-error);
+}
+
+html[data-appearance="win95"] .dropdown-item .material-symbols-outlined {
+font-size: 16px;
+}
+
+html[data-appearance="win95"] .column-cards {
+flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+}
+
+html[data-appearance="win95"] .column-cards::-webkit-scrollbar {
+width: 4px;
+}
+
+html[data-appearance="win95"] .column-cards::-webkit-scrollbar-thumb {
+background: var(--color-border);
+}
+
+html[data-appearance="win95"] .column-cards:empty {
+min-height: 60px;
+}
+
+html[data-appearance="win95"] .kanban-card {
+background: var(--color-kanban-card-bg);
+  border: none;
+  border-radius: 0;
+  padding: 10px 12px;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: box-shadow 0.15s, transform 0.12s;
+  user-select: none;
+  position: relative;
+}
+
+html[data-appearance="win95"] .kanban-card:hover {
+box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+  transform: translateY(-1px);
+}
+
+html[data-appearance="win95"] .kanban-card.dragging {
+opacity: 0.45; cursor: grabbing;
+}
+
+html[data-appearance="win95"] .card-cover-strip {
+height: 6px;
+  margin: -10px -12px 8px;
+  border-radius: 0;
+}
+
+html[data-appearance="win95"] .card-labels {
+display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+
+html[data-appearance="win95"] .card-label-mini {
+display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 0;
+  font-size: 10px;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+html[data-appearance="win95"] .card-header {
+display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+html[data-appearance="win95"] .card-title {
+font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-base);
+  line-height: 1.4;
+  flex: 1;
+}
+
+html[data-appearance="win95"] .card-menu {
+display: flex;
+  gap: 2px;
+  opacity: 0;
+  transition: opacity 0.15s;
+  flex-shrink: 0;
+}
+
+html[data-appearance="win95"] .kanban-card:hover .card-menu {
+opacity: 1;
+}
+
+html[data-appearance="win95"] .card-action-btn {
+background: none;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  padding: 2px;
+  border-radius: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+html[data-appearance="win95"] .card-action-btn:hover {
+background: var(--color-bg-surface); color: var(--color-text-base);
+}
+
+html[data-appearance="win95"] .card-action-btn .material-symbols-outlined {
+font-size: 16px;
+}
+
+html[data-appearance="win95"] .card-menu-dropdown {
+position: absolute;
+  top: 4px;
+  right: 28px;
+  z-index: 200;
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 0;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  min-width: 140px;
+  overflow: hidden;
+}
+
+html[data-appearance="win95"] .card-description {
+font-family: var(--font-body);
+  font-size: 12px;
+  color: var(--color-text-muted);
+  margin: 0 0 8px;
+  line-height: 1.4;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+html[data-appearance="win95"] .card-checklist {
+display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 4px 0 8px;
+}
+
+html[data-appearance="win95"] .checklist-count-label {
+font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+  min-width: 28px;
+}
+
+html[data-appearance="win95"] .checklist-count-label.is-complete {
+color: var(--color-success);
+}
+
+html[data-appearance="win95"] .checklist-progress-bar {
+flex: 1;
+  height: 10px;
+  background: #fff;
+  border: 1px solid;
+  border-color: var(--w95-shadow) var(--w95-highlight) var(--w95-highlight) var(--w95-shadow);
+  border-radius: 0;
+  overflow: hidden;
+}
+
+html[data-appearance="win95"] .checklist-progress-fill {
+height: 100%;
+  background: var(--color-warning);
+  transition: width 0.3s, background 0.3s;
+}
+
+html[data-appearance="win95"] .checklist-progress-fill.is-complete {
+background: var(--color-success);
+}
+
+html[data-appearance="win95"] .card-footer {
+display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+html[data-appearance="win95"] .card-footer-right {
+display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+
+html[data-appearance="win95"] .card-complete-btn {
+background: none;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  padding: 2px;
+  border-radius: 0;
+  display: flex;
+  flex-shrink: 0;
+  transition: color 0.15s;
+}
+
+html[data-appearance="win95"] .card-complete-btn .material-symbols-outlined {
+font-size: 18px;
+}
+
+html[data-appearance="win95"] .card-complete-btn:hover {
+color: var(--color-success);
+}
+
+html[data-appearance="win95"] .card-complete-btn.is-done {
+color: var(--color-success);
+}
+
+html[data-appearance="win95"] .card-priority {
+font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 0;
+}
+
+html[data-appearance="win95"] .priority-low {
+background: rgba(16, 185, 129, 0.15); color: var(--color-success);
+}
+
+html[data-appearance="win95"] .priority-medium {
+background: rgba(245, 158, 11, 0.15); color: var(--color-warning);
+}
+
+html[data-appearance="win95"] .priority-high {
+background: rgba(239, 68, 68, 0.15);  color: var(--color-error);
+}
+
+html[data-appearance="win95"] .priority-urgent {
+background: rgba(239, 68, 68, 0.25);  color: var(--color-error); font-weight: 700;
+}
+
+html[data-appearance="win95"] .card-desc-icon {
+display: inline-flex;
+  align-items: center;
+  color: var(--color-text-muted);
+}
+
+html[data-appearance="win95"] .card-desc-icon .material-symbols-outlined {
+font-size: 14px;
+}
+
+html[data-appearance="win95"] .card-due {
+display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 0;
+  background: var(--color-bg-surface-highest);
+  color: var(--color-text-muted);
+}
+
+html[data-appearance="win95"] .card-due.due-done {
+background: var(--color-success-bg); color: var(--color-success);
+}
+
+html[data-appearance="win95"] .card-due.due-soon {
+background: var(--color-warning-bg); color: var(--color-due-soon-text);
+}
+
+html[data-appearance="win95"] .card-due.due-overdue {
+background: var(--color-error-bg);   color: var(--color-due-overdue-text);
+}
+
+html[data-appearance="win95"] .card-due .material-symbols-outlined {
+font-size: 11px;
+}
+
+html[data-appearance="win95"] .kanban-card.is-done {
+opacity: 0.72;
+}
+
+html[data-appearance="win95"] .kanban-card.is-done .card-title {
+text-decoration: line-through; color: var(--color-text-muted);
+}
+
+html[data-appearance="win95"] .quick-add-card {
+padding: 8px;
+  border-top: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+html[data-appearance="win95"] .quick-add-input {
+width: 100%;
+  resize: none;
+  background: var(--color-kanban-card-bg);
+  border: 1px solid var(--color-primary);
+  border-radius: 0;
+  padding: 8px 10px;
+  font-size: 13px;
+  color: var(--color-text-base);
+  font-family: var(--font-body);
+  outline: none;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.15);
+  margin-bottom: 6px;
+  box-sizing: border-box;
+}
+
+html[data-appearance="win95"] .quick-add-actions {
+display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+html[data-appearance="win95"] .quick-add-actions .btn-primary {
+padding: 6px 14px;
+  font-size: 12px;
+}
+
+html[data-appearance="win95"] .add-card-btn {
+display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  flex-shrink: 0;
+  padding: 10px 12px;
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  font-family: var(--font-body);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+
+html[data-appearance="win95"] .add-card-btn:hover {
+background: rgba(255, 255, 255, 0.05);
+  color: var(--color-text-base);
+}
+
+html[data-appearance="win95"] .add-card-btn .material-symbols-outlined {
+font-size: 18px;
+}
+
+html[data-appearance="win95"] .add-column-placeholder {
+flex-shrink: 0;
+  width: 272px;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 0;
+  color: var(--color-text-muted);
+  font-family: var(--font-body);
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  border: none;
+  align-self: flex-start;
+}
+
+html[data-appearance="win95"] .add-column-placeholder:hover {
+background: rgba(255, 255, 255, 0.12);
+  color: var(--color-text-base);
+}
+
+html[data-appearance="win95"] .add-column-placeholder .material-symbols-outlined {
+font-size: 20px;
+}
+
+html[data-appearance="win95"] .empty-board {
+display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 48px;
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+html[data-appearance="win95"] .empty-board h3 {
+font-size: 18px; color: var(--color-text-base); margin: 0;
+}
+
+html[data-appearance="win95"] .empty-board p {
+font-size: 14px; margin: 0;
+}
+
+html[data-appearance="win95"] .kanban-loading, html[data-appearance="win95"] .kanban-empty {
+display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  gap: 16px;
+  color: var(--color-text-muted);
+}
+
+html[data-appearance="win95"] .empty-icon {
+font-size: 64px; opacity: 0.2;
+}
+
+html[data-appearance="win95"] .spinning {
+animation: w95-spin 2s linear infinite;
+}
+
+@keyframes w95-spin {
+from { transform: rotate(0deg); } to { transform: rotate(360deg); }
+}
+
+html[data-appearance="win95"] .modal-overlay {
+position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+html[data-appearance="win95"] .modal-box {
+background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 0;
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+html[data-appearance="win95"] .modal-title {
+padding: 24px 24px 16px;
+  font-family: var(--font-body);
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text-base);
+}
+
+html[data-appearance="win95"] .modal-form {
+padding: 24px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+html[data-appearance="win95"] .form-group {
+display: flex; flex-direction: column; gap: 8px;
+}
+
+html[data-appearance="win95"] .form-group label {
+font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  letter-spacing: 0.05em;
+}
+
+html[data-appearance="win95"] .required-mark {
+color: var(--color-error);
+}
+
+html[data-appearance="win95"] .form-group input {
+background: var(--color-bg-surface-highest);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-base);
+  font-family: var(--font-body);
+  font-size: 14px;
+  padding: 10px 12px;
+  border-radius: 0;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+html[data-appearance="win95"] .form-group input:focus {
+border-color: var(--color-primary);
+}
+
+html[data-appearance="win95"] .form-group.has-error input {
+border-color: var(--color-error);
+}
+
+html[data-appearance="win95"] .field-error {
+display: flex; align-items: center; gap: 4px; color: var(--color-error); font-size: 12px;
+}
+
+html[data-appearance="win95"] .field-error .material-symbols-outlined {
+font-size: 14px;
+}
+
+html[data-appearance="win95"] .color-picker {
+display: flex; gap: 8px; flex-wrap: wrap;
+}
+
+html[data-appearance="win95"] .color-swatch {
+width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s, border-color 0.15s;
+}
+
+html[data-appearance="win95"] .color-swatch:hover {
+transform: scale(1.15);
+}
+
+html[data-appearance="win95"] .color-swatch.active {
+border-color: white; transform: scale(1.15); box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
+}
+
+html[data-appearance="win95"] .modal-footer {
+padding: 16px 24px 24px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  border-top: 1px solid var(--color-border);
+}
+
+html[data-appearance="win95"] .btn-primary {
+padding: 10px 20px;
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  text-transform: uppercase;
+}
+
+html[data-appearance="win95"] .btn-primary:disabled {
+opacity: 0.6; cursor: not-allowed;
+}
+
+html[data-appearance="win95"] .btn-primary:not(:disabled):hover {
+opacity: 0.85;
+}
+
+html[data-appearance="win95"] .btn-secondary {
+padding: 10px 20px;
+  background: transparent;
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
+  border-radius: 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  text-transform: uppercase;
+}
+
+html[data-appearance="win95"] .btn-secondary:hover {
+color: var(--color-text-base); border-color: var(--color-text-muted);
+}
+
+html[data-appearance="win95"] .modal-box--report {
+max-width: 560px;
+}
+
+html[data-appearance="win95"] .report-modal-header {
+display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+html[data-appearance="win95"] .done-icon {
+font-style: normal; margin-right: 6px;
+}
+
+html[data-appearance="win95"] .report-loading {
+display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 40px;
+  color: var(--color-text-muted);
+  font-size: 14px;
+}
+
+html[data-appearance="win95"] .report-body {
+display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  max-height: calc(90vh - 80px);
+}
+
+html[data-appearance="win95"] .report-task-info {
+display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px 24px;
+  background: var(--color-bg-surface-highest);
+  border-bottom: 1px solid var(--color-border);
+}
+
+html[data-appearance="win95"] .report-task-title {
+font-size: 15px; font-weight: 600; color: var(--color-text-base);
+}
+
+html[data-appearance="win95"] .report-project {
+display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+html[data-appearance="win95"] .report-project .material-symbols-outlined {
+font-size: 14px;
+}
+
+html[data-appearance="win95"] .report-section {
+padding: 20px 24px;
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+html[data-appearance="win95"] .report-section:last-child {
+border-bottom: none;
+}
+
+html[data-appearance="win95"] .report-section-label {
+display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+}
+
+html[data-appearance="win95"] .report-section-icon {
+font-size: 16px !important;
+}
+
+html[data-appearance="win95"] .whatsapp-icon {
+color: #25D366;
+}
+
+html[data-appearance="win95"] .report-contact-info {
+font-family: var(--font-body);
+  font-size: 12px;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--color-text-base);
+  margin-left: auto;
+}
+
+html[data-appearance="win95"] .report-no-contact {
+font-family: var(--font-body);
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--color-warning);
+  font-size: 11px;
+  margin-left: auto;
+}
+
+html[data-appearance="win95"] .report-textarea {
+background: var(--color-bg-surface-highest);
+  border: 1px solid var(--color-border);
+  border-radius: 0;
+  color: var(--color-text-base);
+  font-family: var(--font-body);
+  font-size: 13px;
+  line-height: 1.6;
+  padding: 10px 12px;
+  resize: vertical;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+html[data-appearance="win95"] .report-textarea:focus {
+border-color: var(--color-primary);
+}
+
+html[data-appearance="win95"] .report-section-actions {
+display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+html[data-appearance="win95"] .btn-icon {
+display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+html[data-appearance="win95"] .btn-icon .material-symbols-outlined {
+font-size: 16px;
+}
+
+html[data-appearance="win95"] .whatsapp-btn {
+background: #25D366 !important;
+  text-decoration: none;
+  padding: 10px 20px;
+  border-radius: 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: white !important;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+html[data-appearance="win95"] .whatsapp-btn:hover {
+opacity: 0.88;
+}
+
+html[data-appearance="win95"] .report-email-sent {
+display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--color-success);
+}
+
+html[data-appearance="win95"] .report-email-sent .material-symbols-outlined {
+font-size: 18px;
+}
+
+html[data-appearance="win95"] .report-no-action {
+font-size: 12px;
   color: var(--color-text-muted);
   line-height: 1.5;
   margin: 0;

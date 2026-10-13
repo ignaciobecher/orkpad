@@ -1,12 +1,12 @@
 <template>
   <Teleport to="body">
-    <div v-if="modelValue" class="w-drawer-overlay" @click.self="$emit('update:modelValue', false)">
-      <div class="w-drawer" :style="{ width }">
-        <div class="w-drawer__header">
-          <h2 class="w-drawer__title">{{ title }}</h2>
-          <button class="w-drawer__close" @click="$emit('update:modelValue', false)">
-            <span class="material-symbols-outlined">close</span>
-          </button>
+    <div v-if="modelValue" class="w-drawer-overlay w95-dialog-overlay" @click.self="$emit('update:modelValue', false)">
+      <div class="w-drawer w95-window" :style="{ width }">
+        <div class="w95-titlebar">
+          <span class="title-text">{{ title }}</span>
+          <div class="w95-titlebar-buttons">
+            <button class="w95-title-btn" @click="$emit('update:modelValue', false)" title="Cerrar"><span class="tbtn-close" aria-hidden="true">×</span></button>
+          </div>
         </div>
         <div class="w-drawer__content">
           <slot></slot>
@@ -110,5 +110,52 @@ export default defineComponent({
   padding: 16px 24px;
   border-top: 1px solid var(--color-border);
   background-color: var(--color-bg-surface-low);
+}
+</style>
+
+<!-- Win95: overrides encapsulados por data-appearance -->
+<style>
+html[data-appearance="win95"] .w-drawer-overlay {
+position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.3);
+  display: flex;
+  justify-content: flex-end;
+  z-index: 6000;
+}
+
+html[data-appearance="win95"] .w-drawer {
+height: 100%;
+  max-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 2px;
+}
+
+@media (max-width: 768px) {
+html[data-appearance="win95"] .w-drawer {
+width: 100% !important;
+}
+}
+
+html[data-appearance="win95"] .title-text {
+overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: bold;
+  font-size: 11px;
+}
+
+html[data-appearance="win95"] .w-drawer__content {
+flex-grow: 1;
+  overflow-y: auto;
+  padding: 12px;
+  background: var(--w95-face);
+}
+
+html[data-appearance="win95"] .w-drawer__footer {
+padding: 8px 12px;
+  border-top: 1px solid var(--w95-shadow);
+  background: var(--w95-face);
 }
 </style>

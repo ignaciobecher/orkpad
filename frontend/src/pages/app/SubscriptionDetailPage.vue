@@ -4,7 +4,7 @@
     <header class="page-header">
       <div class="header-left">
         <button class="back-btn" @click="$router.push({ name: 'subscriptions' })">
-          <span class="material-symbols-outlined">arrow_back</span>
+          <span>←</span>
           <span>Volver a Suscripciones</span>
         </button>
         <template v-if="subscription">
@@ -17,15 +17,15 @@
           </div>
           <div class="subtitle-row">
             <span class="meta-item">
-              <span class="material-symbols-outlined">person</span>
+              <win-icon name="users" :size="16" />
               {{ clientName }}
             </span>
             <span class="meta-item">
-              <span class="material-symbols-outlined">autorenew</span>
+              <win-icon name="hourglass" :size="16" />
               {{ subscription.billingCycle === 'monthly' ? 'Mensual' : 'Anual' }}
             </span>
             <span class="meta-item">
-              <span class="material-symbols-outlined">payments</span>
+              <win-icon name="calculator" :size="16" />
               {{ formatMoney(subscription.price, subscription.currency) }}
             </span>
           </div>
@@ -33,7 +33,7 @@
       </div>
       <div v-if="subscription" class="header-right">
         <w-button variant="ghost" @click="openEditModal">
-          <span class="material-symbols-outlined mr-1">edit</span>
+          <win-icon name="paint" :size="16" class="mr-1" />
           Editar
         </w-button>
       </div>
@@ -41,7 +41,7 @@
 
     <!-- Loading skeleton -->
     <div v-if="pageLoading && !subscription" class="loading-state">
-      <span class="material-symbols-outlined loading-icon">progress_activity</span>
+      <win-icon name="hourglass" :size="32" class="loading-icon" />
     </div>
 
     <template v-if="subscription">
@@ -78,20 +78,18 @@
         <div class="section-header">
           <h2 class="section-title">Historial de Pagos</h2>
           <w-button variant="ghost" size="sm" @click="openAddPaymentModal">
-            <span class="material-symbols-outlined mr-1">add</span>
             Agregar período
           </w-button>
         </div>
 
         <div v-if="paymentsLoading" class="loading-state">
-          <span class="material-symbols-outlined loading-icon">progress_activity</span>
+          <win-icon name="hourglass" :size="32" class="loading-icon" />
         </div>
 
         <div v-else-if="!payments.length" class="empty-timeline">
-          <span class="material-symbols-outlined empty-icon">receipt_long</span>
+          <win-icon name="file-lines" :size="32" class="empty-icon" />
           <p>No hay períodos registrados aún.</p>
           <w-button variant="primary" @click="openAddPaymentModal">
-            <span class="material-symbols-outlined mr-1">add</span>
             Agregar primer período
           </w-button>
         </div>
@@ -105,8 +103,8 @@
           >
             <div class="payment-left">
               <span class="payment-status-icon">
-                <span v-if="payment.status === 'paid'" class="material-symbols-outlined icon-paid">check_circle</span>
-                <span v-else class="material-symbols-outlined icon-pending">pending</span>
+                <win-icon v-if="payment.status === 'paid'" name="check" :size="16" class="icon-paid" />
+                <win-icon v-else name="hourglass" :size="16" class="icon-pending" />
               </span>
               <div class="payment-info">
                 <span class="payment-period">{{ payment.periodLabel }}</span>
@@ -126,7 +124,7 @@
                 :loading="actionLoading === payment._id"
                 @click="handleMarkPaid(payment)"
               >
-                <span class="material-symbols-outlined mr-1">check</span>
+                <win-icon name="check" :size="16" class="mr-1" />
                 Marcar pagado
               </w-button>
               <w-button
@@ -136,11 +134,11 @@
                 :loading="actionLoading === payment._id"
                 @click="handleMarkPending(payment)"
               >
-                <span class="material-symbols-outlined mr-1">undo</span>
+                <span class="mr-1">←</span>
                 Marcar pendiente
               </w-button>
               <button class="action-btn text-error" @click="handleDeletePayment(payment)" title="Eliminar período">
-                <span class="material-symbols-outlined">delete</span>
+                <win-icon name="recycle" :size="16" />
               </button>
             </div>
           </div>
@@ -165,6 +163,15 @@
       :loading="pageLoading"
       @save="onSaveSubscription"
     />
+    <w-confirm-modal
+      :is-open="!!deletePaymentTarget"
+      title="Eliminar período"
+      :message="`¿Eliminar el período &quot;${deletePaymentTarget?.periodLabel}&quot;?`"
+      confirm-text="Eliminar"
+      :is-danger="true"
+      @confirm="doDeletePayment"
+      @cancel="deletePaymentTarget = null"
+    />
   </div>
 </template>
 
@@ -181,6 +188,8 @@ import WButton from '@/components/ui/WButton.vue'
 import WBadge from '@/components/ui/WBadge.vue'
 import WKpiCard from '@/components/ui/WKpiCard.vue'
 import WCrudModal from '@/components/ui/WCrudModal.vue'
+import WConfirmModal from '@/components/ui/WConfirmModal.vue'
+import WinIcon from '@/components/win95/WinIcon.vue'
 import { formatDate, formatCalendarDate, isExpiringSoon } from '@/utils/date'
 import {
   loadClientOptionById,
@@ -189,7 +198,7 @@ import {
 
 export default defineComponent({
   name: 'SubscriptionDetailPage',
-  components: { WButton, WBadge, WKpiCard, WCrudModal },
+  components: { WButton, WBadge, WKpiCard, WCrudModal, WConfirmModal, WinIcon },
   setup() {
     const route = useRoute()
     const router = useRouter()
@@ -294,14 +303,23 @@ export default defineComponent({
       }
     }
 
-    async function handleDeletePayment(payment: SubscriptionPayment) {
-      if (!confirm(`¿Eliminar el período "${payment.periodLabel}"?`)) return
+    const deletePaymentTarget = ref<SubscriptionPayment | null>(null)
+
+    function handleDeletePayment(payment: SubscriptionPayment) {
+      deletePaymentTarget.value = payment
+    }
+
+    async function doDeletePayment() {
+      const payment = deletePaymentTarget.value
+      if (!payment) return
       try {
         await subscriptionPaymentsApi.remove(subscriptionId.value, payment._id)
         await loadPayments()
         toast.success('Período eliminado')
       } catch {
         toast.error('Error al eliminar el período')
+      } finally {
+        deletePaymentTarget.value = null
       }
     }
 
@@ -382,7 +400,7 @@ export default defineComponent({
       showAddPaymentModal, showEditModal, paymentData, subscriptionEditData,
       paymentSchema, subscriptionSchema,
       formatDate, formatMoney, formatCalendarDate, isExpiringSoon, isOverdue, getStatusColor, getStatusLabel,
-      handleMarkPaid, handleMarkPending, handleDeletePayment,
+      handleMarkPaid, handleMarkPending, handleDeletePayment, doDeletePayment, deletePaymentTarget,
       openAddPaymentModal, onSavePayment, openEditModal, onSaveSubscription,
     }
   }

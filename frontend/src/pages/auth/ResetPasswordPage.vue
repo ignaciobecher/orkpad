@@ -13,14 +13,14 @@
           Enlace inválido. Por favor solicitá un nuevo enlace desde la página de inicio de sesión.
         </p>
         <router-link to="/forgot-password" class="back-link">
-          <span class="material-symbols-outlined">arrow_back</span>
+          ←
           Solicitar nuevo enlace
         </router-link>
       </div>
 
       <div v-else-if="success" class="success-state">
         <div class="icon-wrapper">
-          <span class="material-symbols-outlined">lock_reset</span>
+          <win-icon name="key" :size="32" />
         </div>
         <span class="badge">CONTRASEÑA ACTUALIZADA</span>
         <p class="success-desc">
@@ -29,7 +29,7 @@
         </p>
         <router-link to="/login" class="cta-btn">
           Ir al inicio de sesión
-          <span class="material-symbols-outlined">arrow_forward</span>
+          →
         </router-link>
       </div>
 
@@ -52,7 +52,7 @@
 
         <template v-if="requiresTwoFactor">
           <div class="totp-hint">
-            <span class="material-symbols-outlined">shield</span>
+            <win-icon name="key" :size="16" />
             <span>Tu cuenta tiene 2FA activo. Ingresá el código de tu app de autenticación para confirmar el cambio.</span>
           </div>
           <w-input
@@ -67,7 +67,7 @@
         <div class="form-actions">
           <w-button variant="primary" block :loading="loading" type="submit">
             Restablecer contraseña
-            <span class="material-symbols-outlined ml-2">lock_reset</span>
+            <win-icon name="key" :size="16" />
           </w-button>
         </div>
       </form>
@@ -83,10 +83,11 @@ import AuthLayout from '@/components/layout/AuthLayout.vue'
 import WButton from '@/components/ui/WButton.vue'
 import WInput from '@/components/ui/WInput.vue'
 import WLogo from '@/components/ui/WLogo.vue'
+import WinIcon from '@/components/win95/WinIcon.vue'
 
 export default defineComponent({
   name: 'ResetPasswordPage',
-  components: { AuthLayout, WButton, WInput, WLogo },
+  components: { AuthLayout, WButton, WInput, WLogo, WinIcon },
   setup() {
     const route = useRoute()
     const token = computed(() => (route.query.token as string) || '')

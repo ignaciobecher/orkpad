@@ -20,7 +20,7 @@
         :aria-label="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'"
         @click="showPassword = !showPassword"
       >
-        <span class="material-symbols-outlined">{{ showPassword ? 'visibility_off' : 'visibility' }}</span>
+        <span class="w-input-toggle-text">{{ showPassword ? 'Ocultar' : 'Ver' }}</span>
       </button>
       <slot name="append"></slot>
     </div>
@@ -171,5 +171,101 @@ export default defineComponent({
   letter-spacing: var(--letter-spacing-caps);
   color: var(--color-text-muted);
   margin-bottom: 6px;
+}
+</style>
+
+<!-- Win95: overrides encapsulados por data-appearance -->
+<style>
+html[data-appearance="win95"] .w-input-group {
+display: flex;
+  flex-direction: column;
+  margin-bottom: 8px;
+  background: transparent;
+}
+
+html[data-appearance="win95"] .w-input-wrapper {
+position: relative;
+  display: flex;
+  align-items: center;
+}
+
+html[data-appearance="win95"] .w-input {
+width: 100%;
+  background-color: #fff;
+  border: 2px solid;
+  border-color: var(--w95-shadow) var(--w95-highlight) var(--w95-highlight) var(--w95-shadow);
+  box-shadow: inset 1px 1px 0 var(--w95-darkshadow);
+  color: #000;
+  font-family: Tahoma, Verdana, sans-serif;
+  font-size: 12px;
+  padding: 4px 6px;
+  border-radius: 0;
+  outline: none;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+@media (max-width: 768px) {
+html[data-appearance="win95"] .w-input {
+font-size: 12px;
+}
+}
+
+html[data-appearance="win95"] .w-input:focus {
+border-color: var(--w95-shadow) var(--w95-highlight) var(--w95-highlight) var(--w95-shadow);
+  outline: 1px dotted #000;
+  outline-offset: -3px;
+}
+
+html[data-appearance="win95"] .w-input:disabled {
+background-color: var(--w95-face);
+  color: var(--w95-shadow);
+  cursor: not-allowed;
+}
+
+html[data-appearance="win95"] .w-input--has-toggle {
+padding-right: 32px;
+}
+
+html[data-appearance="win95"] .w-input-toggle {
+position: absolute;
+  right: 4px;
+  background: var(--w95-face);
+  border: 2px solid;
+  border-color: var(--w95-highlight) var(--w95-darkshadow) var(--w95-darkshadow) var(--w95-highlight);
+  border-radius: 0;
+  padding: 1px 3px;
+  cursor: pointer;
+  color: #000;
+  display: flex;
+  align-items: center;
+}
+
+html[data-appearance="win95"] .w-input-toggle:active {
+border-color: var(--w95-darkshadow) var(--w95-highlight) var(--w95-highlight) var(--w95-darkshadow);
+}
+
+html[data-appearance="win95"] .w-input-toggle-text {
+font-family: Tahoma, Verdana, sans-serif;
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+html[data-appearance="win95"] .w-input-error {
+font-family: Tahoma, Verdana, sans-serif;
+  font-size: 11px;
+  color: var(--w95-error);
+  margin-top: 2px;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+html[data-appearance="win95"] .w-label {
+font-family: Tahoma, Verdana, sans-serif;
+  font-size: 11px;
+  text-transform: none;
+  letter-spacing: 0;
+  color: #000;
+  margin-bottom: 3px;
 }
 </style>

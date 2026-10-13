@@ -5,7 +5,7 @@
         <h1 class="page-title">{{ $t('finance.title') }}</h1>
         <div class="header-filters">
           <div class="search-box">
-            <span class="material-symbols-outlined">search</span>
+            <win-icon name="search" :size="16" />
             <input type="text" v-model="filters.search" :placeholder="$t('finance.searchPlaceholder')" @input="handleSearch" />
           </div>
           <select v-model="filters.type" class="filter-select" @change="onFilterChange">
@@ -26,7 +26,6 @@
       </div>
       <div class="header-right">
         <w-button variant="primary" @click="openNewModal">
-          <span class="material-symbols-outlined mr-2">add</span>
           {{ $t('finance.newInvoice') }}
         </w-button>
       </div>
@@ -35,7 +34,7 @@
     <div class="summary-cards">
       <w-card class="summary-card income">
         <div class="summary-icon">
-          <span class="material-symbols-outlined">trending_up</span>
+          <win-icon name="chart" :size="24" />
         </div>
         <div class="summary-content">
           <span class="summary-label">{{ $t('finance.type.income') }}</span>
@@ -44,7 +43,7 @@
       </w-card>
       <w-card class="summary-card expense">
         <div class="summary-icon">
-          <span class="material-symbols-outlined">trending_down</span>
+          <win-icon name="chart" :size="24" />
         </div>
         <div class="summary-content">
           <span class="summary-label">{{ $t('finance.type.expense') }}</span>
@@ -53,7 +52,7 @@
       </w-card>
       <w-card class="summary-card balance">
         <div class="summary-icon">
-          <span class="material-symbols-outlined">account_balance_wallet</span>
+          <win-icon name="calculator" :size="24" />
         </div>
         <div class="summary-content">
           <span class="summary-label">{{ $t('finance.balance') }}</span>
@@ -67,9 +66,7 @@
         <w-table :headers="headers" :items="formattedItems" :loading="loading" :empty-message="$t('finance.noInvoices')">
           <template #item-type="{ item }">
             <div class="type-cell" :class="item.type || 'income'">
-              <span class="material-symbols-outlined">
-                {{ (item.type === 'expense') ? 'arrow_downward' : 'arrow_upward' }}
-              </span>
+              <span>{{ (item.type === 'expense') ? '↓' : '↑' }}</span>
               {{ $t(`finance.type.${item.type || 'income'}`) }}
             </div>
           </template>
@@ -87,10 +84,10 @@
           <template #item-actions="{ item }">
             <div class="table-actions">
               <button class="action-btn" @click.stop="openEditModal(item)">
-                <span class="material-symbols-outlined">edit</span>
+                <win-icon name="paint" :size="16" />
               </button>
               <button class="action-btn text-error" @click.stop="confirmDelete(item)">
-                <span class="material-symbols-outlined">delete</span>
+                <win-icon name="recycle" :size="16" />
               </button>
             </div>
           </template>
@@ -100,13 +97,21 @@
       <div v-if="!loading && formattedItems.length === 0" class="empty-cta">
         <p class="empty-cta-text">{{ $t('finance.emptyHint') }}</p>
         <w-button variant="primary" @click="openNewModal">
-          <span class="material-symbols-outlined mr-2">add</span>
           {{ $t('finance.newInvoice') }}
         </w-button>
       </div>
     </main>
 
     <w-crud-modal v-model="showCrudModal" :schema="crudSchema" :initial-data="crudData" :loading="loading" @save="onSaveCrud" />
+    <w-confirm-modal
+      :is-open="!!deleteTarget"
+      title="Eliminar factura"
+      :message="$t('finance.deleteConfirm')"
+      confirm-text="Eliminar"
+      :is-danger="true"
+      @confirm="doDelete"
+      @cancel="deleteTarget = null"
+    />
   </div>
 </template>
 
@@ -123,6 +128,8 @@ import WTable from '@/components/ui/WTable.vue'
 import WCard from '@/components/ui/WCard.vue'
 import WBadge from '@/components/ui/WBadge.vue'
 import WCrudModal from '@/components/ui/WCrudModal.vue'
+import WConfirmModal from '@/components/ui/WConfirmModal.vue'
+import WinIcon from '@/components/win95/WinIcon.vue'
 import {
   loadClientOptionById,
   loadClientOptions,
@@ -132,9 +139,10 @@ import {
 
 export default defineComponent({
   name: 'FinancePage',
-  components: { WButton, WTable, WCard, WBadge, WCrudModal },
+  components: { WButton, WTable, WCard, WBadge, WCrudModal, WConfirmModal, WinIcon },
   data() {
     return {
+      deleteTarget: null as any,
       showCrudModal: false,
       crudData: {} as any,
       clientLabels: {} as Record<string, string>
@@ -263,11 +271,14 @@ export default defineComponent({
       }
       this.showCrudModal = true
     },
-    async confirmDelete(item: any) {
-      if (confirm(this.$t('finance.deleteConfirm'))) {
-        await this.remove(item._id)
-        await this.loadRelationLabels()
-      }
+    confirmDelete(item: any) {
+      this.deleteTarget = item
+    },
+    async doDelete() {
+      if (!this.deleteTarget) return
+      await this.remove(this.deleteTarget._id)
+      await this.loadRelationLabels()
+      this.deleteTarget = null
     },
     async onSaveCrud(data: any) {
       const { _id, ...dto } = data
@@ -325,8 +336,8 @@ export default defineComponent({
 .page-title { font-family: var(--font-body); font-size: 24px; font-weight: 600; color: var(--color-text-base); }
 .header-filters { display: flex; align-items: center; gap: 16px; }
 .search-box { position: relative; width: 280px; }
-.search-box span { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 18px; color: var(--color-text-muted); }
-.search-box input { width: 100%; background-color: var(--color-bg-surface); border: 1px solid var(--color-border); padding: 8px 12px 8px 36px; font-family: var(--font-mono); font-size: 11px; color: var(--color-text-base); outline: none; }
+.search-box span, .search-box .win-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 18px; color: var(--color-text-muted); }
+.search-box input { width: 100%; box-sizing: border-box; background-color: var(--color-bg-surface); border: 1px solid var(--color-border); padding: 8px 12px 8px 36px; font-family: var(--font-mono); font-size: 11px; color: var(--color-text-base); outline: none; }
 .filter-select { background-color: var(--color-bg-surface); border: 1px solid var(--color-border); padding: 8px 12px; font-family: var(--font-mono); font-size: 11px; color: var(--color-text-base); outline: none; }
 
 .page-content { flex-grow: 1; min-width: 0; display: flex; flex-direction: column; }

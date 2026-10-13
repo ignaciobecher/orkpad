@@ -2,7 +2,6 @@
   <div class="goals-tab-content">
     <div class="tab-actions">
       <w-button variant="primary" @click="openCreateModal">
-        <span class="material-symbols-outlined mr-2">add</span>
         Nuevo objetivo
       </w-button>
     </div>
@@ -23,7 +22,7 @@
 
     <w-card v-if="activeTab !== 'calendar'" class="no-padding">
       <div v-if="store.loading" class="goals-loading">
-        <span class="material-symbols-outlined spinning">sync</span>
+        <win-icon name="hourglass" :size="16" class="spinning" />
         Cargando objetivos...
       </div>
       <w-empty-state
@@ -93,6 +92,7 @@ import WCard from '@/components/ui/WCard.vue'
 import WEmptyState from '@/components/ui/WEmptyState.vue'
 import WDrawer from '@/components/ui/WDrawer.vue'
 import WConfirmModal from '@/components/ui/WConfirmModal.vue'
+import WinIcon from '../win95/WinIcon.vue'
 import GoalsSummaryBar from '@/components/goals/GoalsSummaryBar.vue'
 import GoalListItem from '@/components/goals/GoalListItem.vue'
 import GoalModal from '@/components/goals/GoalModal.vue'
@@ -116,6 +116,7 @@ export default defineComponent({
     GoalModal,
     GoalHeatmap,
     GoalStatsPanel,
+    WinIcon,
   },
   setup() {
     const store = useGoalsStore()

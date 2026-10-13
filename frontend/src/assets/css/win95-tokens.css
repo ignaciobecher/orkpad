@@ -1,0 +1,70 @@
+/* Orkpad95 — single Windows 95 theme. Especificidad (0,2,0): empata con
+   :root[data-theme] de tokens clásicos y gana por orden de importación. */
+:root[data-appearance='win95'] {
+  /* Win95 palette */
+  --w95-face: #c0c0c0;
+  --w95-face-light: #dfdfdf;
+  --w95-face-lighter: #efefef;
+  --w95-highlight: #ffffff;
+  --w95-shadow: #808080;
+  --w95-darkshadow: #0a0a0a;
+  --w95-teal: #008080;
+  --w95-navy: #000080;
+  --w95-navy-light: #1084d0;
+  --w95-yellow-light: #ffffdf;
+  --w95-button-text: #000000;
+  --w95-inactive-title: #808080;
+  --w95-error: #a00000;
+  --w95-success: #007a00;
+  --w95-warning: #7a5a00;
+
+  /* Map legacy tokens -> Win95 so las 30 pages heredan sin tocar lógica */
+  --color-bg-base: var(--w95-teal);
+  --color-bg-surface: var(--w95-face);
+  --color-bg-surface-low: var(--w95-face-light);
+  --color-bg-surface-container: var(--w95-face);
+  --color-bg-surface-high: var(--w95-face-light);
+  --color-bg-surface-highest: var(--w95-face-lighter);
+
+  --color-primary: var(--w95-navy);
+  --color-primary-rgb: 0, 0, 128;
+  --color-primary-hover: #0000a0;
+  --color-primary-fixed: var(--w95-navy);
+  --color-primary-dim: var(--w95-navy);
+
+  --color-text-base: #000000;
+  --color-text-muted: #222222;
+  --color-text-subtle: #333333;
+  --color-text-disabled: #6b6b6b;
+
+  --color-border: var(--w95-darkshadow);
+  --color-border-subtle: var(--w95-shadow);
+  --color-border-focus: var(--w95-navy);
+
+  --color-success: var(--w95-success);
+  --color-warning: var(--w95-warning);
+  --color-error: var(--w95-error);
+  --color-info: var(--w95-navy);
+
+  --color-success-bg: #d8ecd8;
+  --color-warning-bg: #fff3c4;
+  --color-error-bg: #f5d0d0;
+
+  --color-overlay: rgba(0, 0, 0, 0.35);
+
+  --radius: 0px;
+
+  --color-kanban-column-bg: var(--w95-face);
+  --color-kanban-card-bg: #ffffff;
+  --color-due-overdue-text: var(--w95-error);
+  --color-due-soon-text: var(--w95-warning);
+
+  /* Win95 metrics */
+  --w95-taskbar-height: 34px;
+  --w95-titlebar-height: 26px;
+  --w95-bevel: 2px;
+
+  --font-body: Tahoma, Verdana, 'Segoe UI', sans-serif;
+  --font-mono: Tahoma, Verdana, 'Segoe UI', sans-serif;
+  --letter-spacing-caps: 0.02em;
+}

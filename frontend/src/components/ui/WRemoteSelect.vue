@@ -30,10 +30,10 @@
         class="w-remote-select__clear"
         @click.stop="clearSelection"
       >
-        <span class="material-symbols-outlined">close</span>
+        <span aria-hidden="true">×</span>
       </button>
 
-      <span class="material-symbols-outlined w-remote-select__chevron">expand_more</span>
+      <span class="w-remote-select__chevron" aria-hidden="true">▾</span>
     </div>
 
     <div v-if="isOpen" class="w-remote-select__dropdown" @scroll="handleDropdownScroll">
@@ -443,5 +443,172 @@ export default defineComponent({
 .w-remote-select.is-disabled .w-remote-select__control {
   opacity: 0.6;
   cursor: not-allowed;
+}
+</style>
+
+<!-- Win95: overrides encapsulados por data-appearance -->
+<style>
+html[data-appearance="win95"] .w-remote-select {
+position: relative;
+}
+
+html[data-appearance="win95"] .w-remote-select__control {
+position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 24px;
+  background-color: #fff;
+  border: 2px solid;
+  border-color: var(--w95-shadow) var(--w95-highlight) var(--w95-highlight) var(--w95-shadow);
+  box-shadow: inset 1px 1px 0 var(--w95-darkshadow);
+  border-radius: 0;
+}
+
+html[data-appearance="win95"] .w-remote-select__control.has-error {
+border-color: var(--w95-error);
+  background-color: #fff;
+  outline: 1px solid var(--w95-error);
+}
+
+html[data-appearance="win95"] .w-remote-select__control:hover, html[data-appearance="win95"] .w-remote-select.is-open .w-remote-select__control {
+border-color: var(--w95-shadow) var(--w95-highlight) var(--w95-highlight) var(--w95-shadow);
+}
+
+html[data-appearance="win95"] .w-remote-select__content {
+position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+html[data-appearance="win95"] .w-remote-select__input {
+width: 100%;
+  padding: 4px 40px 4px 6px;
+  background: #fff;
+  border: 0;
+  box-shadow: none;
+  color: #000;
+  font-family: Tahoma, Verdana, sans-serif;
+  font-size: 12px;
+  outline: none;
+  text-transform: none;
+}
+
+html[data-appearance="win95"] .w-remote-select__selected {
+position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 2px 40px 2px 6px;
+  pointer-events: none;
+  overflow: hidden;
+  background: #fff;
+}
+
+html[data-appearance="win95"] .w-remote-select__selected-label, html[data-appearance="win95"] .w-remote-select__option-label {
+font-family: Tahoma, Verdana, sans-serif;
+  font-size: 12px;
+  color: #000;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-transform: none;
+}
+
+html[data-appearance="win95"] .w-remote-select__selected-description, html[data-appearance="win95"] .w-remote-select__option-description {
+font-family: Tahoma, Verdana, sans-serif;
+  font-size: 11px;
+  text-transform: none;
+  letter-spacing: 0;
+  color: #000;
+}
+
+html[data-appearance="win95"] .w-remote-select__chevron, html[data-appearance="win95"] .w-remote-select__clear {
+position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #000;
+  background: var(--w95-face);
+  border: 2px solid;
+  border-color: var(--w95-highlight) var(--w95-darkshadow) var(--w95-darkshadow) var(--w95-highlight);
+  border-radius: 0;
+}
+
+html[data-appearance="win95"] .w-remote-select__clear {
+right: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 2px;
+  cursor: pointer;
+}
+
+html[data-appearance="win95"] .w-remote-select__clear .material-symbols-outlined, html[data-appearance="win95"] .w-remote-select__chevron {
+font-size: 14px;
+}
+
+html[data-appearance="win95"] .w-remote-select__dropdown {
+position: absolute;
+  z-index: 30;
+  top: calc(100% + 2px);
+  width: 100%;
+  max-height: 280px;
+  overflow-y: auto;
+  background: var(--w95-face);
+  border: 2px solid;
+  border-color: var(--w95-highlight) var(--w95-darkshadow) var(--w95-darkshadow) var(--w95-highlight);
+  border-radius: 0;
+  box-shadow: none;
+}
+
+html[data-appearance="win95"] .w-remote-select__option, html[data-appearance="win95"] .w-remote-select__state {
+width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 4px 8px;
+  text-align: left;
+  background: var(--w95-face);
+  color: #000;
+  border: 0;
+  border-bottom: 1px dotted var(--w95-shadow);
+  border-radius: 0;
+  overflow: hidden;
+}
+
+html[data-appearance="win95"] .w-remote-select__option {
+cursor: pointer;
+}
+
+html[data-appearance="win95"] .w-remote-select__option:hover, html[data-appearance="win95"] .w-remote-select__option.is-active, html[data-appearance="win95"] .w-remote-select__state--interactive:hover {
+background: var(--w95-navy);
+  color: #fff;
+}
+
+html[data-appearance="win95"] .w-remote-select__option:hover .w-remote-select__option-label, html[data-appearance="win95"] .w-remote-select__option.is-active .w-remote-select__option-label, html[data-appearance="win95"] .w-remote-select__option:hover .w-remote-select__option-description, html[data-appearance="win95"] .w-remote-select__option.is-active .w-remote-select__option-description {
+color: #fff;
+}
+
+html[data-appearance="win95"] .w-remote-select__state {
+font-family: Tahoma, Verdana, sans-serif;
+  font-size: 11px;
+  color: #000;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+html[data-appearance="win95"] .w-remote-select__state--interactive {
+cursor: pointer;
+}
+
+html[data-appearance="win95"] .w-remote-select.is-disabled .w-remote-select__control {
+background: var(--w95-face);
+  cursor: not-allowed;
+}
+
+html[data-appearance="win95"] .w-remote-select.is-disabled .w-remote-select__control .w-remote-select__input, html[data-appearance="win95"] .w-remote-select.is-disabled .w-remote-select__selected {
+background: var(--w95-face);
+  color: var(--w95-shadow);
 }
 </style>

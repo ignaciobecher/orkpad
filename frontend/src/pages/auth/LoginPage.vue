@@ -38,12 +38,12 @@
         </div>
 
         <div v-if="error && !emailNotVerified" class="error-notice">
-          <span class="material-symbols-outlined">error</span>
+          <win-icon name="error" :size="16" />
           <span>{{ error }}</span>
         </div>
 
         <div v-if="emailNotVerified" class="verification-notice">
-          <span class="material-symbols-outlined">mail</span>
+          <win-icon name="mail" :size="16" />
           <div>
             <p class="notice-title">EMAIL NO VERIFICADO</p>
             <p class="notice-text">
@@ -56,7 +56,7 @@
         </div>
 
         <div v-if="biometricError" class="biometric-error-notice">
-          <span class="material-symbols-outlined">fingerprint</span>
+          <win-icon name="key" :size="16" />
           <span>{{ biometricError }}</span>
         </div>
 
@@ -68,13 +68,13 @@
             :disabled="biometricLoading"
             @click="handleBiometricLogin"
           >
-            <span class="material-symbols-outlined">fingerprint</span>
+            <win-icon name="key" :size="16" />
             <span>{{ biometricLoading ? 'Verificando...' : 'Iniciar sesión con biometría' }}</span>
           </button>
 
           <w-button variant="primary" block :loading="loading" type="submit">
             {{ $t('auth.login.submit') }}
-            <span class="material-symbols-outlined ml-2">arrow_forward</span>
+            <span class="ml-2">→</span>
           </w-button>
         </div>
 
@@ -94,7 +94,7 @@
     <div v-if="showBiometricPrompt" class="biometric-overlay">
       <div class="biometric-prompt">
         <div class="biometric-prompt-icon">
-          <span class="material-symbols-outlined">fingerprint</span>
+          <win-icon name="key" :size="32" />
         </div>
         <h3 class="biometric-prompt-title">Iniciá sesión más rápido</h3>
         <p class="biometric-prompt-text">
@@ -103,7 +103,7 @@
         <p v-if="biometricRegisterError" class="biometric-prompt-error">{{ biometricRegisterError }}</p>
         <div class="biometric-prompt-actions">
           <w-button variant="primary" block :loading="biometricRegisterLoading" @click="handleAcceptBiometric">
-            <span class="material-symbols-outlined">fingerprint</span>
+            <win-icon name="key" :size="16" />
             Activar biometría
           </w-button>
           <button type="button" class="skip-btn" :disabled="biometricRegisterLoading" @click="handleSkipBiometric">
@@ -125,13 +125,14 @@ import AuthLayout from '@/components/layout/AuthLayout.vue'
 import WButton from '@/components/ui/WButton.vue'
 import WInput from '@/components/ui/WInput.vue'
 import WLogo from '@/components/ui/WLogo.vue'
+import WinIcon from '@/components/win95/WinIcon.vue'
 
 const REMEMBER_EMAIL_KEY = 'orkpad_remember_email'
 const BIOMETRIC_DISMISSED_KEY = 'orkpad_biometric_dismissed'
 
 export default defineComponent({
   name: 'LoginPage',
-  components: { AuthLayout, WButton, WInput, WLogo },
+  components: { AuthLayout, WButton, WInput, WLogo, WinIcon },
   setup() {
     const {
       isPlatformAvailable,

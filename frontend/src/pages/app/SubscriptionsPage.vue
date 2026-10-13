@@ -5,7 +5,7 @@
         <h1 class="page-title">{{ $t('subscriptions.title') }}</h1>
         <div class="header-filters">
           <div class="search-box">
-            <span class="material-symbols-outlined">search</span>
+            <win-icon name="search" :size="16" />
             <input type="text" v-model="filters.search" placeholder="BUSCAR..." @input="handleSearch" />
           </div>
           <select v-model="filters.type" class="filter-select" @change="handleSearch">
@@ -17,8 +17,7 @@
       </div>
       <div class="header-right">
         <w-button variant="primary" @click="openNewModal">
-          <span class="material-symbols-outlined mr-2">add</span>
-          NUEVO
+          Nuevo
         </w-button>
       </div>
     </header>
@@ -66,10 +65,10 @@
           <template #item-actions="{ item }">
             <div class="table-actions">
               <button class="action-btn" @click.stop="openEditModal(item)" title="Editar">
-                <span class="material-symbols-outlined">edit</span>
+                <win-icon name="paint" :size="16" />
               </button>
               <button class="action-btn text-error" @click.stop="confirmDelete(item)" title="Eliminar">
-                <span class="material-symbols-outlined">delete</span>
+                <win-icon name="recycle" :size="16" />
               </button>
             </div>
           </template>
@@ -79,13 +78,21 @@
       <div v-if="!loading && items.length === 0" class="empty-cta">
         <p class="empty-cta-text">Cargá tu primer recurrente: cuotas de clientes o pagos como servidores.</p>
         <w-button variant="primary" @click="openNewModal">
-          <span class="material-symbols-outlined mr-2">add</span>
-          NUEVO
+          Nuevo
         </w-button>
       </div>
     </main>
 
     <w-crud-modal v-model="showCrudModal" :schema="crudSchema" :initial-data="crudData" :loading="loading" @save="onSaveCrud" />
+    <w-confirm-modal
+      :is-open="!!deleteTarget"
+      title="Eliminar suscripción"
+      message="¿Estás seguro de eliminar esta suscripción?"
+      confirm-text="Eliminar"
+      :is-danger="true"
+      @confirm="doDelete"
+      @cancel="deleteTarget = null"
+    />
   </div>
 </template>
 
@@ -99,6 +106,8 @@ import WTable from '@/components/ui/WTable.vue'
 import WCard from '@/components/ui/WCard.vue'
 import WBadge from '@/components/ui/WBadge.vue'
 import WCrudModal from '@/components/ui/WCrudModal.vue'
+import WConfirmModal from '@/components/ui/WConfirmModal.vue'
+import WinIcon from '@/components/win95/WinIcon.vue'
 import {
   loadClientOptionById,
   loadClientOptions,
@@ -107,9 +116,10 @@ import { formatDate, formatCalendarDate, isExpiringSoon } from '@/utils/date'
 
 export default defineComponent({
   name: 'SubscriptionsPage',
-  components: { WButton, WTable, WCard, WBadge, WCrudModal },
+  components: { WButton, WTable, WCard, WBadge, WCrudModal, WConfirmModal, WinIcon },
   data() {
     return {
+      deleteTarget: null as any,
       headers: [
         { key: 'planName', label: 'PLAN' },
         { key: 'type', label: 'TIPO' },
@@ -208,11 +218,14 @@ export default defineComponent({
       this.crudData = { ...item }
       this.showCrudModal = true
     },
-    async confirmDelete(item: any) {
-      if (confirm('¿Estás seguro de eliminar esta suscripción?')) {
-        await this.remove(item._id)
-        await this.loadRelationLabels()
-      }
+    confirmDelete(item: any) {
+      this.deleteTarget = item
+    },
+    async doDelete() {
+      if (!this.deleteTarget) return
+      await this.remove(this.deleteTarget._id)
+      await this.loadRelationLabels()
+      this.deleteTarget = null
     },
     async onSaveCrud(data: any) {
       const { _id, ...dto } = data
@@ -242,8 +255,8 @@ export default defineComponent({
 .header-filters { display: flex; align-items: center; gap: 16px; }
 .page-title { font-family: var(--font-body); font-size: 24px; font-weight: 600; color: var(--color-text-base); }
 .search-box { position: relative; width: 280px; }
-.search-box span { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 18px; color: var(--color-text-muted); }
-.search-box input { width: 100%; background-color: var(--color-bg-surface); border: 1px solid var(--color-border); padding: 8px 12px 8px 36px; font-family: var(--font-mono); font-size: 11px; color: var(--color-text-base); outline: none; }
+.search-box span, .search-box .win-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 18px; color: var(--color-text-muted); }
+.search-box input { width: 100%; box-sizing: border-box; background-color: var(--color-bg-surface); border: 1px solid var(--color-border); padding: 8px 12px 8px 36px; font-family: var(--font-mono); font-size: 11px; color: var(--color-text-base); outline: none; }
 .filter-select { background-color: var(--color-bg-surface); border: 1px solid var(--color-border); padding: 8px 12px; font-family: var(--font-mono); font-size: 11px; color: var(--color-text-base); outline: none; }
 
 .page-content { flex-grow: 1; min-width: 0; display: flex; flex-direction: column; }

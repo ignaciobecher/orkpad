@@ -2,7 +2,7 @@
   <div class="w-empty-state">
     <div class="w-empty-state__icon">
       <slot name="icon">
-        <span class="material-symbols-outlined">drafts</span>
+        <win-icon name="envelope" :size="32" alt="" />
       </slot>
     </div>
     <h3 class="w-empty-state__title">{{ title }}</h3>
@@ -15,9 +15,11 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+import WinIcon from '@/components/win95/WinIcon.vue'
 
 export default defineComponent({
   name: 'WEmptyState',
+  components: { WinIcon },
   props: {
     title: {
       type: String,
@@ -69,5 +71,50 @@ export default defineComponent({
 .w-empty-state__action {
   display: flex;
   gap: 12px;
+}
+</style>
+
+<!-- Win95: overrides encapsulados por data-appearance -->
+<style>
+html[data-appearance="win95"] .w-empty-state {
+display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  text-align: center;
+  background: var(--w95-face);
+  border-radius: 0;
+}
+
+html[data-appearance="win95"] .w-empty-state__icon {
+margin-bottom: 8px;
+  color: #000;
+}
+
+html[data-appearance="win95"] .w-empty-state__icon span {
+font-size: 32px;
+}
+
+html[data-appearance="win95"] .w-empty-state__title {
+font-family: Tahoma, Verdana, sans-serif;
+  font-size: 14px;
+  font-weight: bold;
+  color: #000;
+  margin-bottom: 4px;
+  text-transform: none;
+}
+
+html[data-appearance="win95"] .w-empty-state__message {
+font-family: Tahoma, Verdana, sans-serif;
+  font-size: 12px;
+  color: #000;
+  max-width: 320px;
+  margin-bottom: 8px;
+}
+
+html[data-appearance="win95"] .w-empty-state__action {
+display: flex;
+  gap: 8px;
 }
 </style>

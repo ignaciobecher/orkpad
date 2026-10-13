@@ -10,12 +10,12 @@
       <!-- Error state -->
       <div v-if="state === 'error'" class="callback-status">
         <div class="status-icon status-icon--error">
-          <span class="material-symbols-outlined">error</span>
+          <win-icon name="error" :size="32" />
         </div>
         <p class="status-title status-title--error">AUTENTICACIÓN FALLIDA</p>
         <p class="status-message">{{ errorMessage }}</p>
         <router-link to="/login" class="back-link">
-          <span class="material-symbols-outlined">arrow_back</span>
+          ←
           Volver al inicio de sesión
         </router-link>
       </div>
@@ -31,7 +31,7 @@
       <Transition name="success-fade" appear>
         <div v-if="state === 'success'" class="callback-status">
           <div class="status-icon status-icon--success">
-            <span class="material-symbols-outlined">check_circle</span>
+            <win-icon name="check" :size="32" />
           </div>
           <p class="status-title status-title--success">{{ successTitle }}</p>
           <p class="status-message">{{ $t('githubAuth.success') }}</p>
@@ -48,12 +48,13 @@ import { useAuthStore } from '@/stores/auth.store'
 import { useToast } from '@/composables/useToast'
 import AuthLayout from '@/components/layout/AuthLayout.vue'
 import WLogo from '@/components/ui/WLogo.vue'
+import WinIcon from '@/components/win95/WinIcon.vue'
 
 type CallbackState = 'loading' | 'success' | 'error'
 
 export default defineComponent({
   name: 'GitHubCallbackPage',
-  components: { AuthLayout, WLogo },
+  components: { AuthLayout, WLogo, WinIcon },
   setup() {
     const router = useRouter()
     const route = useRoute()

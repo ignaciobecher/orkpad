@@ -7,12 +7,12 @@
       <div class="header-right">
         <input ref="fileInput" type="file" class="hidden-file-input" accept=".md,.doc,.docx,.xls,.xlsx,.pdf,.png,.jpg,.jpeg,.gif,.webp,.mp3,.wav,.flac,.m4a,.mp4,.webm,.ogg,.mov,.avi,.mkv" multiple @change="handleFileUpload" />
         <w-button variant="secondary" @click="openFolderModal = true">
-          <span class="material-symbols-outlined mr-2">create_new_folder</span>
-          NUEVA CARPETA
+          <win-icon name="folder" :size="16" class="mr-2" />
+          Nueva carpeta
         </w-button>
         <w-button variant="primary" @click="triggerUpload">
-          <span class="material-symbols-outlined mr-2">upload_file</span>
-          SUBIR ARCHIVOS
+          <win-icon name="file-lines" :size="16" class="mr-2" />
+          Subir archivos
         </w-button>
         <div class="view-toggle" role="group" aria-label="Vista">
           <button
@@ -20,14 +20,14 @@
             title="Vista detalles"
             @click="setExplorerView('details')"
           >
-            <span class="material-symbols-outlined">view_list</span>
+            <win-icon name="file-lines" :size="16" />
           </button>
           <button
             :class="['view-btn', { 'view-btn--active': explorerView === 'icons' }]"
             title="Iconos grandes"
             @click="setExplorerView('icons')"
           >
-            <span class="material-symbols-outlined">grid_view</span>
+            <win-icon name="folder" :size="16" />
           </button>
         </div>
       </div>
@@ -37,24 +37,24 @@
     <div class="explorer-toolbar">
       <div class="nav-btns">
         <button class="nav-btn" :disabled="!canGoBack" title="Atrás" @click="goBack">
-          <span class="material-symbols-outlined">arrow_back</span>
+          <span aria-hidden="true">←</span>
         </button>
         <button class="nav-btn" :disabled="!canGoForward" title="Adelante" @click="goForward">
-          <span class="material-symbols-outlined">arrow_forward</span>
+          <span aria-hidden="true">→</span>
         </button>
         <button class="nav-btn" :disabled="!currentFolderPath" title="Subir un nivel" @click="goUp">
-          <span class="material-symbols-outlined">arrow_upward</span>
+          <span aria-hidden="true">↑</span>
         </button>
         <button class="nav-btn" title="Actualizar" @click="refreshAll">
-          <span class="material-symbols-outlined" :class="{ spinning: loading }">refresh</span>
+          <win-icon name="hourglass" :size="16" :class="{ spinning: loading }" />
         </button>
       </div>
       <div class="address-bar" @click.self="addressEditing = true">
-        <span class="material-symbols-outlined address-icon">computer</span>
+        <win-icon name="computer" :size="16" class="address-icon" />
         <template v-if="!addressEditing">
           <button class="address-seg address-seg--root" @click="navigateToFolder('')">Este equipo</button>
           <template v-for="crumb in pathCrumbs" :key="crumb.id">
-            <span class="material-symbols-outlined address-chev">chevron_right</span>
+            <span class="address-chev" aria-hidden="true">›</span>
             <button class="address-seg" @click="navigateToFolder(crumb.id)">{{ crumb.label }}</button>
           </template>
         </template>
@@ -69,19 +69,19 @@
         />
       </div>
       <div class="search-box">
-        <span class="material-symbols-outlined">search</span>
+        <win-icon name="search" :size="16" class="search-box__icon" />
         <input type="text" v-model="filters.search" placeholder="Buscar en esta carpeta..." @input="handleSearch" />
       </div>
     </div>
 
     <section class="explorer-shell">
       <aside class="explorer-sidebar">
-        <div class="sidebar-header">ACCESO RÁPIDO</div>
+        <div class="sidebar-header">Acceso rápido</div>
         <button class="sidebar-item" :class="{ active: !currentFolderPath }" @click="navigateToFolder('')">
-          <span class="material-symbols-outlined">home</span>
+          <win-icon name="computer" :size="16" />
           <span>Inicio</span>
         </button>
-        <div class="sidebar-header" style="margin-top:12px">CARPETAS</div>
+        <div class="sidebar-header" style="margin-top:12px">Carpetas</div>
         <button
           v-for="node in folderTree"
           :key="node.path"
@@ -92,11 +92,11 @@
         >
           <span
             v-if="node.hasChildren"
-            class="material-symbols-outlined tree-caret"
+            class="tree-caret"
             @click.stop="toggleTreeExpand(node.path)"
-          >{{ isExpanded(node.path) ? 'expand_more' : 'chevron_right' }}</span>
+          >{{ isExpanded(node.path) ? '▾' : '›' }}</span>
           <span v-else class="tree-caret tree-caret--leaf"></span>
-          <span class="material-symbols-outlined">folder</span>
+          <win-icon name="folder" :size="16" />
           <span class="sidebar-item__label">{{ node.name }}</span>
         </button>
       </aside>
@@ -109,7 +109,7 @@
           @dragleave.prevent="dragActive = false"
           @drop.prevent="handleDrop"
         >
-          <span class="material-symbols-outlined">upload_file</span>
+          <win-icon name="file-lines" :size="32" />
           <p>Soltá para subir en {{ currentFolderPath || 'Inicio' }}</p>
         </div>
         <!-- Vista detalles -->
@@ -129,7 +129,7 @@
             </button>
           </div>
           <div v-if="loading && !allRows.length" class="details-loading">
-            <span class="material-symbols-outlined spinning">sync</span>
+            <win-icon name="hourglass" :size="16" class="spinning" />
             Cargando archivos...
           </div>
           <div v-else-if="!allRows.length" class="details-empty">Esta carpeta está vacía</div>
@@ -142,7 +142,7 @@
             @contextmenu.prevent="openContextMenu($event, row)"
           >
             <span class="details-col details-col--name">
-              <span class="material-symbols-outlined row-icon" :style="{ color: row.iconColor }">{{ row.icon }}</span>
+              <win-icon :name="materialToWinIcon(row.icon)" :size="16" />
               {{ row.name }}
             </span>
             <span class="details-col">{{ row.dateLabel }}</span>
@@ -154,7 +154,7 @@
         <!-- Vista iconos grandes -->
         <div v-else class="icons-wrap">
           <div v-if="loading && !allRows.length" class="details-loading">
-            <span class="material-symbols-outlined spinning">sync</span>
+            <win-icon name="hourglass" :size="16" class="spinning" />
             Cargando archivos...
           </div>
           <div v-else-if="!allRows.length" class="details-empty">Esta carpeta está vacía</div>
@@ -166,7 +166,7 @@
             @dblclick="openRow(row)"
             @contextmenu.prevent="openContextMenu($event, row)"
           >
-            <span class="material-symbols-outlined icon-tile__icon" :style="{ color: row.iconColor }">{{ row.icon }}</span>
+            <win-icon :name="materialToWinIcon(row.icon)" :size="32" />
             <span class="icon-tile__name">{{ row.name }}</span>
           </button>
         </div>
@@ -176,7 +176,7 @@
           <span>{{ statusText }}</span>
           <span v-if="selectedRow" class="status-bar__sel">1 seleccionado: {{ selectedRow.name }}</span>
           <span v-if="loading" class="status-bar__loading">
-            <span class="material-symbols-outlined spinning">sync</span> Cargando...
+            <win-icon name="hourglass" :size="16" class="spinning" /> Cargando...
           </span>
         </div>
 
@@ -187,16 +187,16 @@
           :style="{ top: contextMenu.y + 'px', left: contextMenu.x + 'px' }"
         >
           <button class="context-item" @click="openRow(contextMenu.row); closeContextMenu()">
-            <span class="material-symbols-outlined">open_in_new</span> Abrir
+            <win-icon name="search" :size="16" /> Abrir
           </button>
           <button v-if="!contextMenu.row.isFolder" class="context-item" @click="downloadRow(contextMenu.row); closeContextMenu()">
-            <span class="material-symbols-outlined">download</span> Descargar
+            <win-icon name="file-lines" :size="16" /> Descargar
           </button>
           <button class="context-item" @click="startRename(contextMenu.row); closeContextMenu()">
-            <span class="material-symbols-outlined">edit</span> Renombrar
+            <win-icon name="paint" :size="16" /> Renombrar
           </button>
           <button class="context-item context-item--danger" @click="askDelete(contextMenu.row); closeContextMenu()">
-            <span class="material-symbols-outlined">delete</span> Eliminar
+            <win-icon name="recycle" :size="16" /> Eliminar
           </button>
         </div>
       </main>
@@ -205,7 +205,7 @@
     <!-- Overlay subiendo archivos -->
     <div v-if="uploading" class="upload-overlay">
       <div class="upload-box">
-        <span class="material-symbols-outlined spinning">sync</span>
+        <win-icon name="hourglass" :size="16" class="spinning" />
         <p>Subiendo {{ uploadTotal }} archivo(s)... {{ uploadDone }}/{{ uploadTotal }}</p>
         <div class="upload-track"><div class="upload-fill" :style="{ width: uploadPct + '%' }"></div></div>
       </div>
@@ -279,7 +279,7 @@
             :src="previewSrc || undefined"
           />
           <div v-else class="doc-binary-preview">
-            <span class="material-symbols-outlined">{{ selectedDocument ? getDocumentIcon(selectedDocument) : 'draft' }}</span>
+            <win-icon :name="materialToWinIcon(selectedDocument ? getDocumentIcon(selectedDocument) : 'draft')" :size="32" />
             <p>Vista previa no disponible para este formato.</p>
             <p class="doc-preview__hint">Puedes descargarlo desde aquí cuando lo necesites.</p>
           </div>
@@ -305,6 +305,8 @@ import { mapActions, mapState } from 'pinia'
 import type { Document } from '@/api/docs/docs.types'
 import WButton from '@/components/ui/WButton.vue'
 import WConfirmModal from '@/components/ui/WConfirmModal.vue'
+import WinIcon from '@/components/win95/WinIcon.vue'
+import { materialToWinIcon } from '@/components/win95/icons'
 import { useDocsStore } from '@/stores/docs.store'
 import {
   buildBreadcrumbs,
@@ -354,7 +356,7 @@ const EXPLORER_VIEW_KEY = 'orkpad_explorer_view'
 
 export default defineComponent({
   name: 'DocsPage',
-  components: { WButton, WConfirmModal },
+  components: { WButton, WConfirmModal, WinIcon },
   data() {
     return {
       currentFolderPath: '',
@@ -510,6 +512,7 @@ export default defineComponent({
     },
   },
   methods: {
+    materialToWinIcon,
     ...mapActions(useDocsStore, ['fetchAll', 'create', 'remove', 'update']),
     getDocumentIcon,
     formatDateTime(value: string) {
@@ -1037,5 +1040,462 @@ button.details-col:hover { color: var(--color-text-base); }
   .search-box { width: 100%; }
   .details-head, .details-row { grid-template-columns: minmax(0, 1fr) 110px 90px; }
   .details-head .details-col:nth-child(2), .details-row .details-col:nth-child(2) { display: none; }
+}
+</style>
+
+<!-- Win95: overrides encapsulados por data-appearance -->
+<style>
+html[data-appearance="win95"] .docs-page {
+padding: 32px; flex-grow: 1; min-width: 0;
+}
+
+html[data-appearance="win95"] .page-header {
+display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; gap: 16px; flex-wrap: wrap;
+}
+
+html[data-appearance="win95"] .header-left {
+display: flex; align-items: center; gap: 32px;
+}
+
+html[data-appearance="win95"] .header-right {
+display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+}
+
+html[data-appearance="win95"] .page-title {
+font-family: var(--font-body); font-size: 24px; font-weight: 600; color: var(--color-text-base);
+}
+
+html[data-appearance="win95"] .hidden-file-input {
+display: none;
+}
+
+html[data-appearance="win95"] .mr-2 {
+margin-right: 8px;
+}
+
+html[data-appearance="win95"] .view-toggle {
+display: flex; border: 1px solid var(--color-border);
+}
+
+html[data-appearance="win95"] .view-btn {
+display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; background: var(--color-bg-surface-low); border: none; color: var(--color-text-muted); cursor: pointer;
+}
+
+html[data-appearance="win95"] .view-btn + .view-btn {
+border-left: 1px solid var(--color-border);
+}
+
+html[data-appearance="win95"] .view-btn--active {
+background: var(--color-primary); color: white;
+}
+
+html[data-appearance="win95"] .view-btn .material-symbols-outlined {
+font-size: 18px;
+}
+
+html[data-appearance="win95"] .explorer-toolbar {
+display: flex; align-items: center; gap: 10px; margin-bottom: 12px;
+}
+
+html[data-appearance="win95"] .nav-btns {
+display: flex; gap: 2px;
+}
+
+html[data-appearance="win95"] .nav-btn {
+display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; background: none; border: none; border-radius: 4px; color: var(--color-text-base); cursor: pointer;
+}
+
+html[data-appearance="win95"] .nav-btn:hover:not(:disabled) {
+background: rgba(255,255,255,0.06);
+}
+
+html[data-appearance="win95"] .nav-btn:disabled {
+opacity: 0.3; cursor: default;
+}
+
+html[data-appearance="win95"] .nav-btn .material-symbols-outlined {
+font-size: 20px;
+}
+
+html[data-appearance="win95"] .nav-btn .spinning {
+animation: w95-spin 0.8s linear infinite;
+}
+
+html[data-appearance="win95"] .address-bar {
+flex: 1; display: flex; align-items: center; gap: 2px; min-width: 0; background: var(--color-bg-surface); border: 1px solid var(--color-border); padding: 4px 8px; min-height: 34px;
+}
+
+html[data-appearance="win95"] .address-icon {
+font-size: 18px; color: var(--color-text-muted);
+}
+
+html[data-appearance="win95"] .address-seg {
+background: none; border: none; color: var(--color-text-base); font-size: 13px; padding: 4px 6px; border-radius: 3px; cursor: pointer; white-space: nowrap;
+}
+
+html[data-appearance="win95"] .address-seg:hover {
+background: rgba(255,255,255,0.06);
+}
+
+html[data-appearance="win95"] .address-seg--root {
+color: var(--color-text-muted);
+}
+
+html[data-appearance="win95"] .address-chev {
+font-size: 16px; color: var(--color-text-disabled);
+}
+
+html[data-appearance="win95"] .address-input {
+flex: 1; background: none; border: none; outline: none; color: var(--color-text-base); font-family: var(--font-mono); font-size: 12px;
+}
+
+html[data-appearance="win95"] .search-box {
+position: relative; width: 260px; flex-shrink: 0;
+}
+
+html[data-appearance="win95"] .search-box span, html[data-appearance="win95"] .search-box .search-box__icon {
+position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 18px; color: var(--color-text-muted);
+}
+
+html[data-appearance="win95"] .search-box input {
+width: 100%; background-color: var(--color-bg-surface); border: 1px solid var(--color-border); padding: 8px 12px 8px 36px; font-family: var(--font-mono); font-size: 11px; color: var(--color-text-base); outline: none; box-sizing: border-box;
+}
+
+html[data-appearance="win95"] .explorer-shell {
+display: grid; grid-template-columns: 250px 1fr; gap: 12px; min-height: 62vh;
+}
+
+html[data-appearance="win95"] .explorer-sidebar {
+border: 1px solid var(--color-border); background: var(--color-bg-surface); padding: 12px 6px; overflow-y: auto;
+}
+
+html[data-appearance="win95"] .sidebar-header {
+margin-bottom: 4px; padding: 0 10px; font-family: var(--font-mono); font-size: 11px; letter-spacing: var(--letter-spacing-caps); color: var(--color-text-muted); text-transform: uppercase;
+}
+
+html[data-appearance="win95"] .sidebar-item {
+width: 100%; display: flex; align-items: center; gap: 8px; padding: 7px 10px; background: transparent; border: 0; color: var(--color-text-base); cursor: pointer; text-align: left; font-size: 13px; border-radius: 3px;
+}
+
+html[data-appearance="win95"] .sidebar-item:hover {
+background: rgba(255,255,255,0.04);
+}
+
+html[data-appearance="win95"] .sidebar-item.active {
+background: rgba(255,255,255,0.07);
+}
+
+html[data-appearance="win95"] .sidebar-item .material-symbols-outlined {
+font-size: 18px; color: #FFC107;
+}
+
+html[data-appearance="win95"] .sidebar-item__label {
+overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+html[data-appearance="win95"] .tree-caret {
+font-size: 14px !important; font-weight: bold; color: var(--color-text-muted) !important; cursor: pointer; font-family: Tahoma, Verdana, sans-serif;
+}
+
+html[data-appearance="win95"] .tree-caret--leaf {
+width: 18px;
+}
+
+html[data-appearance="win95"] .explorer-main {
+position: relative; display: flex; flex-direction: column; min-width: 0; border: 1px solid var(--color-border); background: var(--color-bg-surface);
+}
+
+html[data-appearance="win95"] .details-wrap {
+flex: 1; overflow-y: auto; min-height: 300px;
+}
+
+html[data-appearance="win95"] .details-head, html[data-appearance="win95"] .details-row {
+display: grid; grid-template-columns: minmax(0, 1fr) 170px 170px 110px; align-items: center; gap: 8px; padding: 0 12px;
+}
+
+html[data-appearance="win95"] .details-head {
+position: sticky; top: 0; background: var(--color-bg-surface); border-bottom: 1px solid var(--color-border); z-index: 2;
+}
+
+html[data-appearance="win95"] .details-col {
+background: none; border: none; color: var(--color-text-muted); font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; padding: 10px 0; text-align: left; cursor: default;
+}
+
+html[data-appearance="win95"] button.details-col {
+cursor: pointer;
+}
+
+html[data-appearance="win95"] button.details-col:hover {
+color: var(--color-text-base);
+}
+
+html[data-appearance="win95"] .details-col--num {
+text-align: right;
+}
+
+html[data-appearance="win95"] .details-row {
+border-bottom: 1px solid var(--color-border-subtle); cursor: default; padding-top: 2px; padding-bottom: 2px;
+}
+
+html[data-appearance="win95"] .details-row .details-col {
+font-family: var(--font-body); font-size: 13px; color: var(--color-text-base); text-transform: none; letter-spacing: normal; padding: 7px 0;
+}
+
+html[data-appearance="win95"] .details-row:hover {
+background: rgba(255,255,255,0.03);
+}
+
+html[data-appearance="win95"] .details-row--selected {
+background: rgba(37, 99, 235, 0.14) !important;
+}
+
+html[data-appearance="win95"] .details-row--selected:hover {
+background: rgba(37, 99, 235, 0.2) !important;
+}
+
+html[data-appearance="win95"] .row-icon {
+font-size: 20px; vertical-align: -5px; margin-right: 8px;
+}
+
+html[data-appearance="win95"] .details-loading, html[data-appearance="win95"] .details-empty {
+display: flex; align-items: center; justify-content: center; gap: 10px; padding: 64px 0; color: var(--color-text-muted); font-size: 13px;
+}
+
+html[data-appearance="win95"] .spinning {
+animation: w95-spin 0.8s linear infinite;
+}
+
+@keyframes w95-spin {
+to { transform: rotate(360deg); }
+}
+
+html[data-appearance="win95"] .icons-wrap {
+flex: 1; overflow-y: auto; display: flex; flex-wrap: wrap; gap: 4px; padding: 12px; align-content: flex-start; min-height: 300px;
+}
+
+html[data-appearance="win95"] .icon-tile {
+width: 104px; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px 6px; background: none; border: 1px solid transparent; cursor: pointer;
+}
+
+html[data-appearance="win95"] .icon-tile:hover {
+background: rgba(255,255,255,0.04);
+}
+
+html[data-appearance="win95"] .icon-tile--selected {
+background: rgba(37, 99, 235, 0.14) !important; border-color: rgba(37, 99, 235, 0.5);
+}
+
+html[data-appearance="win95"] .icon-tile__icon {
+font-size: 44px;
+}
+
+html[data-appearance="win95"] .icon-tile__name {
+font-size: 12px; color: var(--color-text-base); text-align: center; word-break: break-word; max-height: 3.2em; overflow: hidden;
+}
+
+html[data-appearance="win95"] .status-bar {
+display: flex; align-items: center; gap: 16px; border-top: 1px solid var(--color-border); padding: 6px 12px; font-family: var(--font-mono); font-size: 11px; color: var(--color-text-muted);
+}
+
+html[data-appearance="win95"] .status-bar__sel {
+color: var(--color-text-base);
+}
+
+html[data-appearance="win95"] .status-bar__loading {
+margin-left: auto; display: flex; align-items: center; gap: 6px;
+}
+
+html[data-appearance="win95"] .status-bar__loading .material-symbols-outlined {
+font-size: 14px;
+}
+
+html[data-appearance="win95"] .context-menu {
+position: absolute; z-index: 60; min-width: 190px; background: var(--color-bg-surface-high, #1a1a24); border: 1px solid var(--color-border); padding: 4px; box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+}
+
+html[data-appearance="win95"] .context-item {
+display: flex; align-items: center; gap: 10px; width: 100%; padding: 8px 12px; background: none; border: none; color: var(--color-text-base); font-size: 13px; cursor: pointer; text-align: left;
+}
+
+html[data-appearance="win95"] .context-item:hover {
+background: rgba(255,255,255,0.06);
+}
+
+html[data-appearance="win95"] .context-item .material-symbols-outlined {
+font-size: 18px; color: var(--color-text-muted);
+}
+
+html[data-appearance="win95"] .context-item--danger {
+color: var(--color-error);
+}
+
+html[data-appearance="win95"] .context-item--danger .material-symbols-outlined {
+color: var(--color-error);
+}
+
+html[data-appearance="win95"] .upload-overlay {
+position: fixed; inset: 0; background: rgba(0,0,0,0.55); display: flex; align-items: center; justify-content: center; z-index: 1200;
+}
+
+html[data-appearance="win95"] .upload-box {
+background: var(--color-bg-surface); border: 1px solid var(--color-border); padding: 28px 32px; display: flex; flex-direction: column; align-items: center; gap: 12px; min-width: 320px; font-size: 13px;
+}
+
+html[data-appearance="win95"] .upload-box .material-symbols-outlined {
+font-size: 32px; color: var(--color-primary);
+}
+
+html[data-appearance="win95"] .upload-track {
+width: 100%; height: 8px; background: var(--color-bg-surface-high);
+}
+
+html[data-appearance="win95"] .upload-fill {
+height: 100%; background: var(--color-primary); transition: width 0.2s;
+}
+
+html[data-appearance="win95"] .drop-overlay {
+position: absolute;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: rgba(37, 99, 235, 0.1);
+  border: 2px dashed var(--color-primary);
+  font-size: 15px;
+  color: var(--color-text-base);
+  pointer-events: auto;
+}
+
+html[data-appearance="win95"] .drop-overlay .material-symbols-outlined {
+font-size: 48px;
+  color: var(--color-primary);
+}
+
+html[data-appearance="win95"] .modal-overlay {
+position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 1000;
+}
+
+html[data-appearance="win95"] .modal-box {
+width: 100%; max-width: 480px; padding: 24px; background: var(--color-bg-surface); border: 1px solid var(--color-border);
+}
+
+html[data-appearance="win95"] .modal-box--large {
+max-width: 860px;
+}
+
+html[data-appearance="win95"] .modal-title {
+margin: 0 0 12px; font-family: var(--font-body); font-size: 18px; color: var(--color-text-base);
+}
+
+html[data-appearance="win95"] .modal-form {
+display: flex; flex-direction: column; gap: 8px;
+}
+
+html[data-appearance="win95"] .modal-form label {
+font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; color: var(--color-text-muted);
+}
+
+html[data-appearance="win95"] .modal-form input {
+background: var(--color-bg-surface-highest); border: 1px solid var(--color-border); padding: 10px 12px; color: var(--color-text-base); outline: none;
+}
+
+html[data-appearance="win95"] .modal-footer {
+display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;
+}
+
+html[data-appearance="win95"] .btn-primary, html[data-appearance="win95"] .btn-secondary {
+padding: 9px 16px; border: 1px solid var(--color-border); cursor: pointer; font-family: var(--font-mono); font-size: 11px; text-transform: uppercase;
+}
+
+html[data-appearance="win95"] .btn-primary {
+background: var(--color-primary); border-color: var(--color-primary); color: white;
+}
+
+html[data-appearance="win95"] .btn-secondary {
+background: transparent; color: var(--color-text-base);
+}
+
+html[data-appearance="win95"] .doc-preview__header {
+display: flex; justify-content: space-between; gap: 16px; margin-bottom: 16px;
+}
+
+html[data-appearance="win95"] .doc-preview__meta {
+margin: 0; color: var(--color-text-muted); font-family: var(--font-mono); font-size: 11px; text-transform: uppercase;
+}
+
+html[data-appearance="win95"] .doc-preview__actions {
+display: flex; gap: 10px; align-items: flex-start;
+}
+
+html[data-appearance="win95"] .doc-preview__body {
+min-height: 320px; border: 1px solid var(--color-border); background: var(--color-bg-surface-highest); padding: 16px; overflow: auto;
+}
+
+html[data-appearance="win95"] .doc-text-preview {
+white-space: pre-wrap; margin: 0; color: var(--color-text-base); font-family: var(--font-mono); line-height: 1.5;
+}
+
+html[data-appearance="win95"] .doc-video-preview {
+width: 100%; max-height: 60vh; background: #000;
+}
+
+html[data-appearance="win95"] .doc-image-preview {
+max-width: 100%; max-height: 60vh; object-fit: contain; display: block; margin: 0 auto;
+}
+
+html[data-appearance="win95"] .doc-pdf-preview {
+width: 100%; height: 60vh; border: none; background: #fff;
+}
+
+html[data-appearance="win95"] .doc-audio-preview {
+width: 100%; margin-top: 40px;
+}
+
+html[data-appearance="win95"] .doc-binary-preview {
+min-height: 280px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; color: var(--color-text-muted);
+}
+
+html[data-appearance="win95"] .doc-binary-preview .material-symbols-outlined {
+font-size: 48px; color: var(--color-primary);
+}
+
+html[data-appearance="win95"] .doc-preview__hint {
+margin: 0; font-family: var(--font-mono); font-size: 11px; text-transform: uppercase;
+}
+
+@media (max-width: 1024px) {
+html[data-appearance="win95"] .explorer-shell {
+grid-template-columns: 1fr;
+}
+html[data-appearance="win95"] .explorer-sidebar {
+display: none;
+}
+}
+
+@media (max-width: 768px) {
+html[data-appearance="win95"] .docs-page {
+padding: 16px;
+}
+html[data-appearance="win95"] .page-header {
+flex-direction: column; align-items: stretch;
+}
+html[data-appearance="win95"] .header-right {
+flex-direction: column; align-items: stretch; width: 100%;
+}
+html[data-appearance="win95"] .explorer-toolbar {
+flex-wrap: wrap;
+}
+html[data-appearance="win95"] .search-box {
+width: 100%;
+}
+html[data-appearance="win95"] .details-head, html[data-appearance="win95"] .details-row {
+grid-template-columns: minmax(0, 1fr) 110px 90px;
+}
+html[data-appearance="win95"] .details-head .details-col:nth-child(2), html[data-appearance="win95"] .details-row .details-col:nth-child(2) {
+display: none;
+}
 }
 </style>

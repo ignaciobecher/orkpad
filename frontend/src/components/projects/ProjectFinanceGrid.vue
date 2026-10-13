@@ -78,17 +78,17 @@
           </td>
           <td class="col-actions">
             <div class="row-actions">
-              <span v-if="savingIds.has(row._id)" class="material-symbols-outlined spinning">sync</span>
+              <win-icon v-if="savingIds.has(row._id)" name="hourglass" :size="16" class="spinning" />
               <button
                 v-else-if="!isCollected(row)"
                 class="action-btn"
                 :title="$t('projects.detail.markPaid')"
                 @click="markPaid(row)"
               >
-                <span class="material-symbols-outlined">check_circle</span>
+                <win-icon name="check" :size="16" />
               </button>
               <button class="action-btn action-btn--danger" :title="$t('common.delete')" @click="removeRow(row)">
-                <span class="material-symbols-outlined">delete</span>
+                <win-icon name="recycle" :size="16" />
               </button>
             </div>
           </td>
@@ -106,7 +106,7 @@
                 :placeholder="$t('projects.detail.draftNumberPlaceholder')"
               />
               <button class="action-btn" :title="$t('projects.detail.autoNumber')" @click="draft.number = autoNumber()">
-                <span class="material-symbols-outlined">auto_fix_high</span>
+                <win-icon name="paint" :size="16" />
               </button>
             </div>
           </td>
@@ -145,10 +145,10 @@
           <td class="col-actions">
             <div class="row-actions">
               <button class="action-btn action-btn--save" :title="$t('common.save')" @click="saveDraft">
-                <span class="material-symbols-outlined">check</span>
+                <win-icon name="check" :size="16" />
               </button>
               <button class="action-btn action-btn--danger" :title="$t('common.cancel')" @click="draft = null">
-                <span class="material-symbols-outlined">close</span>
+                <span aria-hidden="true">×</span>
               </button>
             </div>
           </td>
@@ -159,14 +159,23 @@
 
   <div class="grid-footer">
     <w-button variant="secondary" :loading="adding" @click="addRowAuto">
-      <span class="material-symbols-outlined mr-1">auto_fix_high</span>
+      <win-icon name="paint" :size="16" class="mr-1" />
       {{ $t('projects.detail.addInstallmentAuto') }}
     </w-button>
     <w-button variant="ghost" @click="addRowManual">
-      <span class="material-symbols-outlined mr-1">edit</span>
+      <win-icon name="paint" :size="16" class="mr-1" />
       {{ $t('projects.detail.addInstallmentManual') }}
     </w-button>
   </div>
+  <w-confirm-modal
+    :is-open="!!deleteRowTarget"
+    title="Eliminar fila"
+    message="¿Eliminar esta fila?"
+    confirm-text="Eliminar"
+    :is-danger="true"
+    @confirm="doRemoveRow"
+    @cancel="deleteRowTarget = null"
+  />
 </template>
 
 <script lang="ts">
@@ -177,6 +186,8 @@ import { usePaymentMethodsStore } from '@/stores/payment-methods.store'
 import WCard from '@/components/ui/WCard.vue'
 import WBadge from '@/components/ui/WBadge.vue'
 import WButton from '@/components/ui/WButton.vue'
+import WConfirmModal from '@/components/ui/WConfirmModal.vue'
+import WinIcon from '../win95/WinIcon.vue'
 
 interface GridRow {
   _id: string
@@ -208,7 +219,7 @@ function toRow(inv: any): GridRow {
 
 export default defineComponent({
   name: 'ProjectFinanceGrid',
-  components: { WCard, WBadge, WButton },
+  components: { WCard, WBadge, WButton, WConfirmModal, WinIcon },
   props: {
     projectId: { type: String, required: true },
     clientId: { type: String, default: '' },
@@ -349,17 +360,26 @@ export default defineComponent({
       }
     }
 
-    async function removeRow(row: GridRow) {
-      if (!confirm('¿Eliminar esta fila?')) return
+    const deleteRowTarget = ref<GridRow | null>(null)
+
+    function removeRow(row: GridRow) {
+      deleteRowTarget.value = row
+    }
+
+    async function doRemoveRow() {
+      const row = deleteRowTarget.value
+      if (!row) return
       try {
         await invoicesApi.remove(row._id)
         emit('changed')
       } catch (err: any) {
         toast.error(err.response?.data?.message || 'Error al eliminar')
+      } finally {
+        deleteRowTarget.value = null
       }
     }
 
-    return { rows, savingIds, adding, draft, methodNames, isCollected, saveRow, onStatusChange, markPaid, addRowAuto, addRowManual, saveDraft, removeRow, autoNumber }
+    return { rows, savingIds, adding, draft, methodNames, isCollected, saveRow, onStatusChange, markPaid, addRowAuto, addRowManual, saveDraft, removeRow, doRemoveRow, deleteRowTarget, autoNumber }
   },
 })
 </script>

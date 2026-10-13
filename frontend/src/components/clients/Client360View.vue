@@ -52,10 +52,10 @@
       <!-- Projects Tab -->
       <div v-if="activeTab === 'projects'" class="list-section">
         <div v-if="loading" class="list-loading">
-          <span class="material-symbols-outlined spinning">sync</span>
+          <win-icon name="hourglass" :size="16" class="spinning" />
         </div>
         <div v-else-if="projects.length === 0" class="list-empty">
-          <span class="material-symbols-outlined">folder_off</span>
+          <win-icon name="folder" :size="32" />
           <p>No hay proyectos asociados</p>
         </div>
         <div v-else class="project-list">
@@ -75,10 +75,10 @@
       <!-- Invoices Tab -->
       <div v-if="activeTab === 'invoices'" class="list-section">
         <div v-if="loading" class="list-loading">
-          <span class="material-symbols-outlined spinning">sync</span>
+          <win-icon name="hourglass" :size="16" class="spinning" />
         </div>
         <div v-else-if="invoices.length === 0" class="list-empty">
-          <span class="material-symbols-outlined">receipt_long</span>
+          <win-icon name="file-lines" :size="32" />
           <p>No hay facturas registradas</p>
         </div>
         <div v-else class="invoice-list">
@@ -104,9 +104,11 @@ import { projectsApi } from '@/api/projects/projects.api'
 import { invoicesApi } from '@/api/invoices/invoices.api'
 import { formatCurrency } from '@/utils/currency'
 import { formatCalendarDate } from '@/utils/date'
+import WinIcon from '../win95/WinIcon.vue'
 
 export default defineComponent({
   name: 'Client360View',
+  components: { WinIcon },
   props: {
     client: {
       type: Object as PropType<any>,

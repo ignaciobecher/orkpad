@@ -6,6 +6,8 @@ import { success } from '@/composables/useToast'
 
 const STEP_LABELS = ONBOARDING_STEP_LABELS
 
+const dismissedKey = (uid: string) => `orkpad_setup_dismissed_${uid}`
+
 export const useOnboardingStore = defineStore('onboarding', {
   state: () => ({
     status: null as OnboardingStatus | null,
@@ -15,6 +17,7 @@ export const useOnboardingStore = defineStore('onboarding', {
     welcomeLoading: false,
     showWelcome: false,
     demoLoading: false,
+    lastUserId: '' as string,
   }),
 
   getters: {
@@ -58,7 +61,7 @@ export const useOnboardingStore = defineStore('onboarding', {
 
       for (const key of Object.keys(next) as (keyof OnboardingSteps)[]) {
         if (!prev[key] && next[key]) {
-          success(`¡${STEP_LABELS[key]}! 👏`)
+          success(`¡${STEP_LABELS[key]}!`)
         }
       }
 
@@ -69,11 +72,29 @@ export const useOnboardingStore = defineStore('onboarding', {
 
     markVisible(v: boolean) {
       this.visible = v
+      // Reabrir a mano (menú Inicio) levanta la omisión
+      if (v && this.lastUserId) {
+        try { localStorage.removeItem(dismissedKey(this.lastUserId)) } catch { /* noop */ }
+      }
     },
 
-    async checkAndShow(_userId: string) {
+    /** Omite el setup para siempre en este navegador/usuario. */
+    dismiss() {
+      this.visible = false
+      if (this.lastUserId) {
+        try { localStorage.setItem(dismissedKey(this.lastUserId), '1') } catch { /* noop */ }
+      }
+    },
+
+    isDismissed(uid: string): boolean {
+      if (!uid) return false
+      try { return localStorage.getItem(dismissedKey(uid)) === '1' } catch { return false }
+    },
+
+    async checkAndShow(userId: string) {
+      this.lastUserId = userId || ''
       await this.fetchStatus()
-      if (this.status && !this.status.completed) {
+      if (this.status && !this.status.completed && !this.isDismissed(this.lastUserId)) {
         this.visible = true
       }
     },

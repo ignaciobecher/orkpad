@@ -22,11 +22,11 @@
 
         <div class="calendar-nav">
           <button @click="prev" class="nav-btn" :aria-label="$t('common.week')">
-            <span class="material-symbols-outlined">chevron_left</span>
+            <span aria-hidden="true">‹</span>
           </button>
           <button @click="setToday" class="nav-btn today-btn">{{ $t('common.today') }}</button>
           <button @click="next" class="nav-btn" :aria-label="$t('common.week')">
-            <span class="material-symbols-outlined">chevron_right</span>
+            <span aria-hidden="true">›</span>
           </button>
         </div>
       </div>
@@ -742,5 +742,588 @@ export default defineComponent({
 
   .day-view-list { padding: 10px 12px; }
   .day-pill { padding: 10px 12px; font-size: 13px; }
+}
+</style>
+
+<!-- Win95: overrides encapsulados por data-appearance -->
+<style>
+html[data-appearance="win95"] .w-calendar {
+display: flex;
+  flex-direction: column;
+  background-color: var(--w95-face);
+  border: 2px solid;
+  border-color: var(--w95-highlight) var(--w95-darkshadow) var(--w95-darkshadow) var(--w95-highlight);
+  border-radius: 0;
+  box-shadow: none;
+  overflow: hidden;
+  height: 100%;
+  min-height: 0;
+  font-family: Tahoma, Verdana, sans-serif;
+}
+
+html[data-appearance="win95"] .calendar-header {
+display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 8px;
+  background: var(--w95-navy);
+  border-bottom: 2px solid var(--w95-darkshadow);
+  gap: 8px;
+  flex-wrap: wrap;
+  border-radius: 0;
+}
+
+html[data-appearance="win95"] .header-left {
+display: flex; align-items: center; gap: 12px; min-width: 0;
+}
+
+html[data-appearance="win95"] .current-period {
+font-family: Tahoma, Verdana, sans-serif;
+  font-size: 12px;
+  font-weight: bold;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-transform: none;
+}
+
+html[data-appearance="win95"] .header-right {
+display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+html[data-appearance="win95"] .view-switcher {
+display: inline-flex;
+  border: 2px solid;
+  border-color: var(--w95-highlight) var(--w95-darkshadow) var(--w95-darkshadow) var(--w95-highlight);
+  border-radius: 0;
+  overflow: hidden;
+  background: var(--w95-face);
+}
+
+html[data-appearance="win95"] .view-tab {
+background: var(--w95-face);
+  border: none;
+  border-radius: 0;
+  color: #000;
+  cursor: pointer;
+  padding: 4px 10px;
+  font-family: Tahoma, Verdana, sans-serif;
+  font-size: 11px;
+  text-transform: none;
+  letter-spacing: 0;
+  min-height: 24px;
+}
+
+html[data-appearance="win95"] .view-tab:hover {
+color: #000; background: var(--w95-face-light);
+}
+
+html[data-appearance="win95"] .view-tab.active {
+background: var(--w95-navy);
+  color: #fff;
+}
+
+html[data-appearance="win95"] .calendar-nav {
+display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+html[data-appearance="win95"] .nav-btn {
+background: var(--w95-face);
+  border: 2px solid;
+  border-color: var(--w95-highlight) var(--w95-darkshadow) var(--w95-darkshadow) var(--w95-highlight);
+  color: #000;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  min-height: 24px;
+  font-family: Tahoma, Verdana, sans-serif;
+}
+
+html[data-appearance="win95"] .nav-btn:active {
+border-color: var(--w95-darkshadow) var(--w95-highlight) var(--w95-highlight) var(--w95-darkshadow);
+}
+
+html[data-appearance="win95"] .nav-btn:hover {
+background-color: var(--w95-face-light);
+  border-color: var(--w95-highlight) var(--w95-darkshadow) var(--w95-darkshadow) var(--w95-highlight);
+}
+
+html[data-appearance="win95"] .nav-btn .material-symbols-outlined {
+font-size: 14px;
+}
+
+html[data-appearance="win95"] .today-btn {
+font-family: Tahoma, Verdana, sans-serif;
+  font-size: 11px;
+  padding: 2px 8px;
+  text-transform: none;
+}
+
+html[data-appearance="win95"] .calendar-grid {
+flex-grow: 1;
+  min-height: 0;
+  display: grid;
+}
+
+html[data-appearance="win95"] .weekday-label {
+padding: 4px 8px;
+  text-align: center;
+  font-family: Tahoma, Verdana, sans-serif;
+  font-size: 11px;
+  color: #000;
+  border-bottom: 2px solid var(--w95-darkshadow);
+  background-color: var(--w95-face);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+html[data-appearance="win95"] .month-grid {
+grid-template-columns: repeat(7, 1fr);
+  grid-auto-rows: minmax(0, 1fr);
+}
+
+html[data-appearance="win95"] .calendar-day {
+border-right: 1px solid var(--w95-shadow);
+  border-bottom: 1px solid var(--w95-shadow);
+  padding: 4px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-height: 120px;
+  overflow: hidden;
+  background: #fff;
+  border-radius: 0;
+}
+
+html[data-appearance="win95"] .calendar-day:nth-child(7n) {
+border-right: none;
+}
+
+html[data-appearance="win95"] .calendar-day:hover {
+background-color: var(--w95-navy);
+}
+
+html[data-appearance="win95"] .calendar-day:hover .day-number {
+color: #fff;
+}
+
+html[data-appearance="win95"] .calendar-day.not-current-month {
+opacity: 1; background: var(--w95-face);
+}
+
+html[data-appearance="win95"] .calendar-day.not-current-month .day-number {
+color: var(--w95-shadow);
+}
+
+html[data-appearance="win95"] .calendar-day.is-today {
+background-color: var(--w95-yellow-light);
+}
+
+html[data-appearance="win95"] .calendar-day.is-today .day-number {
+color: #fff;
+  font-weight: bold;
+  background-color: var(--w95-navy);
+  width: 20px; height: 20px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 0;
+}
+
+html[data-appearance="win95"] .day-number {
+font-family: Tahoma, Verdana, sans-serif;
+  font-size: 12px;
+  color: #000;
+  margin-bottom: 2px;
+  text-transform: none;
+}
+
+html[data-appearance="win95"] .day-events {
+display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow: hidden;
+}
+
+html[data-appearance="win95"] .event-pill {
+font-family: Tahoma, Verdana, sans-serif;
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 0;
+  border: 1px solid var(--w95-darkshadow);
+  color: #fff;
+  background: var(--w95-navy);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: normal;
+  cursor: pointer;
+  text-transform: none;
+}
+
+html[data-appearance="win95"] .event-pill:hover {
+filter: none; outline: 1px dotted #fff; outline-offset: -3px;
+}
+
+html[data-appearance="win95"] .more-events {
+font-family: Tahoma, Verdana, sans-serif;
+  font-size: 11px;
+  color: #000;
+  padding-left: 4px;
+  text-transform: none;
+}
+
+html[data-appearance="win95"] .week-grid {
+grid-template-columns: repeat(7, 1fr);
+  grid-auto-rows: minmax(0, 1fr);
+}
+
+html[data-appearance="win95"] .week-day-header {
+display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  cursor: pointer;
+}
+
+html[data-appearance="win95"] .week-day-header.is-today {
+color: #fff; background: var(--w95-navy);
+}
+
+html[data-appearance="win95"] .wd-name {
+text-transform: none; font-family: Tahoma, Verdana, sans-serif; font-size: 11px; color: #000;
+}
+
+html[data-appearance="win95"] .week-day-header.is-today .wd-name {
+color: #fff;
+}
+
+html[data-appearance="win95"] .wd-num {
+font-size: 12px;
+  font-weight: bold;
+  width: 20px; height: 20px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 0;
+  color: #000;
+  font-family: Tahoma, Verdana, sans-serif;
+}
+
+html[data-appearance="win95"] .wd-num.is-today {
+background: var(--w95-navy); color: #fff;
+}
+
+html[data-appearance="win95"] .week-col {
+border-right: 1px solid var(--w95-shadow);
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  cursor: pointer;
+  overflow: hidden;
+  min-height: 0;
+  background: #fff;
+  border-radius: 0;
+}
+
+html[data-appearance="win95"] .week-col:last-child {
+border-right: none;
+}
+
+html[data-appearance="win95"] .week-col:hover {
+background-color: var(--w95-face-light);
+}
+
+html[data-appearance="win95"] .week-col.is-today {
+background-color: var(--w95-yellow-light);
+}
+
+html[data-appearance="win95"] .week-pill {
+white-space: normal;
+  line-height: 1.2;
+}
+
+html[data-appearance="win95"] .empty-cell {
+color: #000;
+  font-family: Tahoma, Verdana, sans-serif;
+  font-size: 12px;
+  text-align: center;
+  margin-top: 8px;
+}
+
+html[data-appearance="win95"] .day-view {
+flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+html[data-appearance="win95"] .day-view-date {
+display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  border-bottom: 2px solid var(--w95-darkshadow);
+  flex-shrink: 0;
+  background: var(--w95-face);
+}
+
+html[data-appearance="win95"] .dv-name {
+font-family: Tahoma, Verdana, sans-serif;
+  font-size: 12px;
+  font-weight: bold;
+  color: #000;
+  text-transform: none;
+}
+
+html[data-appearance="win95"] .dv-num {
+font-family: Tahoma, Verdana, sans-serif;
+  font-size: 12px;
+  font-weight: bold;
+  width: 20px; height: 20px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 0;
+  border: 1px solid var(--w95-shadow);
+  color: #000;
+  background: #fff;
+}
+
+html[data-appearance="win95"] .dv-num.is-today {
+background: var(--w95-navy);
+  color: #fff;
+}
+
+html[data-appearance="win95"] .day-view-list {
+flex-grow: 1;
+  overflow-y: auto;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: #fff;
+  border: 2px solid;
+  border-color: var(--w95-shadow) var(--w95-highlight) var(--w95-highlight) var(--w95-shadow);
+  margin: 4px;
+}
+
+html[data-appearance="win95"] .day-pill {
+white-space: normal;
+  line-height: 1.3;
+  padding: 4px 8px;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+html[data-appearance="win95"] .day-pill-dot {
+width: 8px; height: 8px;
+  border-radius: 0;
+  background: #fff;
+  border: 1px solid var(--w95-darkshadow);
+  flex-shrink: 0;
+}
+
+html[data-appearance="win95"] .empty-day {
+color: #000;
+  font-family: Tahoma, Verdana, sans-serif;
+  font-size: 12px;
+  text-align: center;
+  padding: 16px;
+  text-transform: none;
+}
+
+@media (max-width: 1024px) {
+html[data-appearance="win95"] .calendar-header {
+padding: 16px 18px;
+}
+html[data-appearance="win95"] .current-period {
+font-size: 17px;
+}
+html[data-appearance="win95"] .calendar-day {
+min-height: 100px; padding: 6px;
+}
+html[data-appearance="win95"] .day-number {
+font-size: 13px;
+}
+html[data-appearance="win95"] .event-pill {
+font-size: 10px; padding: 3px 6px;
+}
+}
+
+@media (max-width: 768px) {
+html[data-appearance="win95"] .calendar-header {
+padding: 12px 14px;
+    gap: 10px;
+}
+html[data-appearance="win95"] .current-period {
+font-size: 15px;
+}
+html[data-appearance="win95"] .header-right {
+gap: 8px; width: 100%; justify-content: space-between;
+}
+html[data-appearance="win95"] .view-tab {
+padding: 6px 10px; font-size: 10px; min-height: 32px;
+}
+html[data-appearance="win95"] .nav-btn {
+padding: 6px; min-width: 32px; min-height: 32px;
+}
+html[data-appearance="win95"] .nav-btn .material-symbols-outlined {
+font-size: 18px;
+}
+html[data-appearance="win95"] .today-btn {
+padding: 6px 12px; font-size: 10px;
+}
+html[data-appearance="win95"] .weekday-label {
+padding: 8px 4px; font-size: 10px;
+}
+html[data-appearance="win95"] .calendar-day {
+min-height: 80px; padding: 4px;
+}
+html[data-appearance="win95"] .day-number {
+font-size: 12px; margin-bottom: 2px;
+}
+html[data-appearance="win95"] .event-pill {
+font-size: 9px; padding: 2px 4px;
+}
+html[data-appearance="win95"] .more-events {
+font-size: 9px;
+}
+html[data-appearance="win95"] .wd-num {
+width: 22px; height: 22px; font-size: 12px;
+}
+html[data-appearance="win95"] .week-col {
+padding: 6px; gap: 4px;
+}
+html[data-appearance="win95"] .day-view-date {
+padding: 12px 16px;
+}
+html[data-appearance="win95"] .dv-name {
+font-size: 14px;
+}
+html[data-appearance="win95"] .dv-num {
+width: 28px; height: 28px; font-size: 14px;
+}
+html[data-appearance="win95"] .day-view-list {
+padding: 12px 16px;
+}
+html[data-appearance="win95"] .day-pill {
+padding: 8px 12px; font-size: 12px;
+}
+}
+
+@media (max-width: 480px) {
+html[data-appearance="win95"] .calendar-header {
+padding: 10px 12px;
+    flex-direction: column;
+    align-items: stretch;
+}
+html[data-appearance="win95"] .header-left {
+justify-content: center;
+}
+html[data-appearance="win95"] .current-period {
+font-size: 14px; text-align: center;
+}
+html[data-appearance="win95"] .header-right {
+justify-content: center; gap: 8px;
+}
+html[data-appearance="win95"] .view-switcher {
+flex: 1;
+}
+html[data-appearance="win95"] .view-tab {
+flex: 1; padding: 8px 4px; font-size: 10px; min-height: 40px;
+}
+html[data-appearance="win95"] .calendar-nav {
+flex: 0 0 auto;
+}
+html[data-appearance="win95"] .view-month .month-grid {
+display: flex;
+    flex-direction: column;
+}
+html[data-appearance="win95"] .view-month .weekday-label {
+display: none;
+}
+html[data-appearance="win95"] .view-month .calendar-day {
+min-height: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--w95-shadow);
+    padding: 6px 8px;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 8px;
+    background: #fff;
+}
+html[data-appearance="win95"] .view-month .calendar-day.not-current-month {
+display: none;
+}
+html[data-appearance="win95"] .view-month .calendar-day.is-today {
+background-color: var(--w95-yellow-light);
+}
+html[data-appearance="win95"] .view-month .day-number {
+font-size: 12px;
+    font-weight: bold;
+    width: 20px; height: 20px;
+    margin-bottom: 0;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 0;
+    background: var(--w95-face);
+    border: 1px solid var(--w95-shadow);
+    color: #000;
+}
+html[data-appearance="win95"] .view-month .calendar-day.is-today .day-number {
+background: var(--w95-navy);
+    color: #fff;
+}
+html[data-appearance="win95"] .view-month .day-events {
+flex: 1; gap: 6px;
+}
+html[data-appearance="win95"] .view-month .event-pill {
+font-size: 12px;
+    padding: 6px 10px;
+    white-space: normal;
+    line-height: 1.3;
+}
+html[data-appearance="win95"] .view-month .more-events {
+font-size: 11px; padding-left: 0;
+}
+html[data-appearance="win95"] .view-week .week-grid {
+grid-template-columns: 1fr;
+    grid-auto-rows: auto;
+}
+html[data-appearance="win95"] .view-week .week-day-header {
+flex-direction: row;
+    justify-content: flex-start;
+    padding: 4px 8px;
+    border-bottom: 1px solid var(--w95-shadow);
+    background: var(--w95-face);
+}
+html[data-appearance="win95"] .view-week .week-day-header .wd-num {
+margin-left: 8px;
+}
+html[data-appearance="win95"] .view-week .week-col {
+border-right: none;
+    border-bottom: 1px solid var(--w95-shadow);
+    padding: 6px 8px;
+    min-height: auto;
+}
+html[data-appearance="win95"] .view-week .empty-cell {
+text-align: left; margin-top: 0;
+}
+html[data-appearance="win95"] .day-view-list {
+padding: 10px 12px;
+}
+html[data-appearance="win95"] .day-pill {
+padding: 10px 12px; font-size: 13px;
+}
 }
 </style>

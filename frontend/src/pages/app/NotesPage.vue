@@ -9,15 +9,15 @@
           class="change-project-btn"
           @click="backToProjectPicker"
         >
-          <span class="material-symbols-outlined">folder</span>
+          <win-icon name="folder" :size="16" />
           {{ activeProjectName || 'Cambiar proyecto' }}
-          <span class="material-symbols-outlined change-project-icon">swap_horiz</span>
+          ↔
         </button>
         <span v-else class="notes-count">{{ notesStore.total }} notas</span>
       </div>
       <div class="notes-header__right">
         <div class="search-wrap">
-          <span class="material-symbols-outlined search-icon">search</span>
+          <win-icon name="search" :size="16" />
           <input
             v-model="searchQuery"
             class="search-input"
@@ -28,7 +28,7 @@
 
         <div class="filter-dropdown" :class="{ open: filterOpen }">
           <button class="filter-btn" @click="filterOpen = !filterOpen">
-            <span class="material-symbols-outlined">filter_list</span>
+            <win-icon name="file-lines" :size="16" />
             {{ currentStatusLabel }}
           </button>
           <div v-if="filterOpen" class="filter-menu" @click="filterOpen = false">
@@ -44,7 +44,6 @@
         </div>
 
         <button class="btn-new" @click="openCreate">
-          <span class="material-symbols-outlined">add</span>
           Nueva nota
         </button>
 
@@ -54,14 +53,14 @@
             title="Vista grilla"
             @click="notesStore.setView('grid')"
           >
-            <span class="material-symbols-outlined">grid_view</span>
+            <win-icon name="folder" :size="16" />
           </button>
           <button
             :class="['view-btn', { 'view-btn--active': notesStore.view === 'list' }]"
             title="Vista lista"
             @click="notesStore.setView('list')"
           >
-            <span class="material-symbols-outlined">view_list</span>
+            <win-icon name="file-lines" :size="16" />
           </button>
         </div>
       </div>
@@ -70,7 +69,7 @@
     <!-- Project picker (como Tareas: primero el proyecto) -->
     <div v-if="!activeProjectId && !activeGeneral" class="project-picker">
       <div class="project-picker-search">
-        <span class="material-symbols-outlined">search</span>
+        <span><win-icon name="search" :size="16" /></span>
         <input
           type="text"
           v-model="projectSearch"
@@ -83,7 +82,7 @@
         v-if="projectLoading && !projectOptions.length"
         class="project-picker-state"
       >
-        <span class="material-symbols-outlined spinning">sync</span>
+        <win-icon name="hourglass" :size="16" />
         Cargando proyectos...
       </div>
 
@@ -93,7 +92,7 @@
           class="project-card project-card--general"
           @click="selectGeneral"
         >
-          <span class="material-symbols-outlined project-card-icon">edit_note</span>
+          <win-icon name="note" :size="32" />
           <span class="project-card-name">Notas generales</span>
           <span class="project-card-sub">Sin proyecto</span>
         </button>
@@ -104,16 +103,16 @@
           class="project-card"
           @click="selectProject(project._id, project.name)"
         >
-          <span class="material-symbols-outlined project-card-icon">folder</span>
+          <win-icon name="folder" :size="32" />
           <span class="project-card-name">{{ project.name }}</span>
         </button>
         <div v-if="projectLoadingMore" class="project-picker-state project-picker-state--inline">
-          <span class="material-symbols-outlined spinning">sync</span>
+          <win-icon name="hourglass" :size="16" />
           Cargando más...
         </div>
       </div>
       <div v-if="!projectLoading && !projectOptions.length" class="project-picker-state">
-        <span class="material-symbols-outlined empty-icon">folder_off</span>
+        <win-icon name="folder" :size="32" />
         <h2>No se encontraron proyectos</h2>
       </div>
     </div>
@@ -123,17 +122,16 @@
 
     <!-- Loading -->
     <div v-if="notesStore.loading && !notesStore.items.length" class="notes-loading">
-      <span class="material-symbols-outlined spinning">sync</span>
+      <win-icon name="hourglass" :size="16" />
       Cargando pizarra...
     </div>
 
     <!-- Empty state -->
     <div v-else-if="!notesStore.items.length" class="notes-empty">
-      <span class="material-symbols-outlined notes-empty__icon">edit_note</span>
+      <win-icon name="note" :size="32" />
       <p class="notes-empty__title">{{ activeProjectId ? 'Sin notas en este proyecto' : 'La pizarra está vacía' }}</p>
       <p class="notes-empty__sub">Anotá ideas, bugs, pendientes o lo que sea</p>
       <button class="btn-new" @click="openCreate">
-        <span class="material-symbols-outlined">add</span>
         Primera nota
       </button>
     </div>
@@ -142,7 +140,7 @@
       <!-- Pinned -->
       <div v-if="notesStore.pinnedNotes.length" class="notes-section">
         <div class="section-label">
-          <span class="material-symbols-outlined section-icon">keep</span>
+          <win-icon name="check" :size="16" />
           Fijadas
         </div>
         <div v-if="notesStore.view === 'grid'" class="notes-grid">
@@ -165,9 +163,7 @@
             @click="openEdit(note)"
           >
             <button class="list-action-btn" @click.stop="handleToggle(note._id)">
-              <span class="material-symbols-outlined" :style="{ color: note.status === 'done' ? 'var(--color-success)' : 'var(--color-text-muted)' }">
-                {{ note.status === 'done' ? 'check_circle' : 'radio_button_unchecked' }}
-              </span>
+              <win-icon :name="materialToWinIcon(note.status === 'done' ? 'check_circle' : 'radio_button_unchecked')" :size="16" />
             </button>
             <div v-if="note.color" class="note-list-row__color" :style="{ background: note.color }"></div>
             <span class="note-list-row__title">{{ note.title || plainText(note.content) || '(Sin contenido)' }}</span>
@@ -175,10 +171,10 @@
               <span v-for="tag in note.tags.slice(0, 3)" :key="tag" class="note-tag">#{{ tag }}</span>
             </div>
             <button class="list-action-btn" @click.stop="handlePin(note._id)">
-              <span class="material-symbols-outlined" :style="{ color: note.isPinned ? 'var(--color-primary)' : '' }">keep</span>
+              <win-icon name="check" :size="16" />
             </button>
             <button class="list-action-btn list-action-btn--danger" @click.stop="handleRemove(note._id)">
-              <span class="material-symbols-outlined">delete</span>
+              <win-icon name="recycle" :size="16" />
             </button>
           </div>
         </div>
@@ -187,7 +183,7 @@
       <!-- Active -->
       <div v-if="notesStore.activeNotes.length" class="notes-section">
         <div v-if="notesStore.pinnedNotes.length" class="section-label">
-          <span class="material-symbols-outlined section-icon">notes</span>
+          <win-icon name="note" :size="16" />
           Notas
         </div>
         <div v-if="notesStore.view === 'grid'" class="notes-grid">
@@ -210,9 +206,7 @@
             @click="openEdit(note)"
           >
             <button class="list-action-btn" @click.stop="handleToggle(note._id)">
-              <span class="material-symbols-outlined" :style="{ color: note.status === 'done' ? 'var(--color-success)' : 'var(--color-text-muted)' }">
-                {{ note.status === 'done' ? 'check_circle' : 'radio_button_unchecked' }}
-              </span>
+              <win-icon :name="materialToWinIcon(note.status === 'done' ? 'check_circle' : 'radio_button_unchecked')" :size="16" />
             </button>
             <div v-if="note.color" class="note-list-row__color" :style="{ background: note.color }"></div>
             <span class="note-list-row__title">{{ note.title || plainText(note.content) || '(Sin contenido)' }}</span>
@@ -220,10 +214,10 @@
               <span v-for="tag in note.tags.slice(0, 3)" :key="tag" class="note-tag">#{{ tag }}</span>
             </div>
             <button class="list-action-btn" @click.stop="handlePin(note._id)">
-              <span class="material-symbols-outlined" :style="{ color: note.isPinned ? 'var(--color-primary)' : '' }">keep</span>
+              <win-icon name="check" :size="16" />
             </button>
             <button class="list-action-btn list-action-btn--danger" @click.stop="handleRemove(note._id)">
-              <span class="material-symbols-outlined">delete</span>
+              <win-icon name="recycle" :size="16" />
             </button>
           </div>
         </div>
@@ -232,11 +226,9 @@
       <!-- Done -->
       <div v-if="notesStore.doneNotes.length && filters.status !== 'active'" class="notes-section notes-section--done">
         <button class="done-toggle" @click="doneExpanded = !doneExpanded">
-          <span class="material-symbols-outlined done-toggle__icon">
-            {{ doneExpanded ? 'expand_less' : 'expand_more' }}
-          </span>
+          <span class="done-toggle__icon">{{ doneExpanded ? '▴' : '▾' }}</span>
           <span class="section-label-inline">
-            <span class="material-symbols-outlined section-icon">check_circle</span>
+            <win-icon name="check" :size="16" />
             Completadas ({{ notesStore.doneNotes.length }})
           </span>
         </button>
@@ -261,7 +253,7 @@
               @click="openEdit(note)"
             >
               <button class="list-action-btn" @click.stop="handleToggle(note._id)">
-                <span class="material-symbols-outlined" :style="{ color: 'var(--color-success)' }">check_circle</span>
+                <win-icon name="check" :size="16" />
               </button>
               <div v-if="note.color" class="note-list-row__color" :style="{ background: note.color }"></div>
               <span class="note-list-row__title">{{ note.title || plainText(note.content) || '(Sin contenido)' }}</span>
@@ -269,7 +261,7 @@
                 <span v-for="tag in note.tags.slice(0, 3)" :key="tag" class="note-tag">#{{ tag }}</span>
               </div>
               <button class="list-action-btn list-action-btn--danger" @click.stop="handleRemove(note._id)">
-                <span class="material-symbols-outlined">delete</span>
+                <win-icon name="recycle" :size="16" />
               </button>
             </div>
           </div>
@@ -310,6 +302,8 @@ import type { Project } from '@/api/projects/projects.types'
 import NoteCard from '@/components/notes/NoteCard.vue'
 import NoteEditModal from '@/components/notes/NoteEditModal.vue'
 import WConfirmModal from '@/components/ui/WConfirmModal.vue'
+import WinIcon from '@/components/win95/WinIcon.vue'
+import { materialToWinIcon } from '@/components/win95/icons'
 import type { Note, CreateNoteDto, UpdateNoteDto, NoteQueryDto } from '@/api/notes/notes.types'
 
 const STATUS_OPTIONS = [
@@ -320,7 +314,7 @@ const STATUS_OPTIONS = [
 
 export default defineComponent({
   name: 'NotesPage',
-  components: { NoteCard, NoteEditModal, WConfirmModal },
+  components: { NoteCard, NoteEditModal, WConfirmModal, WinIcon },
 
   setup() {
     const notesStore = useNotesStore()
@@ -542,6 +536,7 @@ export default defineComponent({
       handleRemove,
       confirmDelete,
       handleToggleChecklist,
+      materialToWinIcon,
     }
   },
 })

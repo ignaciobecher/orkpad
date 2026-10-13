@@ -3,7 +3,7 @@
     <div class="template-selector__header">
       <span class="template-selector__title">Plantillas</span>
       <button class="template-selector__save-btn" @click="showSave = true" title="Guardar día actual">
-        <span class="material-symbols-outlined">save</span>
+        <win-icon name="check" :size="16" />
       </button>
     </div>
 
@@ -22,7 +22,7 @@
 
     <!-- Empty -->
     <div v-else-if="!templatesStore.items.length" class="template-selector__empty">
-      <span class="material-symbols-outlined">dashboard_customize</span>
+      <win-icon name="programs" :size="32" />
       <p>Sin plantillas aún</p>
       <small>Guardá tu día actual como plantilla</small>
     </div>
@@ -47,23 +47,21 @@
             @click="apply(tpl._id)"
             title="Aplicar al día actual"
           >
-            <span class="material-symbols-outlined">
-              {{ applying === tpl._id ? 'hourglass_empty' : 'play_arrow' }}
-            </span>
+            <win-icon :name="materialToWinIcon(applying === tpl._id ? 'hourglass_empty' : 'play_arrow')" :size="16" />
           </button>
           <button
             class="template-card__dup"
             @click="duplicate(tpl._id)"
             title="Duplicar"
           >
-            <span class="material-symbols-outlined">content_copy</span>
+            <win-icon name="notepad-file" :size="16" />
           </button>
           <button
             class="template-card__del"
             @click="remove(tpl._id)"
             title="Eliminar"
           >
-            <span class="material-symbols-outlined">delete</span>
+            <win-icon name="recycle" :size="16" />
           </button>
         </div>
       </div>
@@ -76,6 +74,15 @@
       @close="showSave = false"
       @saved="onSaved"
     />
+    <w-confirm-modal
+      :is-open="!!deleteTargetId"
+      title="Eliminar plantilla"
+      message="¿Eliminar esta plantilla?"
+      confirm-text="Eliminar"
+      :is-danger="true"
+      @confirm="doRemove"
+      @cancel="deleteTargetId = null"
+    />
   </div>
 </template>
 
@@ -83,10 +90,13 @@
 import { defineComponent, ref, computed, onMounted } from 'vue'
 import { usePlannerTemplatesStore } from '@/stores/planner-templates.store'
 import TemplateSaveModal from './TemplateSaveModal.vue'
+import WConfirmModal from '@/components/ui/WConfirmModal.vue'
+import WinIcon from '../../win95/WinIcon.vue'
+import { materialToWinIcon } from '../../win95/icons'
 
 export default defineComponent({
   name: 'TemplateSelector',
-  components: { TemplateSaveModal },
+  components: { TemplateSaveModal, WConfirmModal, WinIcon },
   props: {
     currentDate: { type: String, required: true },
   },
@@ -121,10 +131,16 @@ export default defineComponent({
       await templatesStore.duplicate(id)
     }
 
-    async function remove(id: string) {
-      if (confirm('¿Eliminar esta plantilla?')) {
-        await templatesStore.remove(id)
-      }
+    const deleteTargetId = ref<string | null>(null)
+
+    function remove(id: string) {
+      deleteTargetId.value = id
+    }
+
+    async function doRemove() {
+      if (!deleteTargetId.value) return
+      await templatesStore.remove(deleteTargetId.value)
+      deleteTargetId.value = null
     }
 
     function onSaved() {
@@ -145,7 +161,10 @@ export default defineComponent({
       apply,
       duplicate,
       remove,
+      doRemove,
+      deleteTargetId,
       onSaved,
+      materialToWinIcon,
     }
   },
 })

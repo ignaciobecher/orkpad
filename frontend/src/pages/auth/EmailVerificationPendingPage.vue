@@ -9,7 +9,7 @@
 
       <div class="pending-body">
         <div class="icon-wrapper">
-          <span class="material-symbols-outlined">mark_email_unread</span>
+          <win-icon name="envelope" :size="32" />
         </div>
         <span class="badge">VERIFICACIÓN PENDIENTE</span>
         <h2 class="title">Revisá tu bandeja de entrada</h2>
@@ -20,14 +20,14 @@
         </p>
 
         <div v-if="resendSuccess" class="resend-success">
-          <span class="material-symbols-outlined">check_circle</span>
+          <win-icon name="check" :size="16" />
           Email reenviado correctamente.
         </div>
 
         <div class="actions">
           <button class="resend-btn" :disabled="resending || resendSuccess" @click="handleResend">
             <span v-if="resending" class="spinner"></span>
-            <span v-else class="material-symbols-outlined">refresh</span>
+            <win-icon v-else name="hourglass" :size="16" />
             {{ resending ? 'Enviando...' : 'Reenviar email' }}
           </button>
         </div>
@@ -35,7 +35,7 @@
 
       <div class="pending-footer">
         <router-link to="/login" class="back-link">
-          <span class="material-symbols-outlined">arrow_back</span>
+          ←
           Volver al inicio de sesión
         </router-link>
       </div>
@@ -49,10 +49,11 @@ import { useAuthStore } from '@/stores/auth.store'
 import { authApi } from '@/api/auth/auth.api'
 import AuthLayout from '@/components/layout/AuthLayout.vue'
 import WLogo from '@/components/ui/WLogo.vue'
+import WinIcon from '@/components/win95/WinIcon.vue'
 
 export default defineComponent({
   name: 'EmailVerificationPendingPage',
-  components: { AuthLayout, WLogo },
+  components: { AuthLayout, WLogo, WinIcon },
   setup() {
     const authStore = useAuthStore()
     const resending = ref(false)

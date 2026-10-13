@@ -6,7 +6,6 @@
       </div>
       <div class="header-right">
         <w-button variant="primary" @click="openNewModal">
-          <span class="material-symbols-outlined mr-2">add</span>
           {{ $t('agenda.new') }}
         </w-button>
       </div>

@@ -5,7 +5,6 @@
       <div class="day-view__header-right">
         <span class="day-view__block-count">{{ blocks.length }} bloques</span>
         <button class="day-view__add-btn-top" @click="$emit('new-block', date)">
-          <span class="material-symbols-outlined">add</span>
           Nuevo bloque
         </button>
       </div>
@@ -81,6 +80,15 @@
 
       </div>
     </div>
+    <w-confirm-modal
+      :is-open="!!deleteTarget"
+      title="Eliminar bloque"
+      :message="`¿Eliminar &quot;${deleteTarget?.title}&quot;?`"
+      confirm-text="Eliminar"
+      :is-danger="true"
+      @confirm="doDelete"
+      @cancel="deleteTarget = null"
+    />
   </div>
 </template>
 
@@ -90,6 +98,7 @@ import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
 import { usePlannerBlocksStore } from '@/stores/planner-blocks.store'
 import TimeBlockCard from '../blocks/TimeBlockCard.vue'
+import WConfirmModal from '@/components/ui/WConfirmModal.vue'
 import QuickAddBlock from '../blocks/QuickAddBlock.vue'
 import type { PlannerBlock } from '@/api/planner/planner.types'
 
@@ -104,7 +113,7 @@ function timeToMinutes(time: string): number {
 
 export default defineComponent({
   name: 'PlannerDayView',
-  components: { TimeBlockCard, QuickAddBlock },
+  components: { TimeBlockCard, QuickAddBlock, WConfirmModal },
   props: {
     date: { type: String, required: true },
   },
@@ -181,10 +190,16 @@ export default defineComponent({
       await blocksStore.duplicate(block._id)
     }
 
-    async function onDelete(block: PlannerBlock) {
-      if (confirm(`¿Eliminar "${block.title}"?`)) {
-        await blocksStore.remove(block._id)
-      }
+    const deleteTarget = ref<PlannerBlock | null>(null)
+
+    function onDelete(block: PlannerBlock) {
+      deleteTarget.value = block
+    }
+
+    async function doDelete() {
+      if (!deleteTarget.value) return
+      await blocksStore.remove(deleteTarget.value._id)
+      deleteTarget.value = null
     }
 
     async function onComplete(block: PlannerBlock) {
@@ -223,6 +238,8 @@ export default defineComponent({
       onQuickAdded,
       onDuplicate,
       onDelete,
+      doDelete,
+      deleteTarget,
       onComplete,
     }
   },

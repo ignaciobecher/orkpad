@@ -41,7 +41,7 @@
         </div>
 
         <div v-if="error" class="error-notice">
-          <span class="material-symbols-outlined">error</span>
+          <win-icon name="error" :size="16" />
           <span>{{ error }}</span>
         </div>
 
@@ -54,7 +54,7 @@
             :disabled="!form.termsAccepted"
           >
             {{ $t('auth.register.submit') }}
-            <span class="material-symbols-outlined ml-2">arrow_forward</span>
+            <span class="ml-2">→</span>
           </w-button>
         </div>
 
@@ -79,7 +79,7 @@
           <h3 class="summary-title">{{ $t('auth.register.terms.summary.title') }}</h3>
           <ul class="summary-list">
             <li v-for="(item, idx) in termsSummaryItems" :key="idx">
-              <span class="material-symbols-outlined">check_circle</span>
+              <win-icon name="check" :size="16" />
               {{ item }}
             </li>
           </ul>
@@ -105,10 +105,11 @@ import WInput from '@/components/ui/WInput.vue'
 import WCheckbox from '@/components/ui/WCheckbox.vue'
 import WDrawer from '@/components/ui/WDrawer.vue'
 import WLogo from '@/components/ui/WLogo.vue'
+import WinIcon from '@/components/win95/WinIcon.vue'
 
 export default defineComponent({
   name: 'RegisterPage',
-  components: { AuthLayout, WButton, WInput, WCheckbox, WDrawer, WLogo },
+  components: { AuthLayout, WButton, WInput, WCheckbox, WDrawer, WLogo, WinIcon },
   data() {
     return {
       showTerms: false,

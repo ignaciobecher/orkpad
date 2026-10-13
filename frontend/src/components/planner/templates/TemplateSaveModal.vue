@@ -1,11 +1,12 @@
 <template>
-  <div class="template-save-overlay" @mousedown.self="$emit('close')">
-    <div class="template-save-modal">
-      <div class="template-save-modal__header">
-        <h4>Guardar día como plantilla</h4>
-        <button @click="$emit('close')">
-          <span class="material-symbols-outlined">close</span>
-        </button>
+  <div class="template-save-overlay w95-dialog-overlay" @mousedown.self="$emit('close')">
+    <div class="template-save-modal w95-window">
+      <div class="w95-titlebar">
+        <win-icon name="file-lines" :size="16" alt="" />
+        <span class="title-text">Guardar día como plantilla — Orkpad95</span>
+        <div class="w95-titlebar-buttons">
+          <button class="w95-title-btn" @click="$emit('close')" title="Cerrar"><span class="tbtn-close" aria-hidden="true">×</span></button>
+        </div>
       </div>
 
       <div class="template-save-modal__body">
@@ -35,8 +36,8 @@
       </div>
 
       <div class="template-save-modal__footer">
-        <button class="btn-cancel" @click="$emit('close')">Cancelar</button>
-        <button class="btn-save" :disabled="!name.trim() || saving" @click="save">
+        <button class="w95-btn" @click="$emit('close')">Cancelar</button>
+        <button class="w95-btn w95-btn--default" :disabled="!name.trim() || saving" @click="save">
           {{ saving ? 'Guardando...' : 'Guardar plantilla' }}
         </button>
       </div>
@@ -46,10 +47,12 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
+import WinIcon from '@/components/win95/WinIcon.vue'
 import { usePlannerTemplatesStore } from '@/stores/planner-templates.store'
 
 export default defineComponent({
   name: 'TemplateSaveModal',
+  components: { WinIcon },
   props: {
     currentDate: { type: String, required: true },
   },
@@ -239,4 +242,101 @@ export default defineComponent({
 
 .btn-save:disabled { opacity: 0.5; cursor: not-allowed; }
 .btn-save:hover:not(:disabled) { background: var(--color-primary-hover); }
+</style>
+
+<!-- Win95: overrides encapsulados por data-appearance -->
+<style>
+html[data-appearance="win95"] .template-save-overlay {
+position: fixed;
+  inset: 0;
+  background: var(--color-overlay);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+  backdrop-filter: blur(4px);
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+html[data-appearance="win95"] .template-save-modal {
+width: 420px;
+  max-width: 100%;
+  padding: 2px;
+}
+
+@media (max-width: 640px) {
+html[data-appearance="win95"] .template-save-overlay {
+align-items: flex-end;
+    padding: 0;
+}
+html[data-appearance="win95"] .template-save-modal {
+width: 100%;
+}
+html[data-appearance="win95"] .template-save-modal__footer {
+padding-bottom: max(8px, env(safe-area-inset-bottom));
+    gap: 8px;
+}
+html[data-appearance="win95"] .template-save-modal__footer .w95-btn {
+flex: 1;
+}
+}
+
+html[data-appearance="win95"] .template-save-modal__header {
+display: none;
+}
+
+html[data-appearance="win95"] .template-save-modal__body {
+padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+html[data-appearance="win95"] .template-save-modal__desc {
+font-size: 13px;
+  color: var(--color-text-subtle);
+  margin: 0;
+  line-height: 1.5;
+}
+
+html[data-appearance="win95"] .template-save-modal__field {
+display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+html[data-appearance="win95"] .template-save-modal__field label {
+font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 0;
+}
+
+html[data-appearance="win95"] .template-save-modal__input {
+background: var(--color-bg-base);
+  border: 1px solid var(--color-border);
+  padding: 8px 10px;
+  color: var(--color-text-base);
+  font-size: 13px;
+  font-family: var(--font-body);
+  outline: none;
+  border-radius: var(--radius);
+}
+
+html[data-appearance="win95"] .template-save-modal__input:focus {
+border-color: var(--color-primary);
+}
+
+html[data-appearance="win95"] .template-save-modal__footer {
+display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 8px;
+  border-top: 1px solid var(--w95-shadow);
+  box-shadow: inset 0 1px 0 var(--w95-highlight);
+  background: var(--w95-face);
+}
 </style>

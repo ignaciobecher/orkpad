@@ -1,30 +1,28 @@
 <template>
   <transition name="fade">
-    <div v-if="isOpen" class="modal-overlay" @click.self="onCancel">
-      <div class="modal-container">
-        <div class="modal-header">
-          <div class="modal-title font-mono uppercase">{{ title }}</div>
-          <button class="close-btn" @click="onCancel">
-            <span class="material-symbols-outlined">close</span>
-          </button>
+    <div v-if="isOpen" class="modal-overlay w95-dialog-overlay" @click.self="onCancel">
+      <div class="modal-container w95-window">
+        <div class="w95-titlebar">
+          <span class="title-text">{{ title }}</span>
+          <div class="w95-titlebar-buttons">
+            <button class="w95-title-btn" @click="onCancel" title="Cerrar"><span class="tbtn-close" aria-hidden="true">×</span></button>
+          </div>
         </div>
-        
         <div class="modal-body">
+          <win-icon :name="isDanger ? 'error' : 'question'" :size="32" alt="" />
           <p class="modal-message">{{ message }}</p>
         </div>
-        
         <div class="modal-footer">
-          <button class="btn-secondary font-mono uppercase" @click="onCancel">
+          <button class="w95-btn" @click="onCancel">
             {{ cancelText || $t('common.cancel', 'Cancelar') }}
           </button>
-          <button 
-            class="btn-primary font-mono uppercase" 
-            :class="{ 'btn-danger': isDanger }"
+          <button
+            class="w95-btn w95-btn--default"
             @click="onConfirm"
             :disabled="loading"
           >
-            <span v-if="loading" class="material-symbols-outlined rotating">sync</span>
-            <span v-else>{{ confirmText || $t('common.confirm', 'Confirmar') }}</span>
+            <span v-if="loading">...</span>
+            <span v-else>{{ confirmText || $t('common.confirm', 'Aceptar') }}</span>
           </button>
         </div>
       </div>
@@ -34,9 +32,11 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+import WinIcon from '@/components/win95/WinIcon.vue'
 
 export default defineComponent({
   name: 'WConfirmModal',
+  components: { WinIcon },
   props: {
     isOpen: { type: Boolean, required: true },
     title: { type: String, default: 'Confirmación' },
@@ -173,5 +173,65 @@ export default defineComponent({
 
 .fade-enter-from, .fade-leave-to {
   opacity: 0;
+}
+</style>
+
+<!-- Win95: overrides encapsulados por data-appearance -->
+<style>
+html[data-appearance="win95"] .modal-overlay {
+position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 6000;
+  padding: 16px;
+}
+
+html[data-appearance="win95"] .modal-container {
+width: 90%;
+  max-width: 380px;
+  padding: 2px;
+}
+
+html[data-appearance="win95"] .modal-body {
+padding: 14px 12px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  background: var(--w95-face);
+}
+
+html[data-appearance="win95"] .tbtn-close {
+font-family: Tahoma, Verdana, sans-serif;
+  font-size: 11px;
+  font-weight: bold;
+  line-height: 1;
+  color: #000;
+}
+
+html[data-appearance="win95"] .modal-message {
+font-size: 12px;
+  color: #000;
+  line-height: 1.5;
+  margin: 0;
+}
+
+html[data-appearance="win95"] .modal-footer {
+padding: 8px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  background: var(--w95-face);
+  border-top: 1px solid var(--w95-shadow);
+}
+
+html[data-appearance="win95"] .fade-enter-active, html[data-appearance="win95"] .fade-leave-active {
+transition: opacity 0.12s ease;
+}
+
+html[data-appearance="win95"] .fade-enter-from, html[data-appearance="win95"] .fade-leave-to {
+opacity: 0;
 }
 </style>

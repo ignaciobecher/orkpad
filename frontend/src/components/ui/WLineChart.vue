@@ -103,3 +103,29 @@ export default defineComponent({
   color: var(--color-text-muted);
 }
 </style>
+
+<!-- Win95: overrides encapsulados por data-appearance -->
+<style>
+html[data-appearance="win95"] .w-line-chart {
+position: relative;
+  height: 220px;
+  background: #fff;
+  border: 2px solid;
+  border-color: var(--w95-shadow) var(--w95-highlight) var(--w95-highlight) var(--w95-shadow);
+  box-shadow: inset 1px 1px 0 var(--w95-darkshadow);
+  border-radius: 0;
+  padding: 4px;
+}
+
+html[data-appearance="win95"] .w-line-chart__empty {
+display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  font-family: Tahoma, Verdana, sans-serif;
+  font-size: 11px;
+  color: #000;
+  text-transform: none;
+  background: var(--w95-face);
+}
+</style>

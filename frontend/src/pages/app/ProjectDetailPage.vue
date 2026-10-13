@@ -3,7 +3,7 @@
     <header class="page-header">
       <div class="header-left">
         <button class="back-btn" @click="$router.push({ name: 'projects' })">
-          <span class="material-symbols-outlined">arrow_back</span>
+          <span>←</span>
           <span>{{ $t('projects.detail.back') }}</span>
         </button>
         <template v-if="overview">
@@ -18,19 +18,19 @@
           <p v-if="overview.project.description" class="project-meta">{{ overview.project.description }}</p>
           <div class="project-dates">
             <span v-if="overview.project.startDate">
-              <span class="material-symbols-outlined">calendar_today</span>
+              <win-icon name="calendar" :size="16" />
               {{ formatCalendarDate(overview.project.startDate) }}
             </span>
             <span v-if="overview.project.endDate">
-              <span class="material-symbols-outlined">event</span>
+              <win-icon name="calendar" :size="16" />
               {{ formatCalendarDate(overview.project.endDate) }}
             </span>
             <span v-if="overview.project.actualEndDate">
-              <span class="material-symbols-outlined">event_available</span>
+              <win-icon name="calendar" :size="16" />
               Fin real: {{ formatCalendarDate(overview.project.actualEndDate) }}
             </span>
             <span v-if="overview.project.budget">
-              <span class="material-symbols-outlined">payments</span>
+              <win-icon name="calculator" :size="16" />
               {{ formatMoney(overview.project.budget, overview.project.currency) }}
             </span>
           </div>
@@ -40,7 +40,7 @@
     </header>
 
     <div v-if="loading && !overview" class="loading-state">
-      <span class="material-symbols-outlined loading-icon">progress_activity</span>
+      <win-icon name="hourglass" :size="32" class="loading-icon" />
     </div>
 
     <template v-if="overview">
@@ -64,7 +64,7 @@
           :class="{ active: activeTab === tab.id }"
           @click="activeTab = tab.id"
         >
-          <span class="material-symbols-outlined">{{ tab.icon }}</span>
+          <win-icon :name="materialToWinIcon(tab.icon)" :size="16" />
           {{ tab.label }}
           <span v-if="tab.count !== null && tab.count !== undefined" class="detail-tab-count">{{ tab.count }}</span>
         </button>
@@ -127,7 +127,7 @@
             <span class="section-count">{{ overview.pendingTasks.length }}</span>
             <router-link to="/app/tasks" class="section-link">
               {{ $t('projects.detail.viewTasks') }}
-              <span class="material-symbols-outlined">arrow_forward</span>
+              <span>→</span>
             </router-link>
           </div>
           <w-card class="no-padding">
@@ -186,7 +186,7 @@
                 :loading="generatingInvoices"
                 @click="handleGenerateInvoices"
               >
-                <span class="material-symbols-outlined mr-1">receipt_long</span>
+                <win-icon name="file-lines" :size="16" class="mr-1" />
                 {{ $t('projects.detail.generateInvoices', { count: overview.project.installmentsCount }) }}
               </w-button>
             </div>
@@ -211,7 +211,7 @@
             <span class="section-count">{{ overview.invoiceStats.total }}</span>
             <router-link to="/app/finance" class="section-link">
               {{ $t('projects.detail.viewInvoices') }}
-              <span class="material-symbols-outlined">arrow_forward</span>
+              <span>→</span>
             </router-link>
           </div>
           <project-finance-grid
@@ -247,11 +247,11 @@
       <div v-if="activeTab === 'github'">
         <section class="github-section">
           <div class="section-header" style="margin-bottom: 12px;">
-            <span class="material-symbols-outlined" style="font-size:16px;color:var(--color-text-muted)">commit</span>
+            <win-icon name="console" :size="16" />
             <h2 class="section-title">GitHub</h2>
             <span v-if="connectedRepos.length" class="section-count">{{ connectedRepos.length }}</span>
             <w-button variant="ghost" style="margin-left:auto" @click="openRepoDrawer">
-              <span class="material-symbols-outlined mr-1">add_link</span>
+              <win-icon name="network" :size="16" class="mr-1" />
               Conectar repo
             </w-button>
           </div>
@@ -259,11 +259,11 @@
           <w-card>
             <div v-if="!connectedRepos.length" class="github-hint">Sin repositorios vinculados</div>
             <div v-for="repo in connectedRepos" :key="`${repo.owner}/${repo.repo}`" class="github-connected-row">
-              <span class="material-symbols-outlined" style="font-size:16px;color:var(--color-text-muted)">commit</span>
+              <win-icon name="console" :size="16" />
               <a :href="repo.htmlUrl" target="_blank" class="github-repo-link">{{ repo.owner }}/{{ repo.repo }}</a>
               <div style="display:flex;gap:6px;margin-left:auto">
                 <w-button variant="ghost" @click="$router.push({ name: 'project-github', params: { id: projectId }, query: { owner: repo.owner, repo: repo.repo } })">
-                  <span class="material-symbols-outlined mr-1">open_in_new</span>
+                  <win-icon name="search" :size="16" class="mr-1" />
                   Ver actividad
                 </w-button>
                 <w-button variant="ghost" @click="handleDisconnectRepo(repo)" :disabled="githubStore.loading">
@@ -278,7 +278,7 @@
         <w-drawer v-model="repoDrawerOpen" title="Conectar repositorio GitHub" width="420px">
           <div class="repo-drawer-body">
             <div class="repo-search-box">
-              <span class="material-symbols-outlined">search</span>
+              <win-icon name="search" :size="16" />
               <input
                 v-model="repoSearch"
                 type="text"
@@ -296,7 +296,7 @@
               :class="{ selected: selectedRepo?.fullName === repo.fullName }"
               @click="selectedRepo = repo"
             >
-              <span class="material-symbols-outlined" style="font-size:16px">{{ repo.private ? 'lock' : 'public' }}</span>
+              <win-icon :name="repo.private ? 'key' : 'network'" :size="16" />
               <span class="repo-item-name">{{ repo.fullName }}</span>
             </div>
           </div>
@@ -309,6 +309,23 @@
             </div>
           </template>
         </w-drawer>
+        <w-confirm-modal
+          :is-open="showGenerateModal"
+          title="Generar facturas"
+          :message="$t('projects.detail.generateConfirm')"
+          confirm-text="Generar"
+          @confirm="handleGenerateInvoices"
+          @cancel="showGenerateModal = false"
+        />
+        <w-confirm-modal
+          :is-open="!!disconnectTarget"
+          title="Desconectar repo"
+          :message="`¿Desconectar ${disconnectTarget?.owner}/${disconnectTarget?.repo} de este proyecto?`"
+          confirm-text="Desconectar"
+          :is-danger="true"
+          @confirm="handleDisconnectRepo(disconnectTarget)"
+          @cancel="disconnectTarget = null"
+        />
       </div>
     </template>
   </div>
@@ -327,12 +344,15 @@ import WTable from '@/components/ui/WTable.vue'
 import WBadge from '@/components/ui/WBadge.vue'
 import WKpiCard from '@/components/ui/WKpiCard.vue'
 import WDrawer from '@/components/ui/WDrawer.vue'
+import WConfirmModal from '@/components/ui/WConfirmModal.vue'
 import ProjectFinanceGrid from '@/components/projects/ProjectFinanceGrid.vue'
+import WinIcon from '@/components/win95/WinIcon.vue'
+import { materialToWinIcon } from '@/components/win95/icons'
 import type { GithubRepo } from '@/api/github/github.api'
 
 export default defineComponent({
   name: 'ProjectDetailPage',
-  components: { WButton, WCard, WTable, WBadge, WKpiCard, WDrawer, ProjectFinanceGrid },
+  components: { WButton, WCard, WTable, WBadge, WKpiCard, WDrawer, ProjectFinanceGrid, WConfirmModal, WinIcon },
   data() {
     return {
       repoDrawerOpen: false,
@@ -341,6 +361,8 @@ export default defineComponent({
       githubStore: useGithubStore(),
       activeTab: 'resumen',
       generatingInvoices: false,
+      showGenerateModal: false,
+      disconnectTarget: null as { owner: string; repo: string } | null,
     }
   },
   computed: {
@@ -432,6 +454,7 @@ export default defineComponent({
       'fetchOverview',
       'generateInvoices',
     ]),
+    materialToWinIcon,
     currencyRows(): { currency: string; agreed: number; paid: number; pending: number; overdue: number }[] {
       const s: any = this.overview?.invoiceStats
       if (s?.byCurrency?.length) return s.byCurrency
@@ -525,7 +548,8 @@ export default defineComponent({
       ])
     },
     async handleGenerateInvoices() {
-      if (!confirm(this.$t('projects.detail.generateConfirm'))) return
+      if (!this.showGenerateModal) { this.showGenerateModal = true; return }
+      this.showGenerateModal = false
       this.generatingInvoices = true
       try {
         await this.generateInvoices(this.projectId)
@@ -534,7 +558,9 @@ export default defineComponent({
       }
     },
     async handleDisconnectRepo(repo: { owner: string; repo: string }) {
-      if (!confirm(`¿Desconectar ${repo.owner}/${repo.repo} de este proyecto?`)) return
+      if (!this.disconnectTarget) { this.disconnectTarget = repo; return }
+      repo = this.disconnectTarget
+      this.disconnectTarget = null
       await this.githubStore.disconnectRepo(this.projectId, repo.owner, repo.repo)
       await this.fetchOverview(this.projectId)
     },
@@ -991,5 +1017,534 @@ export default defineComponent({
   .project-detail { padding: 16px; }
   .page-header { flex-direction: column; }
   .kpi-strip { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+
+<!-- Win95: overrides encapsulados por data-appearance -->
+<style>
+html[data-appearance="win95"] .project-detail {
+padding: 32px;
+  flex-grow: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+html[data-appearance="win95"] .page-header {
+display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  gap: 24px;
+  flex-shrink: 0;
+}
+
+html[data-appearance="win95"] .header-left {
+display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+html[data-appearance="win95"] .back-btn {
+display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  cursor: pointer;
+  padding: 0;
+  letter-spacing: 0.05em;
+}
+
+html[data-appearance="win95"] .back-btn:hover {
+color: var(--color-text-base);
+}
+
+html[data-appearance="win95"] .back-btn .material-symbols-outlined {
+font-size: 16px;
+}
+
+html[data-appearance="win95"] .project-title-row {
+display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+html[data-appearance="win95"] .page-title {
+font-family: var(--font-body);
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--color-text-base);
+}
+
+html[data-appearance="win95"] .project-meta {
+font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-text-muted);
+  max-width: 600px;
+  line-height: 1.5;
+}
+
+html[data-appearance="win95"] .project-dates {
+display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+html[data-appearance="win95"] .project-dates span {
+display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-text-muted);
+}
+
+html[data-appearance="win95"] .project-dates .material-symbols-outlined {
+font-size: 14px; font-family: 'Material Symbols Outlined';
+}
+
+html[data-appearance="win95"] .mono-label {
+font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted);
+}
+
+html[data-appearance="win95"] .icon-btn {
+background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-muted);
+  display: flex;
+  padding: 4px;
+}
+
+html[data-appearance="win95"] .icon-btn:hover {
+color: var(--color-text-base);
+}
+
+html[data-appearance="win95"] .icon-btn--danger {
+color: var(--color-error);
+}
+
+html[data-appearance="win95"] .icon-btn--danger:hover {
+opacity: 0.75;
+}
+
+html[data-appearance="win95"] .loading-state {
+display: flex;
+  justify-content: center;
+  padding: 64px;
+}
+
+html[data-appearance="win95"] .loading-icon {
+animation: w95-spin 1s linear infinite;
+  font-size: 32px;
+  color: var(--color-text-muted);
+}
+
+@keyframes w95-spin {
+from { transform: rotate(0deg); } to { transform: rotate(360deg); }
+}
+
+html[data-appearance="win95"] .kpi-strip {
+display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 1px;
+  background-color: var(--color-border);
+  border: 1px solid var(--color-border);
+  margin-bottom: 32px;
+  flex-shrink: 0;
+}
+
+html[data-appearance="win95"] .finance-summary-cards {
+display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background-color: var(--color-border);
+  border: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+html[data-appearance="win95"] .detail-grid {
+display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+html[data-appearance="win95"] .detail-tabs {
+display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: 24px;
+  overflow-x: auto;
+}
+
+html[data-appearance="win95"] .detail-tab {
+display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  padding: 10px 16px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+html[data-appearance="win95"] .detail-tab:hover {
+color: var(--color-text-base);
+}
+
+html[data-appearance="win95"] .detail-tab.active {
+color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+}
+
+html[data-appearance="win95"] .detail-tab .material-symbols-outlined {
+font-size: 16px;
+}
+
+html[data-appearance="win95"] .detail-tab-count {
+font-size: 10px;
+  padding: 1px 7px;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  color: var(--color-text-muted);
+}
+
+html[data-appearance="win95"] .detail-tab.active .detail-tab-count {
+border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+html[data-appearance="win95"] .billing-row {
+display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+html[data-appearance="win95"] .billing-info {
+flex: 1;
+  min-width: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+html[data-appearance="win95"] .billing-type {
+font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text-base);
+}
+
+html[data-appearance="win95"] .billing-progress-text {
+font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+html[data-appearance="win95"] .billing-progress-track {
+height: 10px;
+  background: #fff;
+  border: 1px solid;
+  border-color: var(--w95-shadow) var(--w95-highlight) var(--w95-highlight) var(--w95-shadow);
+  border-radius: 0;
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+html[data-appearance="win95"] .billing-progress-fill {
+height: 100%;
+  background: var(--color-primary);
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+html[data-appearance="win95"] .detail-section {
+display: flex; flex-direction: column; gap: 12px;
+}
+
+html[data-appearance="win95"] .detail-section.full-width {
+grid-column: 1 / -1;
+}
+
+html[data-appearance="win95"] .section-header {
+display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+html[data-appearance="win95"] .section-link {
+display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-primary);
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+html[data-appearance="win95"] .section-link:hover {
+text-decoration: underline;
+}
+
+html[data-appearance="win95"] .section-link .material-symbols-outlined {
+font-size: 14px;
+}
+
+html[data-appearance="win95"] .section-title {
+font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-text-muted);
+}
+
+html[data-appearance="win95"] .section-count {
+font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--color-text-muted);
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  padding: 1px 6px;
+}
+
+html[data-appearance="win95"] .no-padding {
+display: flex; flex-direction: column;
+}
+
+html[data-appearance="win95"] .no-padding .w-card__body {
+padding: 0 !important;
+}
+
+html[data-appearance="win95"] .tag-list {
+display: flex; gap: 4px; flex-wrap: wrap;
+}
+
+html[data-appearance="win95"] .mr-1 {
+margin-right: 4px;
+}
+
+html[data-appearance="win95"] .text-error {
+color: var(--color-error) !important;
+}
+
+html[data-appearance="win95"] .github-section {
+margin-bottom: 24px; flex-shrink: 0;
+}
+
+html[data-appearance="win95"] .github-connect-row {
+display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+html[data-appearance="win95"] .github-hint {
+font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-text-muted);
+}
+
+html[data-appearance="win95"] .github-connected-row {
+display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+html[data-appearance="win95"] .github-repo-link {
+font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+html[data-appearance="win95"] .github-repo-link:hover {
+text-decoration: underline;
+}
+
+html[data-appearance="win95"] .github-feeds {
+display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+html[data-appearance="win95"] .github-feed-col {
+display: flex; flex-direction: column; gap: 6px;
+}
+
+html[data-appearance="win95"] .feed-title {
+font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted);
+  margin-bottom: 4px;
+}
+
+html[data-appearance="win95"] .feed-empty {
+font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-text-muted);
+  padding: 8px 0;
+}
+
+html[data-appearance="win95"] .commit-row, html[data-appearance="win95"] .pr-row {
+display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--color-border);
+  min-width: 0;
+}
+
+html[data-appearance="win95"] .commit-sha {
+font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+}
+
+html[data-appearance="win95"] .commit-msg, html[data-appearance="win95"] .pr-title {
+font-size: 12px;
+  color: var(--color-text-base);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  min-width: 0;
+}
+
+html[data-appearance="win95"] .pr-number {
+font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+}
+
+html[data-appearance="win95"] .commit-link {
+color: var(--color-text-muted);
+  display: flex;
+  flex-shrink: 0;
+}
+
+html[data-appearance="win95"] .commit-link:hover {
+color: var(--color-primary);
+}
+
+html[data-appearance="win95"] .commit-link .material-symbols-outlined {
+font-size: 14px;
+}
+
+html[data-appearance="win95"] .repo-drawer-body {
+display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 0;
+}
+
+html[data-appearance="win95"] .repo-search-box {
+display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: 4px;
+}
+
+html[data-appearance="win95"] .repo-search-box .material-symbols-outlined {
+font-size: 18px;
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+}
+
+html[data-appearance="win95"] .repo-search-input {
+flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  font-size: 13px;
+  font-family: var(--font-mono);
+  color: var(--color-text-base);
+}
+
+html[data-appearance="win95"] .repo-search-input::placeholder {
+color: var(--color-text-muted);
+}
+
+html[data-appearance="win95"] .repo-item {
+display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 13px;
+  color: var(--color-text-base);
+}
+
+html[data-appearance="win95"] .repo-item:hover {
+background: var(--color-bg-surface);
+}
+
+html[data-appearance="win95"] .repo-item.selected {
+background: var(--color-primary-subtle, #e8f0fe); color: var(--color-primary);
+}
+
+html[data-appearance="win95"] .repo-item-name {
+font-family: var(--font-mono); font-size: 12px;
+}
+
+@media (max-width: 768px) {
+html[data-appearance="win95"] .github-feeds {
+grid-template-columns: 1fr;
+}
+}
+
+@media (max-width: 1200px) {
+html[data-appearance="win95"] .kpi-strip {
+grid-template-columns: repeat(3, 1fr);
+}
+}
+
+@media (max-width: 1024px) {
+html[data-appearance="win95"] .detail-grid {
+grid-template-columns: 1fr;
+}
+html[data-appearance="win95"] .kpi-strip {
+grid-template-columns: repeat(2, 1fr);
+}
+}
+
+@media (max-width: 768px) {
+html[data-appearance="win95"] .project-detail {
+padding: 16px;
+}
+html[data-appearance="win95"] .page-header {
+flex-direction: column;
+}
+html[data-appearance="win95"] .kpi-strip {
+grid-template-columns: repeat(2, 1fr);
+}
 }
 </style>

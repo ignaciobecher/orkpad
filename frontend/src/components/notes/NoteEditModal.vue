@@ -1,13 +1,14 @@
 <template>
   <teleport to="body">
-    <div v-if="isOpen" class="note-modal-overlay" @click.self="$emit('close')">
-      <div class="note-modal">
-        <!-- Modal header -->
-        <div class="note-modal__header">
-          <span class="note-modal__title">{{ isEditing ? 'Editar nota' : 'Nueva nota' }}</span>
-          <button class="note-modal__close" @click="$emit('close')">
-            <span class="material-symbols-outlined">close</span>
-          </button>
+    <div v-if="isOpen" class="note-modal-overlay w95-dialog-overlay" @click.self="$emit('close')">
+      <div class="note-modal w95-window">
+        <!-- Titlebar Win95 -->
+        <div class="w95-titlebar">
+          <win-icon name="note" :size="16" alt="" />
+          <span class="title-text">{{ isEditing ? 'Editar nota' : 'Nueva nota' }} — Orkpad95</span>
+          <div class="w95-titlebar-buttons">
+            <button class="w95-title-btn" @click="$emit('close')" title="Cerrar"><span class="tbtn-close" aria-hidden="true">×</span></button>
+          </div>
         </div>
 
         <!-- Type toggle -->
@@ -16,14 +17,12 @@
             :class="['type-btn', { 'type-btn--active': form.type === 'note' }]"
             @click="form.type = 'note'"
           >
-            <span class="material-symbols-outlined">sticky_note_2</span>
             Nota
           </button>
           <button
             :class="['type-btn', { 'type-btn--active': form.type === 'checklist' }]"
             @click="form.type = 'checklist'"
           >
-            <span class="material-symbols-outlined">checklist</span>
             Checklist
           </button>
         </div>
@@ -40,26 +39,26 @@
         <div v-if="form.type === 'note'" class="note-modal__editor-wrap">
           <div class="editor-toolbar">
             <button class="toolbar-btn" :class="{ active: editor?.isActive('bold') }" title="Negrita" @click="editor?.chain().focus().toggleBold().run()">
-              <span class="material-symbols-outlined">format_bold</span>
+              <span class="tb-glyph" aria-hidden="true">B</span>
             </button>
             <button class="toolbar-btn" :class="{ active: editor?.isActive('italic') }" title="Cursiva" @click="editor?.chain().focus().toggleItalic().run()">
-              <span class="material-symbols-outlined">format_italic</span>
+              <span class="tb-glyph" aria-hidden="true">I</span>
             </button>
             <button class="toolbar-btn" :class="{ active: editor?.isActive('code') }" title="Código" @click="editor?.chain().focus().toggleCode().run()">
-              <span class="material-symbols-outlined">code</span>
+              <span class="tb-glyph" aria-hidden="true">&lt;&gt;</span>
             </button>
             <div class="toolbar-sep"></div>
             <button class="toolbar-btn" :class="{ active: editor?.isActive('heading', { level: 2 }) }" title="H2" @click="editor?.chain().focus().toggleHeading({ level: 2 }).run()">
-              <span class="material-symbols-outlined">title</span>
+              <span class="tb-glyph" aria-hidden="true">H2</span>
             </button>
             <button class="toolbar-btn" :class="{ active: editor?.isActive('bulletList') }" title="Lista" @click="editor?.chain().focus().toggleBulletList().run()">
-              <span class="material-symbols-outlined">format_list_bulleted</span>
+              <span class="tb-glyph" aria-hidden="true">•</span>
             </button>
             <button class="toolbar-btn" :class="{ active: editor?.isActive('orderedList') }" title="Lista numerada" @click="editor?.chain().focus().toggleOrderedList().run()">
-              <span class="material-symbols-outlined">format_list_numbered</span>
+              <span class="tb-glyph" aria-hidden="true">1.</span>
             </button>
             <button class="toolbar-btn" :class="{ active: editor?.isActive('codeBlock') }" title="Bloque de código" @click="editor?.chain().focus().toggleCodeBlock().run()">
-              <span class="material-symbols-outlined">terminal</span>
+              <span class="tb-glyph" aria-hidden="true">{;}</span>
             </button>
           </div>
           <editor-content class="note-modal__editor" :editor="editor" />
@@ -73,9 +72,8 @@
             class="checklist-editor-row"
           >
             <button class="checklist-toggle" @click="item.completed = !item.completed">
-              <span class="material-symbols-outlined">
-                {{ item.completed ? 'check_box' : 'check_box_outline_blank' }}
-              </span>
+              <span v-if="item.completed" class="w95-check w95-check--done" aria-hidden="true">✓</span>
+              <span v-else class="w95-check" aria-hidden="true"></span>
             </button>
             <input
               v-model="item.text"
@@ -84,13 +82,10 @@
               @keydown.enter.prevent="addChecklistItem(idx)"
               @keydown.backspace="onChecklistBackspace(idx, item)"
             />
-            <button class="checklist-remove" @click="removeChecklistItem(idx)">
-              <span class="material-symbols-outlined">close</span>
-            </button>
+            <button class="checklist-remove" @click="removeChecklistItem(idx)">×</button>
           </div>
           <button class="add-checklist-btn" @click="addChecklistItem()">
-            <span class="material-symbols-outlined">add</span>
-            Agregar ítem
+            + Agregar ítem
           </button>
         </div>
 
@@ -104,7 +99,7 @@
               title="Sin color"
               @click="form.color = null"
             >
-              <span class="material-symbols-outlined">block</span>
+              <span aria-hidden="true">–</span>
             </button>
             <button
               v-for="c in COLOR_OPTIONS"
@@ -128,9 +123,7 @@
               class="tag-chip"
             >
               #{{ tag }}
-              <button class="tag-remove" @click="removeTag(tag)">
-                <span class="material-symbols-outlined">close</span>
-              </button>
+              <button class="tag-remove" @click="removeTag(tag)">×</button>
             </span>
             <input
               v-model="tagInput"
@@ -157,9 +150,9 @@
 
         <!-- Footer actions -->
         <div class="note-modal__footer">
-          <button class="note-modal__cancel" @click="$emit('close')">Cancelar</button>
-          <button class="note-modal__save" :disabled="saving" @click="save">
-            <span v-if="saving" class="material-symbols-outlined spinning">sync</span>
+          <button class="w95-btn" @click="$emit('close')">Cancelar</button>
+          <button class="w95-btn w95-btn--default" :disabled="saving" @click="save">
+            <span v-if="saving">...</span>
             <span v-else>{{ isEditing ? 'Guardar' : 'Crear nota' }}</span>
           </button>
         </div>
@@ -177,6 +170,7 @@ import Placeholder from '@tiptap/extension-placeholder'
 import Link from '@tiptap/extension-link'
 import type { Note, CreateNoteDto, UpdateNoteDto, ChecklistItem } from '@/api/notes/notes.types'
 import WRemoteSelect from '@/components/ui/WRemoteSelect.vue'
+import WinIcon from '@/components/win95/WinIcon.vue'
 import apiClient from '@/api/axios.config'
 
 const COLOR_OPTIONS = [
@@ -207,7 +201,7 @@ function emptyForm() {
 
 export default defineComponent({
   name: 'NoteEditModal',
-  components: { EditorContent, WRemoteSelect },
+  components: { EditorContent, WRemoteSelect, WinIcon },
 
   props: {
     isOpen: { type: Boolean, default: false },
@@ -827,5 +821,464 @@ export default defineComponent({
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+</style>
+
+<!-- Win95: overrides encapsulados por data-appearance -->
+<style>
+html[data-appearance="win95"] .note-modal-overlay {
+position: fixed;
+  inset: 0;
+  background: var(--color-overlay);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+html[data-appearance="win95"] .note-modal {
+width: 100%;
+  max-width: 640px;
+  max-height: 90vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 2px;
+}
+
+html[data-appearance="win95"] .note-modal__type-row {
+margin: 8px 8px 0 8px;
+}
+
+html[data-appearance="win95"] .note-modal__input, html[data-appearance="win95"] .note-modal__editor-wrap, html[data-appearance="win95"] .note-modal__checklist-editor, html[data-appearance="win95"] .note-modal__row {
+margin-left: 8px;
+  margin-right: 8px;
+}
+
+html[data-appearance="win95"] .note-modal__row:last-of-type {
+margin-bottom: 8px;
+}
+
+html[data-appearance="win95"] .note-modal__header {
+display: none;
+}
+
+html[data-appearance="win95"] .note-modal__title {
+font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-base);
+}
+
+html[data-appearance="win95"] .note-modal__close {
+background: none;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+}
+
+html[data-appearance="win95"] .note-modal__close:hover {
+color: var(--color-text-base);
+}
+
+html[data-appearance="win95"] .note-modal__type-row {
+display: flex;
+  gap: 8px;
+}
+
+html[data-appearance="win95"] .type-btn {
+display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 14px;
+  font-family: Tahoma, Verdana, sans-serif;
+  font-size: 11px;
+  background: var(--w95-face);
+  border: 2px solid;
+  border-color: var(--w95-highlight) var(--w95-darkshadow) var(--w95-darkshadow) var(--w95-highlight);
+  box-shadow: inset 1px 1px 0 var(--w95-face-light), inset -1px -1px 0 var(--w95-shadow);
+  color: #000;
+  cursor: pointer;
+}
+
+html[data-appearance="win95"] .type-btn--active {
+font-weight: bold;
+  border-color: var(--w95-darkshadow) var(--w95-darkshadow) var(--w95-darkshadow) var(--w95-darkshadow);
+  box-shadow: inset 1px 1px 0 var(--w95-highlight), inset -1px -1px 0 var(--w95-shadow), 0 0 0 1px #000;
+}
+
+html[data-appearance="win95"] .note-modal__input {
+width: 100%;
+  background: var(--color-bg-surface-low);
+  border: 1px solid var(--color-border);
+  padding: 10px 12px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-base);
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.15s;
+}
+
+html[data-appearance="win95"] .note-modal__input:focus {
+border-color: var(--color-border-focus);
+}
+
+html[data-appearance="win95"] .note-modal__input::placeholder {
+color: var(--color-text-disabled);
+}
+
+html[data-appearance="win95"] .note-modal__editor-wrap {
+border: 1px solid var(--color-border);
+  background: var(--color-bg-surface-low);
+  transition: border-color 0.15s;
+}
+
+html[data-appearance="win95"] .note-modal__editor-wrap:focus-within {
+border-color: var(--color-border-focus);
+}
+
+html[data-appearance="win95"] .editor-toolbar {
+display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--color-border);
+  flex-wrap: wrap;
+}
+
+html[data-appearance="win95"] .toolbar-btn {
+background: var(--w95-face);
+  border: 1px solid;
+  border-color: var(--w95-highlight) var(--w95-darkshadow) var(--w95-darkshadow) var(--w95-highlight);
+  color: #000;
+  cursor: pointer;
+  padding: 3px 7px;
+  display: flex;
+  align-items: center;
+  font-family: Tahoma, Verdana, sans-serif;
+  font-size: 12px;
+  font-weight: bold;
+  min-width: 24px;
+  justify-content: center;
+}
+
+html[data-appearance="win95"] .toolbar-btn:hover {
+background: var(--w95-face-light);
+}
+
+html[data-appearance="win95"] .toolbar-btn.active {
+border-color: var(--w95-darkshadow) var(--w95-highlight) var(--w95-highlight) var(--w95-darkshadow);
+  background: var(--w95-face-light);
+  font-weight: bold;
+}
+
+html[data-appearance="win95"] .tb-glyph {
+font-family: Tahoma, Verdana, sans-serif;
+  font-size: 12px;
+  font-weight: bold;
+  font-style: normal;
+  min-width: 18px;
+  text-align: center;
+}
+
+html[data-appearance="win95"] .w95-check {
+display: inline-block;
+  width: 13px;
+  height: 13px;
+  background: #fff;
+  border: 1px solid;
+  border-color: var(--w95-shadow) var(--w95-highlight) var(--w95-highlight) var(--w95-shadow);
+  box-shadow: inset 1px 1px 0 var(--w95-darkshadow);
+  font-size: 10px;
+  font-weight: bold;
+  line-height: 11px;
+  text-align: center;
+  color: #000;
+}
+
+html[data-appearance="win95"] .toolbar-sep {
+width: 1px;
+  height: 18px;
+  background: var(--color-border);
+  margin: 0 4px;
+}
+
+html[data-appearance="win95"] .note-modal__editor {
+min-height: 180px;
+  max-height: 340px;
+  overflow-y: auto;
+}
+
+html[data-appearance="win95"] .note-modal__editor .tiptap-inner {
+padding: 12px;
+  outline: none;
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--color-text-base);
+  line-height: 1.7;
+  min-height: 180px;
+}
+
+html[data-appearance="win95"] .note-modal__editor .tiptap-inner p.is-editor-empty:first-child::before {
+content: attr(data-placeholder);
+  color: var(--color-text-disabled);
+  pointer-events: none;
+  float: left;
+  height: 0;
+}
+
+html[data-appearance="win95"] .note-modal__editor h2 {
+font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 700;
+  margin: 12px 0 4px;
+}
+
+html[data-appearance="win95"] .note-modal__editor code {
+font-family: var(--font-mono);
+  font-size: 11px;
+  background: var(--color-bg-surface-high);
+  padding: 1px 4px;
+}
+
+html[data-appearance="win95"] .note-modal__editor pre {
+background: var(--color-bg-surface-high);
+  padding: 12px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  overflow-x: auto;
+  margin: 8px 0;
+}
+
+html[data-appearance="win95"] .note-modal__editor ul, html[data-appearance="win95"] .note-modal__editor ol {
+padding-left: 20px;
+  margin: 4px 0;
+}
+
+html[data-appearance="win95"] .note-modal__checklist-editor {
+display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-surface-low);
+  padding: 12px;
+  min-height: 120px;
+}
+
+html[data-appearance="win95"] .checklist-editor-row {
+display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+html[data-appearance="win95"] .checklist-toggle {
+background: none;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  display: flex;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+html[data-appearance="win95"] .checklist-toggle .material-symbols-outlined {
+font-size: 18px;
+}
+
+html[data-appearance="win95"] .checklist-input {
+flex: 1;
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--color-border-subtle);
+  padding: 4px 0;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--color-text-base);
+  outline: none;
+}
+
+html[data-appearance="win95"] .checklist-input:focus {
+border-bottom-color: var(--color-border-focus);
+}
+
+html[data-appearance="win95"] .checklist-remove {
+background: none;
+  border: none;
+  color: var(--color-text-disabled);
+  cursor: pointer;
+  display: flex;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+html[data-appearance="win95"] .checklist-remove:hover {
+color: var(--color-error);
+}
+
+html[data-appearance="win95"] .checklist-remove .material-symbols-outlined {
+font-size: 16px;
+}
+
+html[data-appearance="win95"] .add-checklist-btn {
+display: flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  padding: 4px 0;
+  margin-top: 4px;
+}
+
+html[data-appearance="win95"] .add-checklist-btn:hover {
+color: var(--color-primary);
+}
+
+html[data-appearance="win95"] .add-checklist-btn .material-symbols-outlined {
+font-size: 16px;
+}
+
+html[data-appearance="win95"] .note-modal__row {
+display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+html[data-appearance="win95"] .note-modal__label {
+font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted);
+  width: 72px;
+  flex-shrink: 0;
+}
+
+html[data-appearance="win95"] .color-picker {
+display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+html[data-appearance="win95"] .color-chip {
+width: 22px;
+  height: 22px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: transform 0.1s, border-color 0.1s;
+}
+
+html[data-appearance="win95"] .color-chip:hover {
+transform: scale(1.15);
+}
+
+html[data-appearance="win95"] .color-chip--active {
+border-color: var(--color-text-base) !important;
+}
+
+html[data-appearance="win95"] .color-chip--none {
+background: var(--color-bg-surface-high);
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+html[data-appearance="win95"] .color-chip--none .material-symbols-outlined {
+font-size: 14px;
+}
+
+html[data-appearance="win95"] .tags-editor {
+display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  flex: 1;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-surface-low);
+  padding: 6px 10px;
+  min-height: 36px;
+}
+
+html[data-appearance="win95"] .tag-chip {
+display: flex;
+  align-items: center;
+  gap: 2px;
+  background: var(--color-bg-surface-high);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--color-text-subtle);
+  padding: 2px 6px;
+}
+
+html[data-appearance="win95"] .tag-remove {
+background: none;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  display: flex;
+  padding: 0;
+  margin-left: 2px;
+}
+
+html[data-appearance="win95"] .tag-remove:hover {
+color: var(--color-error);
+}
+
+html[data-appearance="win95"] .tag-remove .material-symbols-outlined {
+font-size: 12px;
+}
+
+html[data-appearance="win95"] .tag-input {
+background: none;
+  border: none;
+  outline: none;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-text-base);
+  min-width: 80px;
+}
+
+html[data-appearance="win95"] .tag-input::placeholder {
+color: var(--color-text-disabled);
+}
+
+html[data-appearance="win95"] .note-modal__footer {
+display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 8px;
+  margin: 0;
+  border-top: 1px solid var(--w95-shadow);
+  box-shadow: inset 0 1px 0 var(--w95-highlight);
+  background: var(--w95-face);
+}
+
+html[data-appearance="win95"] .note-modal__save:disabled {
+opacity: 0.6;
+  cursor: not-allowed;
+}
+
+html[data-appearance="win95"] .spinning {
+animation: w95-spin 0.8s linear infinite;
+  font-size: 16px;
+}
+
+@keyframes w95-spin {
+to { transform: rotate(360deg); }
 }
 </style>

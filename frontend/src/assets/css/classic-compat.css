@@ -1,0 +1,135 @@
+/* Orkpad95 — compat clásica.
+   Los templates compartidos usan markup w95-* (titlebars, botones) también en
+   modo clásico. Este shim les da apariencia sobria del tema original.
+   Todo con :where() para NO pelear con los estilos scoped clásicos. */
+
+html[data-appearance='classic'] :where(.w95-dialog-overlay) {
+  position: fixed;
+  inset: 0;
+  background: var(--color-overlay);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 6000;
+}
+
+html[data-appearance='classic'] :where(.w95-window) {
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  border-radius: var(--radius);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+html[data-appearance='classic'] :where(.w95-outset) {
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+/* Titlebar compartida -> header clásico */
+html[data-appearance='classic'] :where(.w95-titlebar) {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 16px;
+  background: var(--color-bg-surface-low);
+  border-bottom: 1px solid var(--color-border);
+  border-radius: 0;
+  user-select: none;
+}
+
+html[data-appearance='classic'] :where(.w95-titlebar .title-text) {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-base);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+html[data-appearance='classic'] :where(.w95-titlebar-buttons) {
+  margin-left: auto;
+  display: flex;
+  gap: 4px;
+}
+
+html[data-appearance='classic'] :where(.w95-title-btn) {
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+}
+
+html[data-appearance='classic'] :where(.tbtn-min),
+html[data-appearance='classic'] :where(.tbtn-restore) {
+  display: none;
+}
+
+/* Botones w95-* en modales clásicos */
+html[data-appearance='classic'] :where(.w95-btn) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-caps);
+  background: transparent;
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  min-width: 80px;
+}
+
+html[data-appearance='classic'] :where(.w95-btn--default) {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+  font-weight: 600;
+}
+
+html[data-appearance='classic'] :where(.w95-btn:disabled) {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Toasts clásicos: sin título amarillo */
+html[data-appearance='classic'] :where(.w95-toast) {
+  background: var(--color-bg-surface-highest);
+}
+
+html[data-appearance='classic'] :where(.toast-titlebar) {
+  display: none;
+}
+
+/* Checks cuadrados en clásica */
+html[data-appearance='classic'] :where(.w95-check) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-surface);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-success);
+}
+
+/* Menubar/status de ventanas (solo shell win95, por las dudas) */
+html[data-appearance='classic'] :where(.w95-menubar),
+html[data-appearance='classic'] :where(.w95-statusbar) {
+  display: none;
+}

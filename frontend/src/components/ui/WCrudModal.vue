@@ -50,7 +50,7 @@
         />
 
         <span v-if="fieldErrors[field.name]" class="field-error">
-          <span class="material-symbols-outlined">error</span>
+          <win-icon name="error" :size="16" />
           {{ fieldErrors[field.name] }}
         </span>
       </div>
@@ -74,6 +74,7 @@ import type { RemoteOption } from '@/utils/remote-entity-options'
 import WButton from './WButton.vue'
 import WDrawer from './WDrawer.vue'
 import WRemoteSelect from './WRemoteSelect.vue'
+import WinIcon from '../win95/WinIcon.vue'
 
 export interface CrudField {
   name: string
@@ -95,7 +96,7 @@ export interface CrudField {
 
 export default defineComponent({
   name: 'WCrudModal',
-  components: { WDrawer, WButton, WRemoteSelect },
+  components: { WDrawer, WButton, WRemoteSelect, WinIcon },
   props: {
     modelValue: { type: Boolean, required: true },
     schema: { type: Array as PropType<CrudField[]>, required: true },
@@ -290,5 +291,84 @@ export default defineComponent({
 .drawer-footer-actions {
   display: flex;
   gap: 12px;
+}
+</style>
+
+<!-- Win95: overrides encapsulados por data-appearance -->
+<style>
+html[data-appearance="win95"] .crud-form {
+display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--w95-face);
+}
+
+html[data-appearance="win95"] .form-group {
+display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+html[data-appearance="win95"] .form-group label {
+font-family: Tahoma, Verdana, sans-serif;
+  font-size: 11px;
+  color: #000;
+  text-transform: none;
+  letter-spacing: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+html[data-appearance="win95"] .required-mark {
+color: var(--w95-error);
+  font-size: 12px;
+  line-height: 1;
+}
+
+html[data-appearance="win95"] .form-group input, html[data-appearance="win95"] .form-group select, html[data-appearance="win95"] .form-group textarea {
+background-color: #fff;
+  border: 2px solid;
+  border-color: var(--w95-shadow) var(--w95-highlight) var(--w95-highlight) var(--w95-shadow);
+  box-shadow: inset 1px 1px 0 var(--w95-darkshadow);
+  padding: 4px 6px;
+  font-family: Tahoma, Verdana, sans-serif;
+  font-size: 12px;
+  color: #000;
+  border-radius: 0;
+  outline: none;
+  text-transform: none;
+}
+
+html[data-appearance="win95"] .form-group input:focus, html[data-appearance="win95"] .form-group select:focus, html[data-appearance="win95"] .form-group textarea:focus {
+border-color: var(--w95-shadow) var(--w95-highlight) var(--w95-highlight) var(--w95-shadow);
+  outline: 1px dotted #000;
+  outline-offset: -3px;
+}
+
+html[data-appearance="win95"] .form-group.has-error input, html[data-appearance="win95"] .form-group.has-error select, html[data-appearance="win95"] .form-group.has-error textarea {
+border-color: var(--w95-error);
+  background-color: #fff;
+  outline: 1px solid var(--w95-error);
+}
+
+html[data-appearance="win95"] .field-error {
+display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--w95-error);
+  font-family: Tahoma, Verdana, sans-serif;
+  font-size: 11px;
+  text-transform: none;
+}
+
+html[data-appearance="win95"] .field-error span {
+font-size: 14px;
+}
+
+html[data-appearance="win95"] .drawer-footer-actions {
+display: flex;
+  gap: 8px;
+  background: var(--w95-face);
 }
 </style>

@@ -3,7 +3,7 @@
     <div class="w-kpi-card__header">
       <div class="w-kpi-card__title">{{ title }}</div>
       <div v-if="icon" class="w-kpi-card__icon">
-        <span class="material-symbols-outlined">{{ icon }}</span>
+        <win-icon :name="materialToWinIcon(icon)" :size="32" :alt="title" />
       </div>
     </div>
     <div class="w-kpi-card__body">
@@ -20,9 +20,13 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+import WinIcon from '@/components/win95/WinIcon.vue'
+import { materialToWinIcon } from '@/components/win95/icons'
 
 export default defineComponent({
   name: 'WKpiCard',
+  components: { WinIcon },
+  methods: { materialToWinIcon },
   props: {
     title: { type: String, required: true },
     value: { type: [String, Number], required: true },
@@ -113,5 +117,86 @@ export default defineComponent({
   font-family: var(--font-mono);
   font-size: 11px;
   color: var(--color-text-muted);
+}
+</style>
+
+<!-- Win95: overrides encapsulados por data-appearance -->
+<style>
+html[data-appearance="win95"] .w-kpi-card {
+padding: 12px;
+  background: var(--w95-face);
+  border: 2px solid;
+  border-color: var(--w95-highlight) var(--w95-darkshadow) var(--w95-darkshadow) var(--w95-highlight);
+  border-radius: 0;
+  box-shadow: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+html[data-appearance="win95"] .w-kpi-card__header {
+display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+html[data-appearance="win95"] .w-kpi-card__title {
+font-family: Tahoma, Verdana, sans-serif;
+  font-size: 11px;
+  font-weight: normal;
+  color: #000;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+html[data-appearance="win95"] .w-kpi-card__icon {
+color: #000;
+  opacity: 1;
+}
+
+html[data-appearance="win95"] .w-kpi-card__icon span {
+font-size: 16px;
+}
+
+html[data-appearance="win95"] .w-kpi-card__body {
+display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+html[data-appearance="win95"] .w-kpi-card__value {
+font-family: Tahoma, Verdana, sans-serif;
+  font-size: 22px;
+  font-weight: bold;
+  color: #000;
+}
+
+html[data-appearance="win95"] .w-kpi-card__trend {
+font-family: Tahoma, Verdana, sans-serif;
+  font-size: 11px;
+  font-weight: normal;
+  padding: 2px 6px;
+  border-radius: 0;
+  border: 2px solid;
+  border-color: var(--w95-highlight) var(--w95-darkshadow) var(--w95-darkshadow) var(--w95-highlight);
+  background: var(--w95-face);
+  color: #000;
+  text-transform: none;
+}
+
+html[data-appearance="win95"] .w-kpi-card__trend.positive {
+color: var(--w95-success);
+  background: var(--w95-face);
+}
+
+html[data-appearance="win95"] .w-kpi-card__trend.negative {
+color: var(--w95-error);
+  background: var(--w95-face);
+}
+
+html[data-appearance="win95"] .w-kpi-card__subvalue {
+font-family: Tahoma, Verdana, sans-serif;
+  font-size: 11px;
+  color: #000;
 }
 </style>

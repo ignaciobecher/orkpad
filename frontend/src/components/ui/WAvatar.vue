@@ -49,3 +49,26 @@ export default defineComponent({
   letter-spacing: -0.05em;
 }
 </style>
+
+<!-- Win95: overrides encapsulados por data-appearance -->
+<style>
+html[data-appearance="win95"] .w-avatar {
+display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--w95-navy);
+  color: #fff;
+  font-family: Tahoma, Verdana, sans-serif;
+  font-weight: bold;
+  font-size: 11px;
+  border: 2px solid;
+  border-color: var(--w95-highlight) var(--w95-darkshadow) var(--w95-darkshadow) var(--w95-highlight);
+  border-radius: 0; 
+  text-transform: none;
+}
+
+html[data-appearance="win95"] .w-avatar__initials {
+font-size: 0.8em;
+  letter-spacing: -0.05em;
+}
+</style>

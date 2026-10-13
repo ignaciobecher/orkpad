@@ -1,25 +1,21 @@
 <template>
   <Teleport to="body">
     <Transition name="onboarding-fade">
-      <div v-if="onboardingStore.showWelcome" class="onboarding-overlay">
-        <div class="onboarding-card">
-          <div class="onboarding-header">
-            <div class="brand">
-              <w-logo :height="20" />
+      <div v-if="onboardingStore.showWelcome" class="onboarding-overlay w95-dialog-overlay">
+        <div class="onboarding-card w95-window">
+          <div class="w95-titlebar">
+            <win-icon name="programs" :size="16" alt="" />
+            <span class="title-text">Bienvenido — Orkpad95</span>
+            <div class="w95-titlebar-buttons">
+              <button class="w95-title-btn" @click="handleSkip" title="Cerrar"><span class="tbtn-close" aria-hidden="true">×</span></button>
             </div>
-            <button class="skip-btn" @click="handleSkip">
-              {{ $t('onboarding.skip') }}
-              <span class="material-symbols-outlined">close</span>
-            </button>
           </div>
 
           <div class="onboarding-body">
             <Transition :name="slideDirection" mode="out-in">
               <div :key="currentStep" class="step-content">
                 <div class="step-icon-wrapper">
-                  <span class="material-symbols-outlined step-icon">{{
-                    currentStepData.icon
-                  }}</span>
+                  <win-icon :name="materialToWinIcon(currentStepData.icon)" :size="32" class="step-icon" />
                 </div>
                 <span class="step-badge">{{ currentStepData.badge }}</span>
                 <h2 class="step-title">{{ currentStepData.title }}</h2>
@@ -38,31 +34,35 @@
           </div>
 
           <div class="onboarding-footer">
-            <button v-if="currentStep > 0" class="nav-btn nav-btn--back" @click="prev">
-              <span class="material-symbols-outlined">arrow_back</span>
-              {{ $t('onboarding.back') }}
-            </button>
-            <div v-else></div>
+            <div class="footer-left">
+              <button v-if="currentStep > 0" class="w95-btn" @click="prev">
+                <span aria-hidden="true">←</span>
+                {{ $t('onboarding.back') }}
+              </button>
+              <button class="w95-btn" @click="handleSkip">
+                {{ $t('onboarding.skip') }}
+              </button>
+            </div>
 
             <span class="step-counter">{{ currentStep + 1 }} / {{ steps.length }}</span>
 
             <button
               v-if="currentStep < steps.length - 1"
-              class="nav-btn nav-btn--next"
+              class="w95-btn w95-btn--default"
               @click="next"
             >
               {{ $t('onboarding.next') }}
-              <span class="material-symbols-outlined">arrow_forward</span>
+              <span aria-hidden="true">→</span>
             </button>
-            <button v-else class="nav-btn nav-btn--done" @click="handleComplete">
+            <button v-else class="w95-btn w95-btn--default" @click="handleComplete">
               {{ $t('onboarding.start') }}
-              <span class="material-symbols-outlined">rocket_launch</span>
+              <win-icon name="programs" :size="16" />
             </button>
           </div>
 
           <div v-if="isLastStep" class="onboarding-demo-cta">
-            <button class="demo-btn" :disabled="onboardingStore.demoLoading" @click="handleSeedDemoData">
-              <span class="material-symbols-outlined">auto_awesome</span>
+            <button class="w95-btn" :disabled="onboardingStore.demoLoading" @click="handleSeedDemoData">
+              <span aria-hidden="true">★</span>
               Ver un ejemplo con datos de muestra
             </button>
           </div>
@@ -76,7 +76,8 @@
 import { defineComponent, computed, ref, watch } from 'vue'
 import { useAuthStore } from '@/stores/auth.store'
 import { useOnboardingStore } from '@/stores/onboarding.store'
-import WLogo from '@/components/ui/WLogo.vue'
+import WinIcon from '@/components/win95/WinIcon.vue'
+import { materialToWinIcon } from '@/components/win95/icons'
 
 interface OnboardingStep {
   icon: string
@@ -87,7 +88,7 @@ interface OnboardingStep {
 
 export default defineComponent({
   name: 'OnboardingModal',
-  components: { WLogo },
+  components: { WinIcon },
   setup() {
     const authStore = useAuthStore()
     const onboardingStore = useOnboardingStore()
@@ -179,6 +180,7 @@ export default defineComponent({
       handleComplete,
       handleSkip,
       handleSeedDemoData,
+      materialToWinIcon,
     }
   },
 })
@@ -495,5 +497,219 @@ export default defineComponent({
   .step-title {
     font-size: 18px;
   }
+}
+</style>
+
+<!-- Win95: overrides encapsulados por data-appearance -->
+<style>
+html[data-appearance="win95"] .onboarding-overlay {
+position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.88);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 24px;
+}
+
+html[data-appearance="win95"] .onboarding-card {
+width: 100%;
+  max-width: 560px;
+  display: flex;
+  flex-direction: column;
+  padding: 2px;
+  font-family: Tahoma, Verdana, sans-serif;
+}
+
+html[data-appearance="win95"] .onboarding-header {
+display: none;
+}
+
+html[data-appearance="win95"] .onboarding-body {
+padding: 16px 24px 12px;
+  min-height: 270px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  background: var(--w95-face);
+}
+
+html[data-appearance="win95"] .step-content {
+width: 100%;
+  text-align: center;
+}
+
+html[data-appearance="win95"] .step-icon-wrapper {
+width: 40px;
+  height: 40px;
+  background-color: var(--w95-face);
+  border: 2px solid;
+  border-color: var(--w95-highlight) var(--w95-darkshadow) var(--w95-darkshadow) var(--w95-highlight);
+  border-radius: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+html[data-appearance="win95"] .step-icon {
+font-size: 20px;
+  color: #000;
+}
+
+html[data-appearance="win95"] .step-badge {
+display: block;
+  font-family: Tahoma, Verdana, sans-serif;
+  font-size: 11px;
+  color: #000;
+  text-transform: none;
+  letter-spacing: 0;
+  margin-bottom: 6px;
+}
+
+html[data-appearance="win95"] .step-title {
+font-family: Tahoma, Verdana, sans-serif;
+  font-size: 16px;
+  font-weight: bold;
+  color: #000;
+  margin: 0 0 8px;
+  line-height: 1.2;
+  text-transform: none;
+}
+
+html[data-appearance="win95"] .step-description {
+font-family: Tahoma, Verdana, sans-serif;
+  font-size: 12px;
+  color: #000;
+  line-height: 1.5;
+  margin: 0;
+  max-width: 400px;
+  margin-inline: auto;
+}
+
+html[data-appearance="win95"] .progress-dots {
+display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  padding: 8px;
+  background: var(--w95-face);
+}
+
+html[data-appearance="win95"] .dot {
+height: 12px;
+  width: 12px;
+  background-color: var(--w95-face);
+  border: 2px solid;
+  border-color: var(--w95-shadow) var(--w95-highlight) var(--w95-highlight) var(--w95-shadow);
+  border-radius: 0;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+html[data-appearance="win95"] .dot--active {
+width: 12px;
+  background-color: var(--w95-face);
+  border-color: var(--w95-darkshadow) var(--w95-darkshadow) var(--w95-darkshadow) var(--w95-darkshadow);
+  box-shadow: inset 1px 1px 0 var(--w95-highlight), inset -1px -1px 0 var(--w95-shadow), 0 0 0 1px #000;
+}
+
+html[data-appearance="win95"] .dot--done {
+background-color: var(--w95-face);
+  box-shadow: inset 1px 1px 0 var(--w95-highlight), inset -1px -1px 0 var(--w95-shadow), 0 0 0 1px #000;
+  opacity: 1;
+}
+
+html[data-appearance="win95"] .onboarding-footer {
+display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px;
+  border-top: 1px solid var(--w95-shadow);
+  background-color: var(--w95-face);
+}
+
+html[data-appearance="win95"] .step-counter {
+font-family: Tahoma, Verdana, sans-serif;
+  font-size: 11px;
+  color: #000;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+html[data-appearance="win95"] .footer-left {
+display: flex;
+  gap: 8px;
+}
+
+html[data-appearance="win95"] .onboarding-footer .w95-btn {
+display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+html[data-appearance="win95"] .onboarding-footer .w95-btn .material-symbols-outlined {
+font-size: 14px;
+}
+
+html[data-appearance="win95"] .onboarding-demo-cta {
+display: flex;
+  justify-content: center;
+  padding: 0 8px 8px;
+  background: var(--w95-face);
+}
+
+html[data-appearance="win95"] .onboarding-demo-cta .w95-btn {
+display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+html[data-appearance="win95"] .onboarding-demo-cta .w95-btn .material-symbols-outlined {
+font-size: 14px;
+}
+
+html[data-appearance="win95"] .slide-left-enter-active, html[data-appearance="win95"] .slide-left-leave-active, html[data-appearance="win95"] .slide-right-enter-active, html[data-appearance="win95"] .slide-right-leave-active {
+transition: all 0.22s ease;
+}
+
+html[data-appearance="win95"] .slide-left-enter-from {
+transform: translateX(36px);
+  opacity: 0;
+}
+
+html[data-appearance="win95"] .slide-left-leave-to {
+transform: translateX(-36px);
+  opacity: 0;
+}
+
+html[data-appearance="win95"] .slide-right-enter-from {
+transform: translateX(-36px);
+  opacity: 0;
+}
+
+html[data-appearance="win95"] .slide-right-leave-to {
+transform: translateX(36px);
+  opacity: 0;
+}
+
+html[data-appearance="win95"] .onboarding-fade-enter-active, html[data-appearance="win95"] .onboarding-fade-leave-active {
+transition: opacity 0.3s ease;
+}
+
+html[data-appearance="win95"] .onboarding-fade-enter-from, html[data-appearance="win95"] .onboarding-fade-leave-to {
+opacity: 0;
+}
+
+@media (max-width: 640px) {
+html[data-appearance="win95"] .onboarding-body {
+padding: 32px 24px 20px;
+    min-height: 240px;
+}
+html[data-appearance="win95"] .step-title {
+font-size: 18px;
+}
 }
 </style>

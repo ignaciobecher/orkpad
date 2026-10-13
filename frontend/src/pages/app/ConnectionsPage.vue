@@ -12,7 +12,7 @@
       <div class="integration-card">
         <div class="integration-header">
           <div class="integration-icon github-icon">
-            <span class="material-symbols-outlined">commit</span>
+            <win-icon name="console" :size="32" />
           </div>
           <div class="integration-info">
             <h2 class="integration-name">GitHub</h2>
@@ -26,7 +26,7 @@
         <div class="integration-body">
           <div class="integration-actions">
             <w-button variant="primary" @click="connectGithub">
-              <span class="material-symbols-outlined mr-1">add_link</span>
+              <win-icon name="network" :size="16" />
               Conectar GitHub
             </w-button>
           </div>
@@ -41,10 +41,11 @@ import { defineComponent } from 'vue'
 import { baseURL } from '@/api/axios.config'
 import WBadge from '@/components/ui/WBadge.vue'
 import WButton from '@/components/ui/WButton.vue'
+import WinIcon from '@/components/win95/WinIcon.vue'
 
 export default defineComponent({
   name: 'ConnectionsPage',
-  components: { WBadge, WButton },
+  components: { WBadge, WButton, WinIcon },
   methods: {
     connectGithub() {
       localStorage.setItem('github_auth_mode', 'link')

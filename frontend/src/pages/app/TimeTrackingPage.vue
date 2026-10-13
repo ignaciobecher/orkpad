@@ -9,7 +9,7 @@
         :loading="loading"
         @click="handleStart"
       >
-        <span class="material-symbols-outlined mr-1">play_arrow</span>
+        <span class="mr-1">►</span>
         INICIAR JORNADA
       </w-button>
     </header>
@@ -28,11 +28,10 @@
       </div>
       <div class="active-card__right">
         <w-button variant="secondary" @click="openAddBlock">
-          <span class="material-symbols-outlined mr-1">add</span>
           AGREGAR BLOQUE
         </w-button>
         <w-button variant="danger" :loading="loading" @click="handleEnd">
-          <span class="material-symbols-outlined mr-1">stop</span>
+          <span class="mr-1">■</span>
           FINALIZAR JORNADA
         </w-button>
       </div>
@@ -43,7 +42,7 @@
       <div class="section-label">BLOQUES DE HOY</div>
 
       <div v-if="entriesLoading" class="blocks-loading">
-        <span class="material-symbols-outlined spin">autorenew</span>
+        <win-icon name="hourglass" :size="16" class="spin" />
       </div>
 
       <div v-else-if="!activeEntries.length" class="blocks-empty">
@@ -56,7 +55,7 @@
           :key="entry._id"
           class="block-row"
         >
-          <span class="material-symbols-outlined block-icon">schedule</span>
+          <win-icon name="clock" :size="16" class="block-icon" />
           <div class="block-project">{{ getProjectLabel(entry.projectId) }}</div>
           <div class="block-time">
             {{ formatTime(entry.startTime) }}
@@ -66,7 +65,7 @@
           <div class="block-duration mono">{{ formatDuration(entry.duration) }}</div>
           <div v-if="entry.description" class="block-desc">{{ entry.description }}</div>
           <button class="block-delete" @click="handleRemoveBlock(entry._id)" title="Eliminar">
-            <span class="material-symbols-outlined">close</span>
+            <span>×</span>
           </button>
         </div>
       </div>
@@ -79,11 +78,11 @@
 
     <!-- ───── SIN JORNADA ───── -->
     <section v-else-if="!loading" class="no-session">
-      <span class="material-symbols-outlined no-session__icon">wb_sunny</span>
+      <win-icon name="clock" :size="32" class="no-session__icon" />
       <p class="no-session__title">SIN JORNADA ACTIVA</p>
       <p class="no-session__sub">Registra el inicio de tu día de trabajo y los bloques dedicados a cada proyecto.</p>
       <w-button variant="primary" :loading="loading" @click="handleStart">
-        <span class="material-symbols-outlined mr-1">play_arrow</span>
+        <span class="mr-1">►</span>
         INICIAR JORNADA
       </w-button>
     </section>
@@ -93,7 +92,7 @@
       <div class="section-label">HISTORIAL DE JORNADAS</div>
 
       <div v-if="loading && !pastSessions.length" class="blocks-loading">
-        <span class="material-symbols-outlined spin">autorenew</span>
+        <win-icon name="hourglass" :size="16" class="spin" />
       </div>
 
       <div v-else-if="!pastSessions.length" class="blocks-empty">
@@ -112,21 +111,21 @@
               {{ formatTime(session.startTime) }} → {{ session.endTime ? formatTime(session.endTime) : '—' }}
             </div>
             <div class="history-total mono">{{ formatSessionDuration(session) }}</div>
-            <span class="material-symbols-outlined history-chevron">
-              {{ expandedSessions[session._id] ? 'expand_less' : 'expand_more' }}
+            <span class="history-chevron">
+              {{ expandedSessions[session._id] ? '▴' : '▾' }}
             </span>
             <button
               class="history-delete"
               @click.stop="handleRemoveSession(session._id)"
               title="Eliminar jornada"
             >
-              <span class="material-symbols-outlined">delete</span>
+              <win-icon name="recycle" :size="16" />
             </button>
           </button>
 
           <div v-if="expandedSessions[session._id]" class="history-entries">
             <div v-if="entriesLoading" class="blocks-loading small">
-              <span class="material-symbols-outlined spin">autorenew</span>
+              <win-icon name="hourglass" :size="16" class="spin" />
             </div>
             <div
               v-else-if="!getSessionEntries(session._id).length"
@@ -140,7 +139,7 @@
                 :key="entry._id"
                 class="block-row block-row--compact"
               >
-                <span class="material-symbols-outlined block-icon">schedule</span>
+                <win-icon name="clock" :size="16" class="block-icon" />
                 <div class="block-project">{{ getProjectLabel(entry.projectId) }}</div>
                 <div class="block-time">
                   {{ formatTime(entry.startTime) }}
@@ -224,6 +223,32 @@
           </w-button>
         </div>
       </div>
+      <w-confirm-modal
+        :is-open="showEndModal"
+        title="Finalizar jornada"
+        message="¿Finalizar la jornada de hoy?"
+        confirm-text="Finalizar"
+        @confirm="handleEnd"
+        @cancel="showEndModal = false"
+      />
+      <w-confirm-modal
+        :is-open="!!removeBlockTarget"
+        title="Eliminar bloque"
+        message="¿Eliminar este bloque?"
+        confirm-text="Eliminar"
+        :is-danger="true"
+        @confirm="handleRemoveBlock(removeBlockTarget)"
+        @cancel="removeBlockTarget = null"
+      />
+      <w-confirm-modal
+        :is-open="!!removeSessionTarget"
+        title="Eliminar jornada"
+        message="¿Eliminar esta jornada?"
+        confirm-text="Eliminar"
+        :is-danger="true"
+        @confirm="handleRemoveSession(removeSessionTarget)"
+        @cancel="removeSessionTarget = null"
+      />
     </div>
   </div>
 </template>
@@ -232,12 +257,14 @@
 import { defineComponent } from 'vue'
 import { mapState, mapActions } from 'pinia'
 import WButton from '@/components/ui/WButton.vue'
+import WConfirmModal from '@/components/ui/WConfirmModal.vue'
+import WinIcon from '@/components/win95/WinIcon.vue'
 import { useWorkSessionsStore } from '@/stores/work-sessions.store'
 import { loadProjectOptions } from '@/utils/remote-entity-options'
 
 export default defineComponent({
   name: 'TimeTrackingPage',
-  components: { WButton },
+  components: { WButton, WConfirmModal, WinIcon },
 
   data() {
     return {
@@ -246,6 +273,9 @@ export default defineComponent({
       expandedSessions: {} as Record<string, boolean>,
       projectLabels: {} as Record<string, string>,
       projectOptions: [] as { value: string; label: string }[],
+      showEndModal: false,
+      removeBlockTarget: null as string | null,
+      removeSessionTarget: null as string | null,
       showAddBlockModal: false,
       blockSaving: false,
       blockForm: {
@@ -313,7 +343,8 @@ export default defineComponent({
 
     async handleEnd() {
       if (!this.activeSession) return
-      if (!confirm('¿Finalizar la jornada de hoy?')) return
+      if (!this.showEndModal) { this.showEndModal = true; return }
+      this.showEndModal = false
       await this.endSession((this.activeSession as any)._id)
     },
 
@@ -361,12 +392,16 @@ export default defineComponent({
 
     async handleRemoveBlock(entryId: string) {
       if (!this.activeSession) return
-      if (!confirm('¿Eliminar este bloque?')) return
+      if (!this.removeBlockTarget) { this.removeBlockTarget = entryId; return }
+      entryId = this.removeBlockTarget
+      this.removeBlockTarget = null
       await this.removeBlock((this.activeSession as any)._id, entryId)
     },
 
     async handleRemoveSession(sessionId: string) {
-      if (!confirm('¿Eliminar esta jornada?')) return
+      if (!this.removeSessionTarget) { this.removeSessionTarget = sessionId; return }
+      sessionId = this.removeSessionTarget
+      this.removeSessionTarget = null
       await this.removeSession(sessionId)
     },
 

@@ -9,7 +9,7 @@
 
       <div v-if="!hasError" class="verified-body">
         <div class="icon-wrapper icon-wrapper--success">
-          <span class="material-symbols-outlined">check_circle</span>
+          <win-icon name="check" :size="32" />
         </div>
         <span class="badge badge--success">VERIFICACIÓN COMPLETADA</span>
         <h2 class="title">¡Email verificado!</h2>
@@ -18,13 +18,13 @@
         </p>
         <router-link to="/login" class="cta-btn">
           Ir al inicio de sesión
-          <span class="material-symbols-outlined">arrow_forward</span>
+          →
         </router-link>
       </div>
 
       <div v-else class="verified-body">
         <div class="icon-wrapper icon-wrapper--error">
-          <span class="material-symbols-outlined">error</span>
+          <win-icon name="error" :size="32" />
         </div>
         <span class="badge badge--error">ENLACE INVÁLIDO</span>
         <h2 class="title">No pudimos verificar tu email</h2>
@@ -33,7 +33,7 @@
           sesión.
         </p>
         <router-link to="/login" class="cta-btn cta-btn--ghost">
-          <span class="material-symbols-outlined">arrow_back</span>
+          ←
           Volver al inicio de sesión
         </router-link>
       </div>
@@ -46,10 +46,11 @@ import { defineComponent, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import AuthLayout from '@/components/layout/AuthLayout.vue'
 import WLogo from '@/components/ui/WLogo.vue'
+import WinIcon from '@/components/win95/WinIcon.vue'
 
 export default defineComponent({
   name: 'EmailVerifiedPage',
-  components: { AuthLayout, WLogo },
+  components: { AuthLayout, WLogo, WinIcon },
   setup() {
     const route = useRoute()
     const hasError = computed(() => !!route.query.error)

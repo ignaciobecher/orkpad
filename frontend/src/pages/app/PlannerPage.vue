@@ -8,11 +8,11 @@
         <!-- Date navigation -->
         <div class="planner-nav">
           <button class="planner-nav__btn" @click="handlePrev">
-            <span class="material-symbols-outlined">chevron_left</span>
+            ‹
           </button>
           <button class="planner-nav__today" @click="uiStore.goToToday()">Hoy</button>
           <button class="planner-nav__btn" @click="handleNext">
-            <span class="material-symbols-outlined">chevron_right</span>
+            ›
           </button>
           <span class="planner-nav__label">{{ currentLabel }}</span>
         </div>
@@ -28,7 +28,7 @@
             :class="{ active: uiStore.view === v.value }"
             @click="uiStore.setView(v.value)"
           >
-            <span class="material-symbols-outlined">{{ v.icon }}</span>
+            <win-icon :name="materialToWinIcon(v.icon)" :size="16" />
             {{ v.label }}
           </button>
         </div>
@@ -40,12 +40,11 @@
           title="Modo foco (F)"
           @click="uiStore.toggleFocusMode()"
         >
-          <span class="material-symbols-outlined">center_focus_strong</span>
+          <win-icon name="search" :size="16" />
         </button>
 
         <!-- New block -->
         <button class="planner-btn-primary" @click="openCreateBlock()">
-          <span class="material-symbols-outlined">add</span>
           Nuevo bloque
         </button>
       </div>
@@ -56,7 +55,7 @@
       <!-- Main view -->
       <div class="planner-main">
         <div v-if="blocksStore.loading && !hasBlocks" class="planner-loading">
-          <span class="material-symbols-outlined spinning">sync</span>
+          <win-icon name="hourglass" :size="16" />
           Cargando planner...
         </div>
         <template v-else>
@@ -73,7 +72,7 @@
           @edit-block="openEditBlock"
         />
         <div v-else class="planner-coming-soon">
-          <span class="material-symbols-outlined">construction</span>
+          <win-icon name="gears" :size="32" />
           <p>Vista en construcción</p>
         </div>
         </template>
@@ -90,7 +89,7 @@
             :title="tab.label"
             @click="uiStore.setSidebarTab(tab.value)"
           >
-            <span class="material-symbols-outlined">{{ tab.icon }}</span>
+            <win-icon :name="materialToWinIcon(tab.icon)" :size="16" />
             <span class="planner-sidebar__tab-label">{{ tab.label }}</span>
           </button>
         </div>
@@ -102,17 +101,17 @@
             @applied="onTemplateApplied"
           />
           <div v-else-if="uiStore.sidebarTab === 'goals'" class="planner-coming-soon">
-            <span class="material-symbols-outlined">flag</span>
+            <win-icon name="dir-check" :size="32" />
             <p>Objetivos</p>
             <small>Define metas diarias, semanales y mensuales. Próximamente en Fase 3.</small>
           </div>
           <div v-else-if="uiStore.sidebarTab === 'habits'" class="planner-coming-soon">
-            <span class="material-symbols-outlined">fitness_center</span>
+            <win-icon name="dir-check" :size="32" />
             <p>Hábitos</p>
             <small>Rastreá tus hábitos y rachas diarias. Próximamente en Fase 2.</small>
           </div>
           <div v-else-if="uiStore.sidebarTab === 'analytics'" class="planner-coming-soon">
-            <span class="material-symbols-outlined">bar_chart</span>
+            <win-icon name="chart" :size="32" />
             <p>Analíticas</p>
             <small>Horas trabajadas, productividad y estadísticas. Próximamente en Fase 3.</small>
           </div>
@@ -141,11 +140,13 @@ import PlannerDayView from '@/components/planner/views/PlannerDayView.vue'
 import PlannerWeekView from '@/components/planner/views/PlannerWeekView.vue'
 import BlockEditorModal from '@/components/planner/blocks/BlockEditorModal.vue'
 import TemplateSelector from '@/components/planner/templates/TemplateSelector.vue'
+import WinIcon from '@/components/win95/WinIcon.vue'
+import { materialToWinIcon } from '@/components/win95/icons'
 import type { PlannerBlock } from '@/api/planner/planner.types'
 
 export default defineComponent({
   name: 'PlannerPage',
-  components: { PlannerDayView, PlannerWeekView, BlockEditorModal, TemplateSelector },
+  components: { PlannerDayView, PlannerWeekView, BlockEditorModal, TemplateSelector, WinIcon },
 
   setup() {
     const uiStore = usePlannerUIStore()
@@ -251,6 +252,7 @@ export default defineComponent({
       onBlockSaved,
       onTemplateApplied,
       hasBlocks,
+      materialToWinIcon,
     }
   },
 })
