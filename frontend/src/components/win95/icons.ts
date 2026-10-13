@@ -117,6 +117,11 @@ const MATERIAL_MAP: Record<string, string> = {
   view_list: 'file-lines', upload: 'file-lines', upload_file: 'file-lines',
   download: 'file-lines', filter_list: 'file-lines',
   view_kanban: 'folder', view_column: 'folder', grid_view: 'folder',
+  movie: 'file-lines', audio_file: 'file-lines', article: 'wordpad',
+  table_chart: 'chart', image: 'paint', folder_zip: 'folder', draft: 'file-lines',
+  badge: 'file-lines', savings: 'calculator', percent: 'chart',
+  emoji_events: 'dir-check', local_fire_department: 'dir-check',
+  public: 'network',
   keep_off: 'file-lines', check_box: 'check', radio_button_unchecked: 'file-lines',
   play_arrow: 'check', undo: 'file-lines',
 }
@@ -143,6 +148,54 @@ export const CATEGORY_WIN_ICON: Record<string, string> = {
 export function categoryToWinIcon(cat?: string | null): string {
   if (!cat) return 'file-lines'
   return CATEGORY_WIN_ICON[cat.trim()] || 'file-lines'
+}
+
+/** Inverso para la apariencia clásica: clave win -> Material Symbol representativo. */
+const INVERSE_MAP: Record<string, string> = {
+  computer: 'computer',
+  folder: 'folder',
+  'folder-open': 'folder_open',
+  briefcase: 'assignment',
+  check: 'check_circle',
+  calendar: 'calendar_month',
+  'user-calendar': 'view_day',
+  users: 'group',
+  'users-key': 'admin_panel_settings',
+  calculator: 'payments',
+  newspaper: 'request_quote',
+  chart: 'bar_chart',
+  'sched-tasks': 'rebase_edit',
+  clock: 'schedule',
+  'dir-check': 'flag',
+  wordpad: 'description',
+  note: 'edit_note',
+  'notepad-file': 'content_copy',
+  'file-lines': 'description',
+  network: 'electrical_services',
+  console: 'terminal',
+  gears: 'construction',
+  settings: 'settings',
+  mail: 'mail',
+  envelope: 'drafts',
+  search: 'search',
+  help: 'help',
+  key: 'key',
+  shutdown: 'power_settings_new',
+  windows: 'apps',
+  info: 'info',
+  warning: 'warning',
+  error: 'error',
+  question: 'help',
+  printer: 'print',
+  programs: 'dashboard_customize',
+  hourglass: 'hourglass_empty',
+  paint: 'edit',
+  recycle: 'delete',
+}
+
+export function winToMaterial(name?: string | null): string {
+  if (!name) return 'description'
+  return INVERSE_MAP[name.trim()] || 'description'
 }
 
 export const WIN_ICON_NAMES = Object.keys(ICON_FILES)

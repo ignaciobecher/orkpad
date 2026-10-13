@@ -15,7 +15,7 @@
             <Transition :name="slideDirection" mode="out-in">
               <div :key="currentStep" class="step-content">
                 <div class="step-icon-wrapper">
-                  <win-icon :name="materialToWinIcon(currentStepData.icon)" :size="32" class="step-icon" />
+                  <win-icon :material="currentStepData.icon" :size="32" class="step-icon" />
                 </div>
                 <span class="step-badge">{{ currentStepData.badge }}</span>
                 <h2 class="step-title">{{ currentStepData.title }}</h2>
@@ -77,7 +77,6 @@ import { defineComponent, computed, ref, watch } from 'vue'
 import { useAuthStore } from '@/stores/auth.store'
 import { useOnboardingStore } from '@/stores/onboarding.store'
 import WinIcon from '@/components/win95/WinIcon.vue'
-import { materialToWinIcon } from '@/components/win95/icons'
 
 interface OnboardingStep {
   icon: string
@@ -180,7 +179,6 @@ export default defineComponent({
       handleComplete,
       handleSkip,
       handleSeedDemoData,
-      materialToWinIcon,
     }
   },
 })

@@ -20,14 +20,14 @@
             title="Vista detalles"
             @click="setExplorerView('details')"
           >
-            <win-icon name="file-lines" :size="16" />
+            <win-icon material="view_list" :size="16" />
           </button>
           <button
             :class="['view-btn', { 'view-btn--active': explorerView === 'icons' }]"
             title="Iconos grandes"
             @click="setExplorerView('icons')"
           >
-            <win-icon name="folder" :size="16" />
+            <win-icon material="grid_view" :size="16" />
           </button>
         </div>
       </div>
@@ -142,7 +142,7 @@
             @contextmenu.prevent="openContextMenu($event, row)"
           >
             <span class="details-col details-col--name">
-              <win-icon :name="materialToWinIcon(row.icon)" :size="16" />
+              <win-icon :material="row.icon" :size="16" />
               {{ row.name }}
             </span>
             <span class="details-col">{{ row.dateLabel }}</span>
@@ -166,7 +166,7 @@
             @dblclick="openRow(row)"
             @contextmenu.prevent="openContextMenu($event, row)"
           >
-            <win-icon :name="materialToWinIcon(row.icon)" :size="32" />
+            <win-icon :material="row.icon" :size="32" />
             <span class="icon-tile__name">{{ row.name }}</span>
           </button>
         </div>
@@ -279,7 +279,7 @@
             :src="previewSrc || undefined"
           />
           <div v-else class="doc-binary-preview">
-            <win-icon :name="materialToWinIcon(selectedDocument ? getDocumentIcon(selectedDocument) : 'draft')" :size="32" />
+            <win-icon :material="selectedDocument ? getDocumentIcon(selectedDocument) : 'draft'" :size="32" />
             <p>Vista previa no disponible para este formato.</p>
             <p class="doc-preview__hint">Puedes descargarlo desde aquí cuando lo necesites.</p>
           </div>
@@ -306,7 +306,6 @@ import type { Document } from '@/api/docs/docs.types'
 import WButton from '@/components/ui/WButton.vue'
 import WConfirmModal from '@/components/ui/WConfirmModal.vue'
 import WinIcon from '@/components/win95/WinIcon.vue'
-import { materialToWinIcon } from '@/components/win95/icons'
 import { useDocsStore } from '@/stores/docs.store'
 import {
   buildBreadcrumbs,
@@ -512,7 +511,6 @@ export default defineComponent({
     },
   },
   methods: {
-    materialToWinIcon,
     ...mapActions(useDocsStore, ['fetchAll', 'create', 'remove', 'update']),
     getDocumentIcon,
     formatDateTime(value: string) {

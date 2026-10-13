@@ -22,7 +22,7 @@
                 :class="{ active: form.type === opt.value }"
                 @click="onTypeChange(opt.value)"
               >
-                <win-icon :name="materialToWinIcon(opt.icon)" :size="16" :alt="opt.label" />
+                <win-icon :material="opt.icon" :size="16" :alt="opt.label" />
                 {{ opt.label }}
               </button>
             </div>
@@ -84,7 +84,6 @@
 import { defineComponent, PropType } from 'vue'
 import WInput from '@/components/ui/WInput.vue'
 import WinIcon from '@/components/win95/WinIcon.vue'
-import { materialToWinIcon } from '@/components/win95/icons'
 import type { Goal, GoalType } from '@/api/goals/goals.types'
 
 const COLOR_OPTIONS = ['#5B4EFF', '#10B981', '#F59E0B', '#EF4444', '#3B82F6', '#EC4899']
@@ -170,7 +169,6 @@ export default defineComponent({
     },
   },
   methods: {
-    materialToWinIcon,
     onTypeChange(type: GoalType) {
       this.form.type = type
       if (type === 'checklist') {

@@ -129,7 +129,7 @@
                   :class="['tab-btn', { 'tab-btn--active': activeTab === tab.id }]"
                   @click="activeTab = tab.id"
                 >
-                  <win-icon :name="materialToWinIcon(tab.icon)" :size="16" />
+                  <win-icon :material="tab.icon" :size="16" />
                   {{ tab.label }}
                 </button>
               </div>
@@ -405,7 +405,6 @@ import WTable from '@/components/ui/WTable.vue'
 import WCard from '@/components/ui/WCard.vue'
 import WBadge from '@/components/ui/WBadge.vue'
 import WinIcon from '@/components/win95/WinIcon.vue'
-import { materialToWinIcon } from '@/components/win95/icons'
 import WConfirmModal from '@/components/ui/WConfirmModal.vue'
 
 const emptyForm = () => ({
@@ -495,7 +494,6 @@ export default defineComponent({
     },
   },
   methods: {
-    materialToWinIcon,
     ...mapActions(useQuotesStore, ['fetchAll', 'setFilters', 'create', 'update', 'remove', 'downloadPdf', 'convertToInvoice']),
     formatCurrency(amount: number, currency?: string) {
       return formatCurrency(amount, currency)

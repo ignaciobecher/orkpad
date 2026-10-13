@@ -28,7 +28,7 @@
             :class="{ active: uiStore.view === v.value }"
             @click="uiStore.setView(v.value)"
           >
-            <win-icon :name="materialToWinIcon(v.icon)" :size="16" />
+            <win-icon :material="v.icon" :size="16" />
             {{ v.label }}
           </button>
         </div>
@@ -89,7 +89,7 @@
             :title="tab.label"
             @click="uiStore.setSidebarTab(tab.value)"
           >
-            <win-icon :name="materialToWinIcon(tab.icon)" :size="16" />
+            <win-icon :material="tab.icon" :size="16" />
             <span class="planner-sidebar__tab-label">{{ tab.label }}</span>
           </button>
         </div>
@@ -141,7 +141,6 @@ import PlannerWeekView from '@/components/planner/views/PlannerWeekView.vue'
 import BlockEditorModal from '@/components/planner/blocks/BlockEditorModal.vue'
 import TemplateSelector from '@/components/planner/templates/TemplateSelector.vue'
 import WinIcon from '@/components/win95/WinIcon.vue'
-import { materialToWinIcon } from '@/components/win95/icons'
 import type { PlannerBlock } from '@/api/planner/planner.types'
 
 export default defineComponent({
@@ -252,7 +251,6 @@ export default defineComponent({
       onBlockSaved,
       onTemplateApplied,
       hasBlocks,
-      materialToWinIcon,
     }
   },
 })

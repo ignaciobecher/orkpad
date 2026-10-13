@@ -53,14 +53,14 @@
             title="Vista grilla"
             @click="notesStore.setView('grid')"
           >
-            <win-icon name="folder" :size="16" />
+            <win-icon material="grid_view" :size="16" />
           </button>
           <button
             :class="['view-btn', { 'view-btn--active': notesStore.view === 'list' }]"
             title="Vista lista"
             @click="notesStore.setView('list')"
           >
-            <win-icon name="file-lines" :size="16" />
+            <win-icon material="view_list" :size="16" />
           </button>
         </div>
       </div>
@@ -163,7 +163,7 @@
             @click="openEdit(note)"
           >
             <button class="list-action-btn" @click.stop="handleToggle(note._id)">
-              <win-icon :name="materialToWinIcon(note.status === 'done' ? 'check_circle' : 'radio_button_unchecked')" :size="16" />
+              <win-icon :material="note.status === 'done' ? 'check_circle' : 'radio_button_unchecked'" :size="16" />
             </button>
             <div v-if="note.color" class="note-list-row__color" :style="{ background: note.color }"></div>
             <span class="note-list-row__title">{{ note.title || plainText(note.content) || '(Sin contenido)' }}</span>
@@ -206,7 +206,7 @@
             @click="openEdit(note)"
           >
             <button class="list-action-btn" @click.stop="handleToggle(note._id)">
-              <win-icon :name="materialToWinIcon(note.status === 'done' ? 'check_circle' : 'radio_button_unchecked')" :size="16" />
+              <win-icon :material="note.status === 'done' ? 'check_circle' : 'radio_button_unchecked'" :size="16" />
             </button>
             <div v-if="note.color" class="note-list-row__color" :style="{ background: note.color }"></div>
             <span class="note-list-row__title">{{ note.title || plainText(note.content) || '(Sin contenido)' }}</span>
@@ -303,7 +303,6 @@ import NoteCard from '@/components/notes/NoteCard.vue'
 import NoteEditModal from '@/components/notes/NoteEditModal.vue'
 import WConfirmModal from '@/components/ui/WConfirmModal.vue'
 import WinIcon from '@/components/win95/WinIcon.vue'
-import { materialToWinIcon } from '@/components/win95/icons'
 import type { Note, CreateNoteDto, UpdateNoteDto, NoteQueryDto } from '@/api/notes/notes.types'
 
 const STATUS_OPTIONS = [
@@ -536,7 +535,6 @@ export default defineComponent({
       handleRemove,
       confirmDelete,
       handleToggleChecklist,
-      materialToWinIcon,
     }
   },
 })

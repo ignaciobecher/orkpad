@@ -3,7 +3,7 @@
     <div class="w-kpi-card__header">
       <div class="w-kpi-card__title">{{ title }}</div>
       <div v-if="icon" class="w-kpi-card__icon">
-        <win-icon :name="materialToWinIcon(icon)" :size="32" :alt="title" />
+        <win-icon :material="icon" :size="32" :alt="title" />
       </div>
     </div>
     <div class="w-kpi-card__body">
@@ -21,12 +21,10 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import WinIcon from '@/components/win95/WinIcon.vue'
-import { materialToWinIcon } from '@/components/win95/icons'
 
 export default defineComponent({
   name: 'WKpiCard',
   components: { WinIcon },
-  methods: { materialToWinIcon },
   props: {
     title: { type: String, required: true },
     value: { type: [String, Number], required: true },

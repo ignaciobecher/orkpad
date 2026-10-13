@@ -1,7 +1,7 @@
 <template>
   <div class="task-item" :class="{ 'is-completed': task.completed }">
     <button class="task-item__check" @click.stop="$emit('toggle', task._id)">
-      <win-icon :name="materialToWinIcon(task.completed ? 'check_circle' : 'radio_button_unchecked')" :size="16" />
+      <win-icon :material="task.completed ? 'check_circle' : 'radio_button_unchecked'" :size="16" />
     </button>
 
     <span class="task-item__title">{{ task.title }}</span>
@@ -22,7 +22,6 @@
 import { defineComponent } from 'vue'
 import type { PlannerTask } from '@/api/planner/planner.types'
 import WinIcon from '../../win95/WinIcon.vue'
-import { materialToWinIcon } from '../../win95/icons'
 
 export default defineComponent({
   name: 'TaskItem',
@@ -31,9 +30,6 @@ export default defineComponent({
     task: { type: Object as () => PlannerTask, required: true },
   },
   emits: ['toggle', 'delete'],
-  setup() {
-    return { materialToWinIcon }
-  },
 })
 </script>
 

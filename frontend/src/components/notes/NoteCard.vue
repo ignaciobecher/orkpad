@@ -19,7 +19,7 @@
           :title="note.isPinned ? 'Desfijar' : 'Fijar'"
           @click="$emit('pin', note._id)"
         >
-          <win-icon :name="materialToWinIcon(note.isPinned ? 'keep' : 'keep_off')" :size="16" />
+          <win-icon :material="note.isPinned ? 'keep' : 'keep_off'" :size="16" />
         </button>
       </div>
     </div>
@@ -35,7 +35,7 @@
         class="checklist-item"
         @click.prevent="$emit('toggle-checklist', note._id, item.id)"
       >
-        <win-icon :name="materialToWinIcon(item.completed ? 'check_box' : 'check_box_outline_blank')" :size="16" class="checklist-icon" />
+        <win-icon :material="item.completed ? 'check_box' : 'check_box_outline_blank'" :size="16" class="checklist-icon" />
         <span :class="['checklist-text', { 'checklist-text--done': item.completed }]">{{ item.text }}</span>
       </label>
       <span v-if="note.checklist.length > 5" class="checklist-more">
@@ -55,7 +55,7 @@
           :title="note.status === 'done' ? 'Reactivar' : 'Completar'"
           @click="$emit('toggle', note._id)"
         >
-          <win-icon :name="materialToWinIcon(note.status === 'done' ? 'undo' : 'check_circle')" :size="16" />
+          <win-icon :material="note.status === 'done' ? 'undo' : 'check_circle'" :size="16" />
         </button>
         <button class="note-action-btn note-action-btn--danger" title="Eliminar" @click="$emit('remove', note._id)">
           <win-icon name="recycle" :size="16" />
@@ -70,7 +70,6 @@ import { defineComponent, computed } from 'vue'
 import type { PropType } from 'vue'
 import type { Note } from '@/api/notes/notes.types'
 import WinIcon from '../win95/WinIcon.vue'
-import { materialToWinIcon } from '../win95/icons'
 
 export default defineComponent({
   name: 'NoteCard',
@@ -101,7 +100,7 @@ export default defineComponent({
       return d.toLocaleDateString('es-AR', { day: '2-digit', month: 'short' })
     }
 
-    return { cardStyle, renderedContent, formatDate, materialToWinIcon }
+    return { cardStyle, renderedContent, formatDate }
   },
 })
 </script>

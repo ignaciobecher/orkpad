@@ -64,7 +64,7 @@
           :class="{ active: activeTab === tab.id }"
           @click="activeTab = tab.id"
         >
-          <win-icon :name="materialToWinIcon(tab.icon)" :size="16" />
+          <win-icon :material="tab.icon" :size="16" />
           {{ tab.label }}
           <span v-if="tab.count !== null && tab.count !== undefined" class="detail-tab-count">{{ tab.count }}</span>
         </button>
@@ -296,7 +296,7 @@
               :class="{ selected: selectedRepo?.fullName === repo.fullName }"
               @click="selectedRepo = repo"
             >
-              <win-icon :name="repo.private ? 'key' : 'network'" :size="16" />
+              <win-icon :material="repo.private ? 'lock' : 'public'" :size="16" />
               <span class="repo-item-name">{{ repo.fullName }}</span>
             </div>
           </div>
@@ -347,7 +347,6 @@ import WDrawer from '@/components/ui/WDrawer.vue'
 import WConfirmModal from '@/components/ui/WConfirmModal.vue'
 import ProjectFinanceGrid from '@/components/projects/ProjectFinanceGrid.vue'
 import WinIcon from '@/components/win95/WinIcon.vue'
-import { materialToWinIcon } from '@/components/win95/icons'
 import type { GithubRepo } from '@/api/github/github.api'
 
 export default defineComponent({
@@ -454,7 +453,6 @@ export default defineComponent({
       'fetchOverview',
       'generateInvoices',
     ]),
-    materialToWinIcon,
     currencyRows(): { currency: string; agreed: number; paid: number; pending: number; overdue: number }[] {
       const s: any = this.overview?.invoiceStats
       if (s?.byCurrency?.length) return s.byCurrency

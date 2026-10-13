@@ -30,14 +30,14 @@
           title="Vista kanban"
           @click="setBoardView('kanban')"
         >
-          <win-icon name="folder" :size="16" />
+          <win-icon material="view_kanban" :size="16" />
         </button>
         <button
           :class="['view-btn', { 'view-btn--active': boardView === 'list' }]"
           title="Vista lista"
           @click="setBoardView('list')"
         >
-          <win-icon name="file-lines" :size="16" />
+          <win-icon material="view_list" :size="16" />
         </button>
       </div>
     </header>
@@ -136,7 +136,7 @@
             :title="task.status === 'done' ? 'Desmarcar completada' : 'Marcar como completada'"
             @click.stop="toggleCompleteTask(task)"
           >
-<win-icon :name="materialToWinIcon(task.status === 'done' ? 'check_circle' : 'radio_button_unchecked')" :size="16" />
+<win-icon :material="task.status === 'done' ? 'check_circle' : 'radio_button_unchecked'" :size="16" />
           </button>
           <span class="task-list-title">{{ task.title }}</span>
           <span
@@ -283,7 +283,7 @@
                       :title="task.status === 'done' ? 'Desmarcar completada' : 'Marcar como completada'"
                       @click.stop="toggleCompleteTask(task)"
                     >
-<win-icon :name="materialToWinIcon(task.status === 'done' ? 'check_circle' : 'radio_button_unchecked')" :size="16" />
+<win-icon :material="task.status === 'done' ? 'check_circle' : 'radio_button_unchecked'" :size="16" />
                     </button>
                     <span class="card-priority" :class="`priority-${task.priority}`">{{ task.priority }}</span>
                     <div class="card-footer-right">
@@ -536,7 +536,6 @@ import TaskModal from '@/components/tasks/TaskModal.vue'
 import WConfirmModal from '@/components/ui/WConfirmModal.vue'
 import WBadge from '@/components/ui/WBadge.vue'
 import WinIcon from '@/components/win95/WinIcon.vue'
-import { materialToWinIcon } from '@/components/win95/icons'
 import { useToast } from '@/composables/useToast'
 import type { TaskColumn } from '@/api/task-columns/task-columns.types'
 import type { Task, CompleteTaskResponse } from '@/api/tasks/tasks.types'
@@ -1165,7 +1164,6 @@ export default defineComponent({
       getLabelTextColor,
       formatDate,
       formatCalendarDate,
-      materialToWinIcon,
       // github
       activeProjectHasRepo,
       createBranchForTask,

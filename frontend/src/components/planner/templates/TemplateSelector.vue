@@ -47,7 +47,7 @@
             @click="apply(tpl._id)"
             title="Aplicar al día actual"
           >
-            <win-icon :name="materialToWinIcon(applying === tpl._id ? 'hourglass_empty' : 'play_arrow')" :size="16" />
+            <win-icon :material="applying === tpl._id ? 'hourglass_empty' : 'play_arrow'" :size="16" />
           </button>
           <button
             class="template-card__dup"
@@ -92,7 +92,6 @@ import { usePlannerTemplatesStore } from '@/stores/planner-templates.store'
 import TemplateSaveModal from './TemplateSaveModal.vue'
 import WConfirmModal from '@/components/ui/WConfirmModal.vue'
 import WinIcon from '../../win95/WinIcon.vue'
-import { materialToWinIcon } from '../../win95/icons'
 
 export default defineComponent({
   name: 'TemplateSelector',
@@ -164,7 +163,6 @@ export default defineComponent({
       doRemove,
       deleteTargetId,
       onSaved,
-      materialToWinIcon,
     }
   },
 })

@@ -1,6 +1,6 @@
 <template>
   <div class="goal-item" :style="{ '--goal-color': goal.color }">
-    <win-icon :name="materialToWinIcon(goal.icon || defaultIcon)" :size="16" :alt="goal.title" />
+    <win-icon :material="goal.icon || defaultIcon" :size="16" :alt="goal.title" />
 
     <div class="goal-main">
       <div class="goal-title-row">
@@ -53,7 +53,6 @@ import { defineComponent, PropType } from 'vue'
 import WBadge from '@/components/ui/WBadge.vue'
 import GoalQuickProgress from './GoalQuickProgress.vue'
 import WinIcon from '@/components/win95/WinIcon.vue'
-import { materialToWinIcon } from '@/components/win95/icons'
 import type { Goal } from '@/api/goals/goals.types'
 
 const TYPE_LABELS: Record<string, string> = {
@@ -80,7 +79,6 @@ const STATUS_LABELS: Record<string, string> = {
 export default defineComponent({
   name: 'GoalListItem',
   components: { WBadge, GoalQuickProgress, WinIcon },
-  methods: { materialToWinIcon },
   props: {
     goal: { type: Object as PropType<Goal>, required: true },
   },

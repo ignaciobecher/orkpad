@@ -25,7 +25,7 @@
                   :class="['nav-item', { active: activeSection === item.id }]"
                   @click.prevent="scrollToSection(item.id)"
                 >
-                  <win-icon :name="materialToWinIcon(item.icon)" :size="16" />
+                  <win-icon :material="item.icon" :size="16" />
                   {{ item.label }}
                 </a>
               </li>
@@ -671,7 +671,6 @@
 import { defineComponent, ref, computed, onMounted } from 'vue'
 import { useUIStore } from '@/stores/ui.store'
 import WinIcon from '@/components/win95/WinIcon.vue'
-import { materialToWinIcon } from '@/components/win95/icons'
 
 export default defineComponent({
   name: 'HelpPage',
@@ -805,7 +804,6 @@ export default defineComponent({
 
     return {
       uiStore,
-      materialToWinIcon,
       activeSection,
       searchQuery,
       filteredNav,

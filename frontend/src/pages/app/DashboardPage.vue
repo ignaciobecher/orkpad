@@ -36,7 +36,7 @@
               :class="{ 'onboarding-step--done': step.completed }"
             >
               <win-icon
-                :name="materialToWinIcon(step.completed ? 'check_circle' : stepIcon(step.id))"
+                :material="step.completed ? 'check_circle' : stepIcon(step.id)"
                 :size="16"
               />
               <div class="onboarding-step-text">
@@ -143,7 +143,6 @@ import WCard from '@/components/ui/WCard.vue'
 import WBadge from '@/components/ui/WBadge.vue'
 import WButton from '@/components/ui/WButton.vue'
 import WinIcon from '@/components/win95/WinIcon.vue'
-import { materialToWinIcon } from '@/components/win95/icons'
 
 const WorkloadConstellation = defineAsyncComponent(
   () => import('@/components/dashboard/WorkloadConstellation.vue'),
@@ -223,7 +222,6 @@ export default defineComponent({
     },
   },
   methods: {
-    materialToWinIcon,
     stepIcon(key: keyof OnboardingSteps): string {
       return ONBOARDING_STEP_ICONS[key] ?? 'radio_button_unchecked'
     },
