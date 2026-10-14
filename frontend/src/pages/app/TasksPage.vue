@@ -715,14 +715,17 @@ export default defineComponent({
       Object.keys(columnsData.value).forEach(colId => {
         columnsData.value[colId] = columnsData.value[colId].filter(t => t._id !== task._id)
       })
+      if ((task as any).archived && !showArchived.value) {
+        if (editingTask.value && editingTask.value._id === task._id) editingTask.value = task
+        return
+      }
       const colId = task.columnId || ''
-      if (colId && columnsData.value[colId]) {
+      if (colId) {
+        if (!columnsData.value[colId]) columnsData.value[colId] = []
         const arr = columnsData.value[colId]
         const idx = Math.min(task.order ?? arr.length, arr.length)
         arr.splice(idx, 0, task)
         arr.forEach((t, i) => { t.order = i })
-      } else if (!showArchived.value && (task as any).archived) {
-        // Archivada y filtro oculta: no mostrar
       }
       if (editingTask.value && editingTask.value._id === task._id) editingTask.value = task
     }
@@ -930,10 +933,11 @@ export default defineComponent({
       cardMenuTask.value = null
     }
 
+    let offBoardEvent: (() => void) | null = null
     onMounted(() => {
       document.addEventListener('click', closeAllMenus)
       void fetchProjectPickerOptions(true)
-      onBoardEvent((event, payload: any) => {
+      offBoardEvent = onBoardEvent((event, payload: any) => {
         if (!activeProjectId.value) return
         if (event === 'task:created' && payload?.task) {
           if (payload.task.projectId !== activeProjectId.value) return
@@ -955,12 +959,17 @@ export default defineComponent({
         }
       })
     })
-    onUnmounted(() => document.removeEventListener('click', closeAllMenus))
+    onUnmounted(() => {
+      document.removeEventListener('click', closeAllMenus)
+      offBoardEvent?.()
+      offBoardEvent = null
+    })
 
     // ── Quick-add inline ──
     const quickAddColumnId = ref<string | null>(null)
     const quickAddTitle = ref('')
     const quickAddInputRef = ref<HTMLTextAreaElement | null>(null)
+    const quickAddSaving = ref(false)
 
     const startQuickAdd = async (columnId: string) => {
       quickAddColumnId.value = columnId
@@ -975,10 +984,12 @@ export default defineComponent({
     }
 
     const confirmQuickAdd = async () => {
+      if (quickAddSaving.value) return
       const title = quickAddTitle.value.trim()
       if (!title) { cancelQuickAdd(); return }
       const columnId = quickAddColumnId.value!
       const order = columnsData.value[columnId]?.length || 0
+      quickAddSaving.value = true
       try {
         const { data } = await tasksApi.create({
           title,
@@ -987,13 +998,16 @@ export default defineComponent({
           priority: 'medium',
           order,
         })
-        if (!columnsData.value[columnId]) columnsData.value[columnId] = []
-        columnsData.value[columnId].push(data)
+        // Idempotente: el evento realtime task:created puede llegar antes
+        // que la respuesta del POST e insertar la tarjeta primero.
+        upsertTask(data)
         quickAddTitle.value = ''
         await nextTick()
         quickAddInputRef.value?.focus()
       } catch {
         toast.error('Error al crear tarea')
+      } finally {
+        quickAddSaving.value = false
       }
     }
 
@@ -1060,15 +1074,12 @@ export default defineComponent({
       try {
         if (editingTask.value) {
           const { data } = await tasksApi.update(editingTask.value._id, dto)
-          const colTasks = columnsData.value[activeColumnId.value]
-          const idx = colTasks.findIndex(t => t._id === editingTask.value!._id)
-          if (idx !== -1) colTasks[idx] = data
+          upsertTask(data)
           toast.success('Tarea actualizada')
         } else {
           dto.order = (columnsData.value[activeColumnId.value]?.length || 0)
           const { data } = await tasksApi.create(dto)
-          if (!columnsData.value[activeColumnId.value]) columnsData.value[activeColumnId.value] = []
-          columnsData.value[activeColumnId.value].push(data)
+          upsertTask(data)
           toast.success('Tarea creada')
         }
         showTaskModal.value = false
