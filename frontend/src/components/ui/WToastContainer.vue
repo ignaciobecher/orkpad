@@ -20,8 +20,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, computed } from 'vue'
 import { useToast } from '@/composables/useToast'
+import { useUIStore } from '@/stores/ui.store'
 import WinIcon from '@/components/win95/WinIcon.vue'
 
 export default defineComponent({
@@ -29,12 +30,14 @@ export default defineComponent({
   components: { WinIcon },
   setup() {
     const { toasts, removeToast } = useToast()
+    const uiStore = useUIStore()
+    const appName = computed(() => (uiStore.appearance === 'win95' ? 'Orkpad95' : 'Orkpad'))
     const toastTitle = (type: string) => {
       switch (type) {
         case 'success': return 'Éxito'
         case 'error': return 'Error'
         case 'warning': return 'Aviso'
-        default: return 'Orkpad95'
+        default: return appName.value
       }
     }
     const toastIcon = (type: string) => {

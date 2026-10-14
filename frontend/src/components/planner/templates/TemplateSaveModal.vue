@@ -3,7 +3,7 @@
     <div class="template-save-modal w95-window">
       <div class="w95-titlebar">
         <win-icon name="file-lines" :size="16" alt="" />
-        <span class="title-text">Guardar día como plantilla — Orkpad95</span>
+        <span class="title-text">Guardar día como plantilla — Orkpad</span>
         <div class="w95-titlebar-buttons">
           <button class="w95-title-btn" @click="$emit('close')" title="Cerrar"><span class="tbtn-close" aria-hidden="true">×</span></button>
         </div>

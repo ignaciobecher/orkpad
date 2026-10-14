@@ -2,6 +2,20 @@ import { defineStore } from 'pinia'
 
 export type Appearance = 'win95' | 'classic'
 
+export const WIN95_TITLE = 'Orkpad95 — Mi PC freelance'
+export const CLASSIC_TITLE = 'Orkpad — App open source para freelancers'
+
+/** Título + favicon de la pestaña según apariencia. */
+export function applyBrowserChrome(appearance: Appearance) {
+  try {
+    document.title = appearance === 'win95' ? WIN95_TITLE : CLASSIC_TITLE
+    const link = document.querySelector<HTMLLinkElement>('link[rel="icon"]')
+    if (link) link.href = appearance === 'win95' ? '/favicon.ico' : '/favicon-classic.ico'
+    const apple = document.querySelector<HTMLLinkElement>('link[rel="apple-touch-icon"]')
+    if (apple) apple.href = appearance === 'win95' ? '/pwa-192x192.png' : '/apple-touch-icon.png'
+  } catch { /* noop */ }
+}
+
 function storedAppearance(): Appearance {
   try {
     const v = localStorage.getItem('orkpad_appearance')
@@ -53,11 +67,13 @@ export const useUIStore = defineStore('ui', {
       this.appearance = appearance
       try { localStorage.setItem('orkpad_appearance', appearance) } catch { /* noop */ }
       document.documentElement.setAttribute('data-appearance', appearance)
+      applyBrowserChrome(appearance)
     },
     initTheme() {
       document.documentElement.setAttribute('data-theme', this.theme)
       document.documentElement.style.colorScheme = this.theme
       document.documentElement.setAttribute('data-appearance', this.appearance)
+      applyBrowserChrome(this.appearance)
     }
   }
 })

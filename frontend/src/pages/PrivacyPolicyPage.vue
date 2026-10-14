@@ -1,7 +1,7 @@
 <template>
   <div class="privacy-page w95-desktop">
     <div class="w95-window privacy-win">
-      <div class="w95-titlebar"><span class="title-text">Privacidad — Orkpad95</span></div>
+      <div class="w95-titlebar"><span class="title-text">Privacidad — Orkpad</span></div>
       <header class="privacy-header">
       <div class="privacy-header-inner">
         <router-link to="/" class="privacy-back">

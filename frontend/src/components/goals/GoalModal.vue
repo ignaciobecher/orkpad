@@ -3,7 +3,7 @@
     <div class="goal-modal w95-window">
       <div class="w95-titlebar">
         <win-icon name="dir-check" :size="16" alt="" />
-        <span class="title-text">{{ isEditing ? 'Editar objetivo' : 'Nuevo objetivo' }} — Orkpad95</span>
+        <span class="title-text">{{ isEditing ? 'Editar objetivo' : 'Nuevo objetivo' }} — Orkpad</span>
         <div class="w95-titlebar-buttons">
           <button class="w95-title-btn" @click="isOpen = false" title="Cerrar"><span class="tbtn-close" aria-hidden="true">×</span></button>
         </div>

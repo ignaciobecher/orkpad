@@ -1,5 +1,23 @@
 <template>
-  <div class="auth-layout w95-desktop">
+  <!-- Clásica: layout original sobrio -->
+  <div v-if="uiStore.appearance === 'classic'" class="auth-layout">
+    <div class="auth-container">
+      <slot></slot>
+    </div>
+
+    <div class="auth-footer">
+      <div class="footer-status">
+        <span class="status-dot"></span>
+        <span class="status-text">v1.0.4-stable</span>
+      </div>
+      <div class="footer-info">
+        <span class="info-item">LATENCY: 14MS</span>
+        <span class="info-item">ENCRYPTION: AES-256</span>
+      </div>
+    </div>
+  </div>
+  <!-- Win95: ventana de bienvenida retro -->
+  <div v-else class="auth-layout w95-desktop">
     <div class="auth-boot">Microsoft(R) Windows 95<br />Orkpad95 [Versión 4.00.950]</div>
     <div class="auth-window w95-window">
       <div class="w95-titlebar">
@@ -36,10 +54,15 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import WinIcon from '@/components/win95/WinIcon.vue'
+import { useUIStore } from '@/stores/ui.store'
 
 export default defineComponent({
   name: 'AuthLayout',
-  components: { WinIcon }
+  components: { WinIcon },
+  setup() {
+    const uiStore = useUIStore()
+    return { uiStore }
+  }
 })
 </script>
 

@@ -114,7 +114,7 @@
           <div class="quote-modal w95-window">
             <div class="w95-titlebar">
               <win-icon name="newspaper" :size="16" alt="" />
-              <span class="title-text">{{ editingId ? 'Editar presupuesto' : 'Nuevo presupuesto' }} — Orkpad95</span>
+              <span class="title-text">{{ editingId ? 'Editar presupuesto' : 'Nuevo presupuesto' }} — Orkpad</span>
               <div class="w95-titlebar-buttons">
                 <button class="w95-title-btn" @click="closeModal" title="Cerrar"><span class="tbtn-close" aria-hidden="true">×</span></button>
               </div>

@@ -3,7 +3,7 @@
     <div class="modal w95-window">
       <div class="w95-titlebar">
         <win-icon name="mail" :size="16" alt="" />
-        <span class="title-text">Nuevo anuncio — Orkpad95</span>
+        <span class="title-text">Nuevo anuncio — Orkpad</span>
         <div class="w95-titlebar-buttons">
           <button class="w95-title-btn" @click="handleClose" title="Cerrar"><span class="tbtn-close" aria-hidden="true">×</span></button>
         </div>

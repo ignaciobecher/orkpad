@@ -3,7 +3,7 @@
     <div class="block-editor w95-window">
       <div class="w95-titlebar">
         <win-icon name="user-calendar" :size="16" alt="" />
-        <span class="title-text">{{ block ? 'Editar bloque' : 'Nuevo bloque' }} — Orkpad95</span>
+        <span class="title-text">{{ block ? 'Editar bloque' : 'Nuevo bloque' }} — Orkpad</span>
         <div class="w95-titlebar-buttons">
           <button class="w95-title-btn" @click="$emit('close')" title="Cerrar"><span class="tbtn-close" aria-hidden="true">×</span></button>
         </div>

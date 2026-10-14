@@ -5,7 +5,7 @@
         <div class="onboarding-card w95-window">
           <div class="w95-titlebar">
             <win-icon name="programs" :size="16" alt="" />
-            <span class="title-text">Bienvenido — Orkpad95</span>
+            <span class="title-text">Bienvenido — Orkpad</span>
             <div class="w95-titlebar-buttons">
               <button class="w95-title-btn" @click="handleSkip" title="Cerrar"><span class="tbtn-close" aria-hidden="true">×</span></button>
             </div>

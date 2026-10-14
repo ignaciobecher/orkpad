@@ -3,6 +3,18 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" href="/favicon.ico" />
+    <!-- Chrome de pestaña según apariencia guardada (antes de que cargue la app) -->
+    <script>
+      try {
+        var a = localStorage.getItem('orkpad_appearance') || 'win95';
+        document.documentElement.setAttribute('data-appearance', a);
+        if (a === 'classic') {
+          document.title = 'Orkpad — App open source para freelancers';
+          var l = document.querySelector('link[rel="icon"]');
+          if (l) l.href = '/favicon-classic.ico';
+        }
+      } catch (e) {}
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <meta name="theme-color" content="#008080" />
     <meta name="apple-mobile-web-app-capable" content="yes" />

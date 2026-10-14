@@ -3,7 +3,7 @@
     <div class="task-modal-box w95-window">
       <div class="w95-titlebar">
         <win-icon name="check" :size="16" alt="" />
-        <span class="title-text">{{ form.title || 'Tarea' }} — Orkpad95</span>
+        <span class="title-text">{{ form.title || 'Tarea' }} — Orkpad</span>
         <div class="w95-titlebar-buttons">
           <button class="w95-title-btn" @click="close" title="Cerrar"><span class="tbtn-close" aria-hidden="true">×</span></button>
         </div>
