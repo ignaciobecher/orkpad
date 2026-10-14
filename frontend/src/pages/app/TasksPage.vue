@@ -2049,8 +2049,9 @@ export default defineComponent({
 .card-badge { display: inline-flex; align-items: center; gap: 3px; font-size: 11px; padding: 2px 6px; background: var(--color-bg-surface-highest); border-radius: 4px; color: var(--color-text-muted); }
 .card-cover-img img { width: 100%; max-height: 120px; object-fit: cover; display: block; }
 .board-filters { display: flex; align-items: center; gap: 10px; }
-.board-search { padding: 6px 10px; border: 1px solid var(--color-border); border-radius: 6px; font-size: 13px; min-width: 200px; }
-.archived-toggle { display: flex; align-items: center; gap: 6px; font-size: 12px; }
+.board-search { padding: 6px 10px; border: 1px solid var(--color-border); border-radius: var(--radius); background: var(--color-bg-surface-low); color: var(--color-text-base); font-size: 13px; min-width: 200px; }
+.board-search::placeholder { color: var(--color-text-muted); }
+.archived-toggle { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--color-text-muted); } .archived-toggle input { accent-color: var(--color-primary); }
 
 /* Done card state */
 .kanban-card.is-done { opacity: 0.72; }
