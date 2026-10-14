@@ -1,9 +1,26 @@
+export interface TaskAttachment {
+  id: string
+  name: string
+  url: string
+  type: string
+  size: number
+  uploadedAt: string
+}
+
 export interface Task {
   _id: string
   title: string
   description?: string
   checklist?: { text: string; completed: boolean }[]
-  labels?: { color: string; name: string }[]
+  labels?: { id?: string; color: string; name: string }[]
+  attachments?: TaskAttachment[]
+  memberIds?: string[]
+  watcherIds?: string[]
+  startDate?: string | null
+  coverColor?: string | null
+  coverAttachmentId?: string | null
+  archived?: boolean
+  commentsCount?: number
   projectId?: string
   assigneeId?: string
   status: 'todo' | 'in-progress' | 'done' | 'cancelled'
@@ -20,6 +37,13 @@ export interface CreateTaskDto {
   description?: string
   checklist?: { text: string; completed: boolean }[]
   labels?: { color: string; name: string }[]
+  attachments?: TaskAttachment[]
+  memberIds?: string[]
+  watcherIds?: string[]
+  startDate?: string | null
+  coverColor?: string | null
+  coverAttachmentId?: string | null
+  archived?: boolean
   projectId?: string
   assigneeId?: string
   status?: 'todo' | 'in-progress' | 'done' | 'cancelled'
@@ -43,8 +67,10 @@ export interface TaskQueryDto {
   status?: string
   projectId?: string
   assigneeId?: string
+  memberId?: string
   priority?: string
   columnId?: string
+  archived?: boolean
 }
 
 export interface PaginatedResponse<T> {
@@ -66,4 +92,28 @@ export interface CompleteTaskResponse {
   whatsappText: string
   whatsappUrl: string | null
   emailSent: boolean
+}
+
+export interface TaskComment {
+  _id: string
+  taskId: string
+  projectId?: string
+  authorId: string
+  authorName?: string
+  text: string
+  mentions?: string[]
+  editedAt?: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+export interface TaskActivity {
+  _id: string
+  taskId: string
+  projectId?: string
+  actorId?: string
+  actorName?: string
+  type: string
+  payload?: Record<string, any>
+  createdAt: string
 }

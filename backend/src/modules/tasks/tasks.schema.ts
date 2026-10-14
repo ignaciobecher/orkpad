@@ -52,6 +52,27 @@ export class Task extends BaseSchema {
     uploadedAt: Date;
   }[];
 
+  @Prop({ type: [String], default: [] })
+  memberIds: string[];
+
+  @Prop({ type: [String], default: [] })
+  watcherIds: string[];
+
+  @Prop({ type: Date, default: null })
+  startDate: Date | null;
+
+  @Prop({ type: String, default: null })
+  coverColor: string | null;
+
+  @Prop({ type: String, default: null })
+  coverAttachmentId: string | null;
+
+  @Prop({ type: Boolean, default: false })
+  archived: boolean;
+
+  @Prop({ default: 0 })
+  commentsCount: number;
+
   @Prop({ default: false })
   isDemo: boolean;
 }
@@ -66,3 +87,5 @@ TaskSchema.index({ workspaceId: 1, dueDate: 1 });
 TaskSchema.index({ workspaceId: 1, columnId: 1, order: 1 });
 TaskSchema.index({ workspaceId: 1, createdAt: -1 });
 TaskSchema.index({ workspaceId: 1, isDemo: 1 });
+TaskSchema.index({ workspaceId: 1, archived: 1 });
+TaskSchema.index({ workspaceId: 1, memberIds: 1 });

@@ -32,6 +32,8 @@ import { PlannerTasksModule } from './modules/planner-tasks/planner-tasks.module
 import { PlannerTemplatesModule } from './modules/planner-templates/planner-templates.module';
 import { GoalsModule } from './modules/goals/goals.module';
 import { OnboardingModule } from './modules/onboarding/onboarding.module';
+import { TaskCommentsModule } from './modules/task-comments/task-comments.module';
+import { TaskActivitiesModule } from './modules/task-activities/task-activities.module';
 
 @Module({
   imports: [
@@ -105,6 +107,8 @@ import { OnboardingModule } from './modules/onboarding/onboarding.module';
     PlannerTasksModule,
     PlannerTemplatesModule,
     GoalsModule,
+    TaskCommentsModule,
+    TaskActivitiesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,14 +1,19 @@
 import { Module, forwardRef } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { JwtModule } from '@nestjs/jwt';
 import { ProjectsModule } from '../projects/projects.module';
 import { TaskColumnsModule } from '../task-columns/task-columns.module';
 import { UsersModule } from '../users/users.module';
 import { ClientsModule } from '../clients/clients.module';
 import { MailModule } from '../mail/mail.module';
+import { StorageModule } from '../storage/storage.module';
+import { TaskActivitiesModule } from '../task-activities/task-activities.module';
+import { NotificationsModule } from '../notifications/notifications.module';
 import { GithubIntegrationModule } from '../github-integration/github-integration.module';
 import { TasksController } from './tasks.controller';
 import { TasksService } from './tasks.service';
 import { TasksRepository } from './tasks.repository';
+import { BoardsGateway } from './boards.gateway';
 import { Task, TaskSchema } from './tasks.schema';
 
 @Module({
@@ -18,11 +23,15 @@ import { Task, TaskSchema } from './tasks.schema';
     UsersModule,
     ClientsModule,
     MailModule,
+    StorageModule,
+    TaskActivitiesModule,
+    NotificationsModule,
+    JwtModule.register({}),
     forwardRef(() => GithubIntegrationModule),
     MongooseModule.forFeature([{ name: Task.name, schema: TaskSchema }]),
   ],
   controllers: [TasksController],
-  providers: [TasksService, TasksRepository],
-  exports: [TasksService],
+  providers: [TasksService, TasksRepository, BoardsGateway],
+  exports: [TasksService, BoardsGateway],
 })
 export class TasksModule {}

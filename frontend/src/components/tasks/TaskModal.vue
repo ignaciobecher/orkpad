@@ -1,1477 +1,448 @@
 <template>
-  <div v-if="modelValue" class="task-modal-overlay w95-dialog-overlay" @click.self="close">
-    <div class="task-modal-box w95-window">
-      <div class="w95-titlebar">
-        <win-icon name="check" :size="16" alt="" />
-        <span class="title-text">{{ form.title || 'Tarea' }} — Orkpad</span>
-        <div class="w95-titlebar-buttons">
-          <button class="w95-title-btn" @click="close" title="Cerrar"><span class="tbtn-close" aria-hidden="true">×</span></button>
-        </div>
+  <div v-if="modelValue" class="task-modal-overlay" @click.self="close">
+    <div class="task-modal-box">
+      <!-- Cover -->
+      <div v-if="coverUrl || form.coverColor" class="task-cover" :style="coverStyle">
+        <img v-if="coverUrl" :src="coverUrl" alt="Portada" />
+        <button class="cover-close" @click="close">×</button>
+      </div>
+      <div class="task-modal-header">
+        <span class="header-title">{{ form.title || 'Tarea' }}</span>
+        <button class="icon-btn" @click="close" title="Cerrar">×</button>
       </div>
 
-      <!-- Draft banner -->
-      <div v-if="hasDraft" class="draft-banner">
-        <win-icon name="clock" :size="16" alt="" />
-        Borrador restaurado
-        <button class="draft-discard" @click="discardDraft">Descartar</button>
-      </div>
+      <div class="task-modal-body">
+        <div class="task-main">
+          <!-- Título -->
+          <input v-model="form.title" class="task-title-input" placeholder="Título de la tarea" />
 
-      <div class="task-modal-body custom-scrollbar">
-        <div class="task-main-col">
-          <input
-            v-model="form.title"
-            type="text"
-            class="task-title-input"
-            placeholder="Título de la tarea"
-          />
-
-          <!-- Labels -->
-          <div class="task-section">
-            <h3 class="section-title">
-              Etiquetas
-            </h3>
-            <div class="labels-list">
-              <span
-                v-for="(label, i) in form.labels"
-                :key="i"
-                class="task-label"
-                :style="{ backgroundColor: label.color + '22', color: label.color, borderColor: label.color + '44' }"
-              >
-                {{ label.name }}
-                <button v-if="!viewMode" class="remove-label" @click="removeLabel(i)">
-                  ×
-                </button>
+          <!-- Etiquetas -->
+          <div class="section">
+            <h4>Etiquetas</h4>
+            <div class="labels-row">
+              <span v-for="(l, i) in form.labels" :key="i" class="label-chip"
+                :style="{ backgroundColor: l.color + '22', color: l.color, borderColor: l.color + '55' }">
+                {{ l.name }}
+                <button @click="removeLabel(i)">×</button>
               </span>
-              <button v-if="!viewMode" class="add-btn add-label-btn" @click.stop.prevent="showLabelPopover = !showLabelPopover">
-                + Agregar
-              </button>
+              <button class="add-btn" @click="showLabelPop = !showLabelPop">+ Agregar</button>
             </div>
-
-            <div v-if="showLabelPopover" class="label-popover">
-              <input v-model="newLabelName" type="text" placeholder="Nombre" class="popover-input" @click.stop />
-              <div class="color-picker">
-                <button
-                  v-for="c in colors"
-                  :key="c"
-                  class="color-swatch"
-                  :style="{ background: c }"
-                  :class="{ active: newLabelColor === c }"
-                  @click.stop.prevent="newLabelColor = c"
-                ></button>
+            <div v-if="showLabelPop" class="popover">
+              <input v-model="newLabelName" placeholder="Nombre" class="popover-input" />
+              <div class="color-row">
+                <button v-for="c in COLORS" :key="c" class="swatch" :style="{ background: c }"
+                  :class="{ active: newLabelColor === c }" @click="newLabelColor = c" />
               </div>
-              <button class="w95-btn w95-btn--default" style="width:100%;margin-top:8px" @click.stop.prevent="addLabel">Guardar</button>
+              <button class="btn-primary btn-block" @click="addLabel">Guardar</button>
             </div>
           </div>
 
-          <!-- Description -->
-          <div class="task-section">
-            <h3 class="section-title">
-              Descripción
-            </h3>
-            <div v-if="!viewMode || editingDescription" class="editor-container">
-              <QuillEditor
-                v-model:content="form.description"
-                content-type="html"
-                theme="snow"
-                placeholder="Añadir una descripción más detallada..."
-              />
-              <div v-if="viewMode && editingDescription" class="description-edit-actions">
-                <button class="w95-btn w95-btn--default" style="padding:6px 14px;font-size:12px" @click="saveInViewMode">Listo</button>
-                <button class="w95-btn" style="padding:6px 14px;font-size:12px" @click="cancelDescriptionEdit">Cancelar</button>
-              </div>
+          <!-- Fechas / miembros -->
+          <div class="section grid-2">
+            <div>
+              <h4>Inicio</h4>
+              <input v-model="form.startDate" type="date" class="input" />
             </div>
-            <div
-              v-else
-              class="description-view description-view--clickable"
-              @click="startEditingDescription"
-            >
-              <div
-                v-if="form.description && form.description !== '<p><br></p>'"
-                class="ql-content"
-                v-html="form.description"
-              ></div>
-              <p v-else class="description-placeholder">Agregar una descripción más detallada...</p>
+            <div>
+              <h4>Vencimiento</h4>
+              <input v-model="form.dueDate" type="date" class="input" />
             </div>
-          </div>
-
-          <!-- Checklist -->
-          <div class="task-section">
-            <div class="section-title-row">
-              <h3 class="section-title">
-                Checklist
-              </h3>
-              <span v-if="form.checklist && form.checklist.length" class="checklist-pct">
-                {{ checklistProgress }}%
-              </span>
-            </div>
-
-            <div v-if="form.checklist && form.checklist.length" class="checklist-progress-container">
-              <div class="progress-bar">
-                <div
-                  class="progress-fill"
-                  :class="{ 'progress-fill--done': checklistProgress === 100 }"
-                  :style="{ width: checklistProgress + '%' }"
-                ></div>
-              </div>
-            </div>
-
-            <div class="checklist-items">
-              <div
-                v-for="(item, idx) in form.checklist"
-                :key="idx"
-                class="checklist-item"
-                :class="{ completed: item.completed }"
-              >
-                <input
-                  type="checkbox"
-                  v-model="item.completed"
-                  :disabled="viewMode"
-                  class="checklist-checkbox"
-                />
-                <input
-                  v-if="!viewMode"
-                  :ref="(el) => { if (el) checklistItemRefs[idx] = el as HTMLInputElement }"
-                  v-model="item.text"
-                  type="text"
-                  class="checklist-text-input"
-                  placeholder="Añadir un elemento"
-                  @keydown.enter.prevent="addChecklistItemAndFocus"
-                  @keydown.esc="onChecklistItemEscape(idx)"
-                />
-                <span v-else class="checklist-text" :class="{ completed: item.completed }">{{ item.text }}</span>
-                <button v-if="!viewMode" class="icon-btn checklist-delete-btn" @click="removeChecklistItem(idx)">
-                  ×
-                </button>
-              </div>
-            </div>
-
-            <button v-if="!viewMode" class="add-btn mt-2" @click="addChecklistItemAndFocus">
-              + Añadir un elemento
-            </button>
-          </div>
-
-        </div>
-
-        <!-- Sidebar -->
-        <div class="task-side-col">
-          <div class="meta-card">
-            <h4 class="meta-title">Asignado a</h4>
-            <div v-if="!viewMode">
-              <w-remote-select
-                v-model="form.assigneeId"
-                placeholder="Sin asignar"
-                :load-options="loadUserOptions"
-                :load-option-by-value="loadUserOptionById"
-              />
-            </div>
-            <div v-else class="meta-value">{{ form.assigneeId || 'Sin asignar' }}</div>
-          </div>
-
-          <div class="meta-card">
-            <h4 class="meta-title">Prioridad</h4>
-            <div v-if="!viewMode">
-              <select v-model="form.priority" class="task-select">
+            <div>
+              <h4>Prioridad</h4>
+              <select v-model="form.priority" class="input">
                 <option value="low">Baja</option>
                 <option value="medium">Media</option>
                 <option value="high">Alta</option>
                 <option value="urgent">Urgente</option>
               </select>
             </div>
-            <div v-else class="meta-value" :class="`priority-${form.priority}`">{{ form.priority }}</div>
-          </div>
-
-          <div class="meta-card">
-            <h4 class="meta-title">Vencimiento</h4>
-            <div v-if="!viewMode">
-              <input v-model="form.dueDate" type="date" class="task-date" />
+            <div>
+              <h4>Responsable</h4>
+              <w-remote-select v-model="form.assigneeId" placeholder="Sin asignar"
+                :load-options="loadUserOptions" :load-option-by-value="loadUserOptionById" />
             </div>
-            <div v-else class="meta-value">{{ form.dueDate || 'Sin fecha' }}</div>
           </div>
 
-          <div class="meta-card actions-card" v-if="!viewMode">
-            <button class="w95-btn w95-btn--default w-full" :disabled="loading" @click="save">
-              {{ loading ? 'Guardando...' : 'Guardar tarea' }}
-            </button>
+          <div class="section">
+            <h4>Miembros ({{ form.memberIds.length }})</h4>
+            <div class="members-list">
+              <span v-for="mid in form.memberIds" :key="mid" class="label-chip">{{ shortId(mid) }} <button @click="removeMember(mid)">×</button></span>
+            </div>
+            <div class="row-between">
+              <w-remote-select v-model="memberToAdd" placeholder="Agregar miembro"
+                :load-options="loadUserOptions" :load-option-by-value="loadUserOptionById" />
+              <button class="add-btn" :disabled="!memberToAdd" @click="addMember">Añadir</button>
+            </div>
+            <label class="watch-row">
+              <input type="checkbox" :checked="isWatching" @change="toggleWatchLocal" />
+              Vigilar esta tarjeta
+            </label>
+          </div>
+
+          <!-- Descripción -->
+          <div class="section">
+            <h4>Descripción</h4>
+            <QuillEditor v-model:content="form.description" content-type="html" theme="snow"
+              placeholder="Añadir descripción..." />
+          </div>
+
+          <!-- Checklist -->
+          <div class="section">
+            <div class="row-between">
+              <h4>Checklist</h4>
+              <span v-if="form.checklist.length">{{ checklistPct }}%</span>
+            </div>
+            <div v-if="form.checklist.length" class="progress"><div class="fill" :style="{ width: checklistPct + '%' }" /></div>
+            <div v-for="(it, idx) in form.checklist" :key="idx" class="check-item">
+              <input type="checkbox" v-model="it.completed" />
+              <input v-model="it.text" class="input" placeholder="Elemento" @keydown.enter.prevent="addCheckItem" />
+              <button class="icon-btn" @click="form.checklist.splice(idx, 1)">×</button>
+            </div>
+            <button class="add-btn" @click="addCheckItem">+ Añadir elemento</button>
+          </div>
+
+          <!-- Adjuntos -->
+          <div class="section" v-if="task?._id || form.attachments.length">
+            <div class="row-between">
+              <h4>Adjuntos ({{ form.attachments.length }})</h4>
+              <label v-if="task?._id" class="add-btn file-label">
+                + Subir
+                <input type="file" hidden @change="onFilePicked" :disabled="uploading" />
+              </label>
+            </div>
+            <div v-if="uploading" class="progress"><div class="fill" :style="{ width: uploadPct + '%' }" /></div>
+            <div v-for="a in form.attachments" :key="a.id" class="attach-row">
+              <img v-if="isImage(a)" :src="fileUrl(a)" class="attach-thumb" alt="" />
+              <div v-else class="attach-thumb attach-file">📎</div>
+              <div class="attach-meta">
+                <a :href="fileUrl(a)" target="_blank" rel="noopener">{{ a.name }}</a>
+                <small>{{ formatSize(a.size) }} · {{ formatDate(a.uploadedAt) }}</small>
+              </div>
+              <button class="mini-btn" @click="makeCover(a)" :disabled="!task?._id" title="Usar como portada">Portada</button>
+              <button class="icon-btn" @click="deleteAttachment(a)" title="Quitar">×</button>
+            </div>
+            <p v-if="!task?._id" class="muted">Guardá la tarea para poder subir archivos.</p>
+          </div>
+
+          <!-- Comentarios -->
+          <div class="section" v-if="task?._id">
+            <h4>Comentarios ({{ comments.length }})</h4>
+            <div class="comment-box">
+              <textarea v-model="newComment" rows="2" placeholder="Escribí un comentario... (@ para mencionar)" />
+              <div class="row-between">
+                <small class="muted">Tip: escribí @seguido del nombre para notificar. Ej: @juan revisá esto</small>
+                <button class="btn-primary" :disabled="!newComment.trim() || savingComment" @click="postComment">
+                  {{ savingComment ? 'Enviando...' : 'Comentar' }}
+                </button>
+              </div>
+            </div>
+            <div v-for="c in comments" :key="c._id" class="comment">
+              <div class="comment-head">
+                <strong>{{ c.authorName || 'Miembro' }}</strong>
+                <small>{{ formatDateTime(c.createdAt) }}<span v-if="c.editedAt"> · editado</span></small>
+              </div>
+              <div v-if="editingId !== c._id" class="comment-text">{{ c.text }}</div>
+              <textarea v-else v-model="editingText" rows="2" class="input" />
+              <div class="comment-actions" v-if="c.authorId === currentUserId">
+                <button v-if="editingId !== c._id" class="mini-btn" @click="startEdit(c)">Editar</button>
+                <template v-else>
+                  <button class="mini-btn" @click="saveEdit(c)">Guardar</button>
+                  <button class="mini-btn" @click="editingId = null">Cancelar</button>
+                </template>
+                <button class="mini-btn danger" @click="deleteComment(c)">Eliminar</button>
+              </div>
+            </div>
+            <p v-if="!comments.length" class="muted">Sé la primera persona en comentar.</p>
+          </div>
+
+          <!-- Actividad -->
+          <div class="section" v-if="task?._id">
+            <h4>Actividad</h4>
+            <div v-for="a in activities" :key="a._id" class="activity">
+              <span class="dot" />
+              <span><strong>{{ a.actorName || 'Sistema' }}</strong> {{ activityLabel(a) }}</span>
+              <small>{{ formatDateTime(a.createdAt) }}</small>
+            </div>
+            <p v-if="!activities.length" class="muted">Sin actividad todavía.</p>
           </div>
         </div>
+
+        <!-- Sidebar acciones -->
+        <aside class="task-side">
+          <h4>Acciones</h4>
+          <button class="btn-primary btn-block" :disabled="loading" @click="save">
+            {{ loading ? 'Guardando...' : task?._id ? 'Guardar cambios' : 'Crear tarea' }}
+          </button>
+          <template v-if="task?._id">
+            <button class="side-btn" @click="toggleComplete">{{ isDone ? '↩ Reabrir' : '✓ Completar' }}</button>
+            <button class="side-btn" @click="duplicate">⧉ Duplicar</button>
+            <button class="side-btn" @click="toggleArchive">{{ form.archived ? '📥 Desarchivar' : '📦 Archivar' }}</button>
+            <div class="side-group">
+              <h4>Portada</h4>
+              <div class="color-row">
+                <button v-for="c in COLORS" :key="c" class="swatch" :style="{ background: c }"
+                  :class="{ active: form.coverColor === c }" @click="form.coverColor = form.coverColor === c ? null : c" />
+                <button v-if="form.coverColor" class="mini-btn" @click="form.coverColor = null">Quitar</button>
+              </div>
+            </div>
+          </template>
+        </aside>
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch, nextTick } from 'vue'
+import { defineComponent, ref, watch, computed } from 'vue'
 import { QuillEditor } from '@vueup/vue-quill'
 import '@vueup/vue-quill/dist/vue-quill.snow.css'
 import WRemoteSelect from '@/components/ui/WRemoteSelect.vue'
-import WinIcon from '@/components/win95/WinIcon.vue'
 import { loadUserOptions, loadUserOptionById } from '@/utils/remote-entity-options'
+import { tasksApi } from '@/api/tasks/tasks.api'
+import { baseURL } from '@/api/axios.config'
+import { useAuthStore } from '@/stores/auth.store'
+import type { TaskComment, TaskActivity } from '@/api/tasks/tasks.types'
 
 const COLORS = ['#2563EB', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899']
 
 export default defineComponent({
   name: 'TaskModal',
-  components: { QuillEditor, WRemoteSelect, WinIcon },
+  components: { QuillEditor, WRemoteSelect },
   props: {
     modelValue: { type: Boolean, required: true },
-    viewMode:   { type: Boolean, default: false },
-    task:       { type: Object, default: null },
-    loading:    { type: Boolean, default: false }
+    viewMode: { type: Boolean, default: false },
+    task: { type: Object as () => any, default: null },
+    loading: { type: Boolean, default: false },
   },
-  emits: ['update:modelValue', 'save'],
+  emits: ['update:modelValue', 'save', 'task-updated'],
   setup(props, { emit }) {
-    const form = ref<any>({
-      title: '', description: '', priority: 'medium', dueDate: '',
-      assigneeId: '', checklist: [], labels: [], attachments: []
+    const form = ref<any>({ title: '', description: '', priority: 'medium', dueDate: '', startDate: '', assigneeId: '', memberIds: [], watcherIds: [], checklist: [], labels: [], attachments: [], coverColor: null, coverAttachmentId: null, archived: false })
+    const showLabelPop = ref(false)
+    const newLabelName = ref('')
+    const newLabelColor = ref(COLORS[0])
+    const comments = ref<TaskComment[]>([])
+    const activities = ref<TaskActivity[]>([])
+    const newComment = ref('')
+    const savingComment = ref(false)
+    const editingId = ref<string | null>(null)
+    const editingText = ref('')
+    const uploading = ref(false)
+    const uploadPct = ref(0)
+    const auth = useAuthStore()
+    const currentUserId = computed(() => (auth.user as any)?._id || (auth.user as any)?.id || '')
+
+    const isDone = computed(() => (props.task as any)?.status === 'done')
+    const checklistPct = computed(() => {
+      if (!form.value.checklist.length) return 0
+      return Math.round((form.value.checklist.filter((i: any) => i.completed).length / form.value.checklist.length) * 100)
     })
-
-    const editingDescription  = ref(false)
-    const checklistItemRefs   = ref<HTMLInputElement[]>([])
-    const showLabelPopover    = ref(false)
-    const newLabelName        = ref('')
-    const newLabelColor       = ref(COLORS[0])
-    const colors              = COLORS
-    const hasDraft            = ref(false)
-
-    // Draft key: new task uses 'task-draft-new', existing uses 'task-draft-{id}'
-    const draftKey = () => props.task?._id ? `task-draft-${props.task._id}` : 'task-draft-new'
-
-    const saveDraft = () => {
-      try { localStorage.setItem(draftKey(), JSON.stringify(form.value)) } catch { /* localStorage puede no estar disponible */ }
+    const membersProxy = computed({
+      get: () => form.value.memberIds,
+      set: (v: any) => { form.value.memberIds = Array.isArray(v) ? v : v ? [v] : [] },
+    })
+    const memberToAdd = ref('')
+    const shortId = (id: string) => String(id).slice(-6)
+    const addMember = () => {
+      if (!memberToAdd.value) return
+      if (!form.value.memberIds.includes(memberToAdd.value)) form.value.memberIds.push(memberToAdd.value)
+      memberToAdd.value = ''
     }
+    const removeMember = (id: string) => { form.value.memberIds = form.value.memberIds.filter((x: string) => x !== id) }
+    const isWatching = computed(() => (form.value.watcherIds || []).includes(currentUserId.value))
+    const coverUrl = computed(() => {
+      const id = form.value.coverAttachmentId
+      const att = (form.value.attachments || []).find((a: any) => a.id === id)
+      if (!att) return null
+      return `${baseURL}${att.url}`
+    })
+    const coverStyle = computed(() => form.value.coverColor && !coverUrl.value ? { background: form.value.coverColor, minHeight: '64px' } : {})
 
-    const loadDraft = (): any | null => {
-      try { const s = localStorage.getItem(draftKey()); return s ? JSON.parse(s) : null } catch { return null }
-    }
-
-    const clearDraft = () => {
-      try { localStorage.removeItem(draftKey()) } catch { /* localStorage puede no estar disponible */ }
-      hasDraft.value = false
-    }
-
-    // Auto-save draft on every form change
-    watch(form, saveDraft, { deep: true })
-
-    watch(() => props.modelValue, (val) => {
-      editingDescription.value = false
-      checklistItemRefs.value  = []
-      showLabelPopover.value   = false
-
-      if (val && props.task) {
-        const base = {
-          title:       props.task.title       || '',
-          description: props.task.description || '',
-          priority:    props.task.priority    || 'medium',
-          dueDate:     props.task.dueDate ? props.task.dueDate.split('T')[0] : '',
-          assigneeId:  props.task.assigneeId  || '',
-          checklist:   props.task.checklist   ? JSON.parse(JSON.stringify(props.task.checklist))   : [],
-          labels:      props.task.labels      ? JSON.parse(JSON.stringify(props.task.labels))      : [],
-          attachments: props.task.attachments ? JSON.parse(JSON.stringify(props.task.attachments)) : []
-        }
-        const draft = loadDraft()
-        // Only restore draft if it has meaningful changes vs base
-        if (draft && draft.title !== undefined) {
-          form.value = draft
-          hasDraft.value = true
-        } else {
-          form.value = base
-          hasDraft.value = false
-        }
-      } else if (val) {
-        // New task — restore draft if exists
-        const draft = loadDraft()
-        if (draft && (draft.title || draft.description)) {
-          form.value = draft
-          hasDraft.value = true
-        } else {
-          form.value = {
-            title: '', description: '', priority: 'medium', dueDate: '',
-            assigneeId: '', checklist: [], labels: [], attachments: []
-          }
-          hasDraft.value = false
-        }
+    const resetForm = (t: any) => {
+      form.value = {
+        title: t?.title || '', description: t?.description || '', priority: t?.priority || 'medium',
+        dueDate: t?.dueDate ? String(t.dueDate).split('T')[0] : '', startDate: t?.startDate ? String(t.startDate).split('T')[0] : '',
+        assigneeId: t?.assigneeId || '', memberIds: t?.memberIds ? [...t.memberIds] : [], watcherIds: t?.watcherIds ? [...t.watcherIds] : [],
+        checklist: t?.checklist ? JSON.parse(JSON.stringify(t.checklist)) : [], labels: t?.labels ? JSON.parse(JSON.stringify(t.labels)) : [],
+        attachments: t?.attachments ? JSON.parse(JSON.stringify(t.attachments)) : [],
+        coverColor: t?.coverColor ?? null, coverAttachmentId: t?.coverAttachmentId ?? null, archived: !!t?.archived,
       }
-    })
+    }
+
+    const loadThread = async () => {
+      const id = props.task?._id
+      if (!id) { comments.value = []; activities.value = []; return }
+      try {
+        const [{ data: c }, { data: a }] = await Promise.all([
+          tasksApi.listComments(id, { limit: 100 }),
+          tasksApi.listActivities(id, { limit: 50 }),
+        ])
+        comments.value = c.data
+        activities.value = a.data
+      } catch { /* best effort */ }
+    }
+
+    watch(() => props.modelValue, (v) => {
+      if (v) { resetForm(props.task); newComment.value = ''; editingId.value = null; void loadThread() }
+    }, { immediate: true })
+    watch(() => props.task?._id, () => { if (props.modelValue) { resetForm(props.task); void loadThread() } })
 
     const close = () => emit('update:modelValue', false)
+    const save = () => emit('save', { ...form.value })
 
-    const save = () => {
-      clearDraft()
-      emit('save', form.value)
-    }
-
-    const discardDraft = () => {
-      clearDraft()
-      if (props.task) {
-        form.value = {
-          title:       props.task.title       || '',
-          description: props.task.description || '',
-          priority:    props.task.priority    || 'medium',
-          dueDate:     props.task.dueDate ? props.task.dueDate.split('T')[0] : '',
-          assigneeId:  props.task.assigneeId  || '',
-          checklist:   props.task.checklist   ? JSON.parse(JSON.stringify(props.task.checklist))   : [],
-          labels:      props.task.labels      ? JSON.parse(JSON.stringify(props.task.labels))      : [],
-          attachments: props.task.attachments ? JSON.parse(JSON.stringify(props.task.attachments)) : []
-        }
-      } else {
-        form.value = { title: '', description: '', priority: 'medium', dueDate: '', assigneeId: '', checklist: [], labels: [], attachments: [] }
-      }
-    }
-
-    // In viewMode, save immediately when user finishes editing description
-    const originalDescription = ref('')
-    const saveInViewMode = () => {
-      editingDescription.value = false
-      clearDraft()
-      emit('save', form.value)
-    }
-    const cancelDescriptionEdit = () => {
-      form.value.description = originalDescription.value
-      editingDescription.value = false
-    }
-    // Capture original before editing so cancel can revert
-    const startEditingDescription = () => {
-      originalDescription.value = form.value.description
-      editingDescription.value = true
-    }
-
-    // ── Labels ──
     const addLabel = () => {
       if (!newLabelName.value.trim()) return
       form.value.labels.push({ name: newLabelName.value.trim(), color: newLabelColor.value })
-      newLabelName.value   = ''
-      newLabelColor.value  = COLORS[0]
-      showLabelPopover.value = false
+      newLabelName.value = ''; newLabelColor.value = COLORS[0]; showLabelPop.value = false
     }
-
     const removeLabel = (i: number) => form.value.labels.splice(i, 1)
-
-    // ── Checklist ──
-    const addChecklistItemAndFocus = async () => {
-      form.value.checklist.push({ text: '', completed: false })
-      await nextTick()
-      const inputs = checklistItemRefs.value.filter(Boolean)
-      inputs[inputs.length - 1]?.focus()
+    const addCheckItem = () => form.value.checklist.push({ text: '', completed: false })
+    const toggleWatchLocal = () => {
+      const id = currentUserId.value
+      if (!id) return
+      const arr = [...(form.value.watcherIds || [])]
+      const ix = arr.indexOf(id)
+      if (ix === -1) arr.push(id); else arr.splice(ix, 1)
+      form.value.watcherIds = arr
     }
 
-    const removeChecklistItem = (i: number) => {
-      form.value.checklist.splice(i, 1)
-      checklistItemRefs.value.splice(i, 1)
+    const fileUrl = (a: any) => `${baseURL}${a.url}`
+    const isImage = (a: any) => (a.type || '').startsWith('image/')
+    const formatSize = (n: number) => n > 1048576 ? `${(n / 1048576).toFixed(1)} MB` : `${Math.max(1, Math.round(n / 1024))} KB`
+    const formatDate = (d: any) => { try { return new Date(d).toLocaleDateString('es-AR') } catch { return '' } }
+    const formatDateTime = (d: any) => { try { return new Date(d).toLocaleString('es-AR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) } catch { return '' } }
+    const activityLabel = (a: TaskActivity) => {
+      const map: Record<string, string> = { created: 'creó la tarjeta', updated: 'actualizó la tarjeta', moved: 'movió la tarjeta', completed: 'completó la tarjeta', reopened: 'reabrió la tarjeta', commented: 'comentó', attachment_added: `adjuntó ${(a.payload as any)?.name || 'un archivo'}`, attachment_removed: 'quitó un adjunto', archived: 'archivó la tarjeta', unarchived: 'desarchivó la tarjeta', duplicated: 'duplicó la tarjeta', member_added: 'agregó un miembro', member_removed: 'quitó un miembro' }
+      return map[a.type] || a.type
     }
 
-    const onChecklistItemEscape = (idx: number) => {
-      if (!form.value.checklist[idx].text.trim()) {
-        form.value.checklist.splice(idx, 1)
-        checklistItemRefs.value.splice(idx, 1)
+    const refreshTask = async () => {
+      const id = props.task?._id
+      if (!id) return
+      try {
+        const { data } = await tasksApi.getById(id)
+        resetForm(data)
+        emit('task-updated', data)
+        void loadThread()
+      } catch { /* noop */ }
+    }
+
+    const postComment = async () => {
+      const id = props.task?._id
+      const text = newComment.value.trim()
+      if (!id || !text) return
+      savingComment.value = true
+      try {
+        // Mencione simples @nombre -> el backend notifica por mentions explícitos si matchean IDs;
+        // enviamos texto plano y dejamos que el backend extraiga @<id>.
+        await tasksApi.addComment(id, { text })
+        newComment.value = ''
+        const { data } = await tasksApi.listComments(id, { limit: 100 })
+        comments.value = data.data
+        emit('task-updated', props.task)
+      } finally { savingComment.value = false }
+    }
+    const startEdit = (c: TaskComment) => { editingId.value = c._id; editingText.value = c.text }
+    const saveEdit = async (c: TaskComment) => {
+      await tasksApi.updateComment(c.taskId, c._id, { text: editingText.value })
+      editingId.value = null
+      const { data } = await tasksApi.listComments(c.taskId, { limit: 100 })
+      comments.value = data.data
+    }
+    const deleteComment = async (c: TaskComment) => {
+      await tasksApi.removeComment(c.taskId, c._id)
+      comments.value = comments.value.filter(x => x._id !== c._id)
+    }
+
+    const onFilePicked = async (e: Event) => {
+      const input = e.target as HTMLInputElement
+      const file = input.files?.[0]
+      input.value = ''
+      if (!file || !props.task?._id) return
+      uploading.value = true; uploadPct.value = 0
+      try {
+        const { data } = await tasksApi.addAttachment(props.task._id, file, (p) => { uploadPct.value = p })
+        form.value.attachments = [...(form.value.attachments || []), data.file]
+        emit('task-updated', data.task)
+        void loadThread()
+      } finally { uploading.value = false }
+    }
+    const deleteAttachment = async (a: any) => {
+      if (!props.task?._id) return
+      const { data } = await tasksApi.removeAttachment(props.task._id, a.id)
+      form.value.attachments = (form.value.attachments || []).filter((x: any) => x.id !== a.id)
+      if (form.value.coverAttachmentId === a.id) form.value.coverAttachmentId = null
+      emit('task-updated', data)
+    }
+    const makeCover = async (a: any) => {
+      form.value.coverAttachmentId = a.id
+      form.value.coverColor = null
+      if (props.task?._id) {
+        const { data } = await tasksApi.update(props.task._id, { coverAttachmentId: a.id, coverColor: null } as any)
+        emit('task-updated', data)
       }
     }
 
+    const toggleComplete = async () => {
+      if (!props.task?._id) return
+      const { data } = await tasksApi.complete(props.task._id, { completed: !isDone.value })
+      emit('task-updated', data.task)
+      close()
+    }
+    const duplicate = async () => {
+      if (!props.task?._id) return
+      await tasksApi.duplicate(props.task._id)
+      close()
+    }
+    const toggleArchive = async () => {
+      form.value.archived = !form.value.archived
+      if (props.task?._id) {
+        const { data } = await tasksApi.update(props.task._id, { archived: form.value.archived } as any)
+        emit('task-updated', data)
+      }
+      close()
+    }
+
     return {
-      form,
-      editingDescription,
-      checklistItemRefs,
-      showLabelPopover,
-      newLabelName,
-      newLabelColor,
-      colors,
-      loadUserOptions,
-      loadUserOptionById,
-      hasDraft,
-      close,
-      save,
-      discardDraft,
-      saveInViewMode,
-      cancelDescriptionEdit,
-      startEditingDescription,
-      addLabel,
-      removeLabel,
-      addChecklistItemAndFocus,
-      removeChecklistItem,
-      onChecklistItemEscape,
+      form, COLORS, showLabelPop, newLabelName, newLabelColor, comments, activities, newComment, savingComment,
+      editingId, editingText, uploading, uploadPct, currentUserId, isDone, checklistPct, membersProxy, memberToAdd, shortId, addMember, removeMember, isWatching,
+      coverUrl, coverStyle, close, save, addLabel, removeLabel, addCheckItem, toggleWatchLocal, fileUrl, isImage,
+      formatSize, formatDate, formatDateTime, activityLabel, postComment, startEdit, saveEdit, deleteComment,
+      onFilePicked, deleteAttachment, makeCover, toggleComplete, duplicate, toggleArchive,
+      loadUserOptions, loadUserOptionById, refreshTask,
     }
   },
-  computed: {
-    checklistProgress(): number {
-      if (!this.form.checklist.length) return 0
-      const completed = this.form.checklist.filter((i: any) => i.completed).length
-      return Math.round((completed / this.form.checklist.length) * 100)
-    }
-  }
 })
 </script>
 
 <style scoped>
-/* ── Overlay & box ── */
-.task-modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.65);
-  backdrop-filter: blur(4px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.task-modal-box {
-  background: var(--color-bg-surface);
-  width: 768px;
-  max-width: 95vw;
-  max-height: 90vh;
-  height: auto;
-  border-radius: 0;
-  border: none;
-  box-shadow: 0 20px 60px -10px rgba(0, 0, 0, 0.7);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  animation: slideUp 0.2s ease-out;
-}
-
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-/* ── Header ── */
-.task-modal-header {
-  padding: 20px 24px 16px;
-  border-bottom: 1px solid var(--color-border);
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-  flex-shrink: 0;
-}
-
-.header-left {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  flex: 1;
-  min-width: 0;
-}
-
-.header-icon {
-  color: var(--color-text-muted);
-  font-size: 22px;
-  margin-top: 2px;
-  flex-shrink: 0;
-}
-
-.task-title-input {
-  flex: 1;
-  background: transparent;
-  border: none;
-  padding: 0;
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--color-text-base);
-  outline: none;
-  font-family: var(--font-body);
-  line-height: 1.3;
-  min-width: 0;
-}
-
-.task-title-input::placeholder {
-  color: var(--color-text-muted);
-  font-weight: 400;
-}
-
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  flex-shrink: 0;
-}
-
-.icon-btn {
-  background: transparent;
-  border: none;
-  color: var(--color-text-muted);
-  cursor: pointer;
-  padding: 8px;
-  border-radius: 0;
-  transition: background 0.15s, color 0.15s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.icon-btn:hover { background: var(--color-bg-base); color: var(--color-text-base); }
-.icon-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-.icon-btn .material-symbols-outlined { font-size: 20px; }
-.icon-btn--save { color: var(--color-primary); }
-.icon-btn--save:hover { background: rgba(37, 99, 235, 0.08); color: var(--color-primary); }
-
-/* ── Draft banner ── */
-.draft-banner {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 24px;
-  background: rgba(245, 158, 11, 0.1);
-  border-bottom: 1px solid rgba(245, 158, 11, 0.25);
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--color-warning);
-  flex-shrink: 0;
-}
-.draft-discard {
-  margin-left: auto;
-  background: none;
-  border: 1px solid currentColor;
-  color: inherit;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  padding: 2px 8px;
-  cursor: pointer;
-  opacity: 0.8;
-}
-.draft-discard:hover { opacity: 1; }
-
-/* ── Body ── */
-.task-modal-body {
-  display: flex;
-  flex: 1;
-  overflow-y: auto;
-  padding: 24px;
-  gap: 24px;
-  max-height: calc(90vh - 72px);
-}
-
-.task-main-col {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 28px;
-  min-width: 0;
-}
-
-.task-side-col {
-  width: 200px;
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-/* ── Sections ── */
-.task-section {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.section-title {
-  font-family: var(--font-body);
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--color-text-base);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 0;
-  text-transform: none;
-  letter-spacing: normal;
-}
-
-.section-title .material-symbols-outlined {
-  font-size: 18px;
-  color: var(--color-text-muted);
-}
-
-.section-title-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.checklist-pct {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--color-text-muted);
-}
-
-/* ── Labels ── */
-.labels-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  align-items: center;
-  position: relative;
-}
-
-.task-label {
-  padding: 3px 10px;
-  border-radius: 0;
-  font-size: 11px;
-  font-weight: 600;
-  font-family: var(--font-mono);
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  border: 1px solid transparent;
-}
-
-.remove-label {
-  background: transparent;
-  border: none;
-  color: inherit;
-  cursor: pointer;
-  display: flex;
-  opacity: 0.6;
-  padding: 0;
-}
-
-.remove-label:hover { opacity: 1; }
-.remove-label .material-symbols-outlined { font-size: 13px; }
-
-.add-btn {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px dashed var(--color-border);
-  color: var(--color-text-muted);
-  border-radius: 0;
-  padding: 4px 12px;
-  font-size: 11px;
-  font-family: var(--font-mono);
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  transition: background 0.15s, color 0.15s;
-}
-
-.add-btn:hover { background: rgba(255, 255, 255, 0.1); color: var(--color-text-base); }
-.add-btn .material-symbols-outlined { font-size: 14px; }
-.mt-2 { margin-top: 4px; }
-
-.label-popover {
-  position: absolute;
-  top: calc(100% + 8px);
-  left: 0;
-  background: var(--color-bg-surface);
-  border: 1px solid var(--color-border);
-  padding: 12px;
-  border-radius: 0;
-  z-index: 10;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-  width: 200px;
-}
-
-.popover-input {
-  width: 100%;
-  background: var(--color-bg-base);
-  border: 1px solid var(--color-border);
-  padding: 6px 10px;
-  border-radius: 0;
-  font-size: 12px;
-  color: var(--color-text-base);
-  margin-bottom: 8px;
-  outline: none;
-  font-family: var(--font-body);
-  box-sizing: border-box;
-}
-
-.popover-input:focus { border-color: var(--color-primary); }
-
-.color-picker { display: flex; gap: 6px; flex-wrap: wrap; }
-
-.color-swatch {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  border: 2px solid transparent;
-  cursor: pointer;
-  transition: transform 0.15s;
-}
-
-.color-swatch:hover { transform: scale(1.15); }
-.color-swatch.active { border-color: white; transform: scale(1.15); }
-
-/* ── Description ── */
-.editor-container {
-  border: 1px solid var(--color-border);
-  border-radius: 0;
-  overflow: hidden;
-}
-
-:deep(.ql-toolbar) {
-  background: var(--color-bg-surface);
-  border-color: var(--color-border) !important;
-  border-top: none;
-  border-left: none;
-  border-right: none;
-}
-
-:deep(.ql-container) {
-  background: var(--color-bg-base);
-  border: none !important;
-  font-family: var(--font-body);
-  font-size: 14px;
-  min-height: 120px;
-}
-
-:deep(.ql-editor) { color: var(--color-text-base); }
-:deep(.ql-stroke)  { stroke: var(--color-text-muted); }
-:deep(.ql-fill)    { fill:   var(--color-text-muted); }
-:deep(.ql-picker)  { color:  var(--color-text-muted); }
-
-.description-view {
-  background: var(--color-bg-base);
-  padding: 12px 16px;
-  border-radius: 0;
-  border: 1px solid var(--color-border);
-  font-size: 14px;
-  line-height: 1.6;
-  color: var(--color-text-base);
-}
-
-.description-view--clickable {
-  cursor: pointer;
-  min-height: 60px;
-  transition: background 0.15s;
-  border: 1px solid transparent;
-}
-
-.description-view--clickable:hover {
-  background: var(--color-bg-surface-high);
-  border-color: var(--color-border);
-}
-
-.description-placeholder {
-  color: var(--color-text-muted);
-  font-size: 14px;
-  margin: 0;
-  padding: 4px 0;
-}
-
-.description-edit-actions {
-  display: flex;
-  gap: 8px;
-  padding: 8px;
-  border-top: 1px solid var(--color-border);
-  background: var(--color-bg-surface);
-}
-
-/* ── Checklist ── */
-.checklist-progress-container {
-  margin-bottom: 4px;
-}
-
-.progress-bar {
-  flex: 1;
-  height: 6px;
-  background: var(--color-bg-base);
-  border-radius: 0;
-  overflow: hidden;
-}
-
-.progress-fill {
-  height: 100%;
-  background: var(--color-primary);
-  transition: width 0.3s, background 0.3s;
-}
-
-.progress-fill--done { background: var(--color-success); }
-
-.checklist-items {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.checklist-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 4px 0;
-}
-
-.checklist-checkbox {
-  width: 16px;
-  height: 16px;
-  cursor: pointer;
-  accent-color: var(--color-primary);
-  flex-shrink: 0;
-}
-
-.checklist-text-input {
-  flex: 1;
-  background: transparent;
-  border: 1px solid transparent;
-  padding: 6px 8px;
-  color: var(--color-text-base);
-  font-size: 14px;
-  font-family: var(--font-body);
-  outline: none;
-  border-radius: 0;
-  transition: background 0.15s, border-color 0.15s;
-}
-
-.checklist-text-input:focus {
-  background: var(--color-bg-base);
-  border-color: var(--color-border);
-}
-
-.checklist-item.completed .checklist-text-input {
-  text-decoration: line-through;
-  color: var(--color-text-muted);
-}
-
-.checklist-text {
-  flex: 1;
-  font-size: 14px;
-  padding: 6px 0;
-  color: var(--color-text-base);
-}
-
-.checklist-text.completed {
-  text-decoration: line-through;
-  color: var(--color-text-muted);
-}
-
-.checklist-delete-btn {
-  padding: 4px;
-  opacity: 0;
-  transition: opacity 0.15s;
-}
-
-.checklist-item:hover .checklist-delete-btn { opacity: 1; }
-
-/* ── Sidebar ── */
-.meta-card {
-  background: none;
-  border: none;
-  padding: 0;
-}
-
-.meta-title {
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--color-text-muted);
-  margin-bottom: 6px;
-  font-family: var(--font-mono);
-  font-weight: 600;
-}
-
-.task-select,
-.task-date {
-  width: 100%;
-  background: var(--color-bg-surface-high);
-  border: none;
-  padding: 8px 10px;
-  border-radius: 0;
-  color: var(--color-text-base);
-  font-size: 13px;
-  outline: none;
-  font-family: var(--font-body);
-  cursor: pointer;
-  box-sizing: border-box;
-}
-
-.task-select:hover,
-.task-date:hover {
-  background: var(--color-bg-surface-highest);
-}
-
-.task-select:focus,
-.task-date:focus {
-  outline: 2px solid var(--color-primary);
-  outline-offset: -2px;
-}
-
-.meta-value {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--color-text-base);
-}
-
-.priority-low    { color: var(--color-success); }
-.priority-medium { color: var(--color-warning); }
-.priority-high   { color: var(--color-error); }
-.priority-urgent { color: var(--color-error); font-weight: 700; text-transform: uppercase; }
-
-.actions-card { margin-top: auto; }
-
-.btn-primary {
-  padding: 10px 20px;
-  background: var(--color-primary);
-  color: white;
-  border: none;
-  border-radius: 0;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 600;
-  cursor: pointer;
-  text-transform: uppercase;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-}
-
-.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
-.btn-primary:not(:disabled):hover { opacity: 0.85; }
-
-.btn-secondary {
-  padding: 10px 20px;
-  background: transparent;
-  color: var(--color-text-muted);
-  border: 1px solid var(--color-border);
-  border-radius: 0;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 600;
-  cursor: pointer;
-  text-transform: uppercase;
-}
-
-.btn-secondary:hover { color: var(--color-text-base); border-color: var(--color-text-muted); }
-
-.w-full { width: 100%; }
-
-/* ── Scrollbar ── */
-.custom-scrollbar::-webkit-scrollbar { width: 6px; }
-.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-.custom-scrollbar::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 3px; }
-</style>
-
-<!-- Win95: overrides encapsulados por data-appearance -->
-<style>
-html[data-appearance="win95"] .task-modal-overlay {
-position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.65);
-  backdrop-filter: blur(4px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-html[data-appearance="win95"] .task-modal-box {
-width: 768px;
-  max-width: 95vw;
-  max-height: 90vh;
-  height: auto;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  padding: 2px;
-  animation: w95-slideUp 0.2s ease-out;
-}
-
-@keyframes w95-slideUp {
-from { opacity: 0; transform: translateY(20px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-html[data-appearance="win95"] .task-modal-header {
-display: none;
-}
-
-html[data-appearance="win95"] .task-title-input {
-width: 100%;
-  background: var(--color-bg-surface-low);
-  border: 1px solid var(--color-border);
-  padding: 10px 12px;
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--color-text-base);
-  outline: none;
-  font-family: var(--font-body);
-  line-height: 1.3;
-  box-sizing: border-box;
-}
-
-html[data-appearance="win95"] .task-title-input:focus {
-border-color: var(--color-border-focus);
-}
-
-html[data-appearance="win95"] .task-title-input::placeholder {
-color: var(--color-text-muted);
-  font-weight: 400;
-}
-
-html[data-appearance="win95"] .header-right {
-display: none;
-}
-
-html[data-appearance="win95"] .icon-btn {
-background: transparent;
-  border: none;
-  color: var(--color-text-muted);
-  cursor: pointer;
-  padding: 8px;
-  border-radius: 0;
-  transition: background 0.15s, color 0.15s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-html[data-appearance="win95"] .icon-btn:hover {
-background: var(--color-bg-base); color: var(--color-text-base);
-}
-
-html[data-appearance="win95"] .icon-btn:disabled {
-opacity: 0.4; cursor: not-allowed;
-}
-
-html[data-appearance="win95"] .icon-btn .material-symbols-outlined {
-font-size: 20px;
-}
-
-html[data-appearance="win95"] .draft-banner {
-display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 24px;
-  background: rgba(245, 158, 11, 0.1);
-  border-bottom: 1px solid rgba(245, 158, 11, 0.25);
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--color-warning);
-  flex-shrink: 0;
-}
-
-html[data-appearance="win95"] .draft-discard {
-margin-left: auto;
-  background: none;
-  border: 1px solid currentColor;
-  color: inherit;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  padding: 2px 8px;
-  cursor: pointer;
-  opacity: 0.8;
-}
-
-html[data-appearance="win95"] .draft-discard:hover {
-opacity: 1;
-}
-
-html[data-appearance="win95"] .task-modal-body {
-display: flex;
-  flex: 1;
-  overflow-y: auto;
-  padding: 24px;
-  gap: 24px;
-  max-height: calc(90vh - 72px);
-}
-
-html[data-appearance="win95"] .task-main-col {
-flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 28px;
-  min-width: 0;
-}
-
-html[data-appearance="win95"] .task-side-col {
-width: 200px;
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-html[data-appearance="win95"] .task-section {
-display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-html[data-appearance="win95"] .section-title {
-font-family: var(--font-body);
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--color-text-base);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 0;
-  text-transform: none;
-  letter-spacing: normal;
-}
-
-html[data-appearance="win95"] .section-title .material-symbols-outlined {
-font-size: 18px;
-  color: var(--color-text-muted);
-}
-
-html[data-appearance="win95"] .section-title-row {
-display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-html[data-appearance="win95"] .checklist-pct {
-font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--color-text-muted);
-}
-
-html[data-appearance="win95"] .labels-list {
-display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  align-items: center;
-  position: relative;
-}
-
-html[data-appearance="win95"] .task-label {
-padding: 3px 10px;
-  border-radius: 0;
-  font-size: 11px;
-  font-weight: 600;
-  font-family: var(--font-mono);
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  border: 1px solid transparent;
-}
-
-html[data-appearance="win95"] .remove-label {
-background: transparent;
-  border: none;
-  color: inherit;
-  cursor: pointer;
-  display: flex;
-  opacity: 0.6;
-  padding: 0;
-}
-
-html[data-appearance="win95"] .remove-label:hover {
-opacity: 1;
-}
-
-html[data-appearance="win95"] .remove-label .material-symbols-outlined {
-font-size: 13px;
-}
-
-html[data-appearance="win95"] .add-btn {
-background: rgba(255, 255, 255, 0.05);
-  border: 1px dashed var(--color-border);
-  color: var(--color-text-muted);
-  border-radius: 0;
-  padding: 4px 12px;
-  font-size: 11px;
-  font-family: var(--font-mono);
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  transition: background 0.15s, color 0.15s;
-}
-
-html[data-appearance="win95"] .add-btn:hover {
-background: rgba(255, 255, 255, 0.1); color: var(--color-text-base);
-}
-
-html[data-appearance="win95"] .add-btn .material-symbols-outlined {
-font-size: 14px;
-}
-
-html[data-appearance="win95"] .mt-2 {
-margin-top: 4px;
-}
-
-html[data-appearance="win95"] .label-popover {
-position: absolute;
-  top: calc(100% + 8px);
-  left: 0;
-  background: var(--color-bg-surface);
-  border: 1px solid var(--color-border);
-  padding: 12px;
-  border-radius: 0;
-  z-index: 10;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-  width: 200px;
-}
-
-html[data-appearance="win95"] .popover-input {
-width: 100%;
-  background: var(--color-bg-base);
-  border: 1px solid var(--color-border);
-  padding: 6px 10px;
-  border-radius: 0;
-  font-size: 12px;
-  color: var(--color-text-base);
-  margin-bottom: 8px;
-  outline: none;
-  font-family: var(--font-body);
-  box-sizing: border-box;
-}
-
-html[data-appearance="win95"] .popover-input:focus {
-border-color: var(--color-primary);
-}
-
-html[data-appearance="win95"] .color-picker {
-display: flex; gap: 6px; flex-wrap: wrap;
-}
-
-html[data-appearance="win95"] .color-swatch {
-width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  border: 2px solid transparent;
-  cursor: pointer;
-  transition: transform 0.15s;
-}
-
-html[data-appearance="win95"] .color-swatch:hover {
-transform: scale(1.15);
-}
-
-html[data-appearance="win95"] .color-swatch.active {
-border-color: white; transform: scale(1.15);
-}
-
-html[data-appearance="win95"] .editor-container {
-border: 1px solid var(--color-border);
-  border-radius: 0;
-  overflow: hidden;
-}
-
-html[data-appearance="win95"]:deep(.ql-toolbar) {
-background: var(--color-bg-surface);
-  border-color: var(--color-border) !important;
-  border-top: none;
-  border-left: none;
-  border-right: none;
-}
-
-html[data-appearance="win95"]:deep(.ql-container) {
-background: var(--color-bg-base);
-  border: none !important;
-  font-family: var(--font-body);
-  font-size: 14px;
-  min-height: 120px;
-}
-
-html[data-appearance="win95"]:deep(.ql-editor) {
-color: var(--color-text-base);
-}
-
-html[data-appearance="win95"]:deep(.ql-stroke) {
-stroke: var(--color-text-muted);
-}
-
-html[data-appearance="win95"]:deep(.ql-fill) {
-fill:   var(--color-text-muted);
-}
-
-html[data-appearance="win95"]:deep(.ql-picker) {
-color:  var(--color-text-muted);
-}
-
-html[data-appearance="win95"] .description-view {
-background: var(--color-bg-base);
-  padding: 12px 16px;
-  border-radius: 0;
-  border: 1px solid var(--color-border);
-  font-size: 14px;
-  line-height: 1.6;
-  color: var(--color-text-base);
-}
-
-html[data-appearance="win95"] .description-view--clickable {
-cursor: pointer;
-  min-height: 60px;
-  transition: background 0.15s;
-  border: 1px solid transparent;
-}
-
-html[data-appearance="win95"] .description-view--clickable:hover {
-background: var(--color-bg-surface-high);
-  border-color: var(--color-border);
-}
-
-html[data-appearance="win95"] .description-placeholder {
-color: var(--color-text-muted);
-  font-size: 14px;
-  margin: 0;
-  padding: 4px 0;
-}
-
-html[data-appearance="win95"] .description-edit-actions {
-display: flex;
-  gap: 8px;
-  padding: 8px;
-  border-top: 1px solid var(--color-border);
-  background: var(--color-bg-surface);
-}
-
-html[data-appearance="win95"] .checklist-progress-container {
-margin-bottom: 4px;
-}
-
-html[data-appearance="win95"] .progress-bar {
-flex: 1;
-  height: 6px;
-  background: var(--color-bg-base);
-  border-radius: 0;
-  overflow: hidden;
-}
-
-html[data-appearance="win95"] .progress-fill {
-height: 100%;
-  background: var(--color-primary);
-  transition: width 0.3s, background 0.3s;
-}
-
-html[data-appearance="win95"] .progress-fill--done {
-background: var(--color-success);
-}
-
-html[data-appearance="win95"] .checklist-items {
-display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-html[data-appearance="win95"] .checklist-item {
-display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 4px 0;
-}
-
-html[data-appearance="win95"] .checklist-checkbox {
-width: 16px;
-  height: 16px;
-  cursor: pointer;
-  accent-color: var(--color-primary);
-  flex-shrink: 0;
-}
-
-html[data-appearance="win95"] .checklist-text-input {
-flex: 1;
-  background: transparent;
-  border: 1px solid transparent;
-  padding: 6px 8px;
-  color: var(--color-text-base);
-  font-size: 14px;
-  font-family: var(--font-body);
-  outline: none;
-  border-radius: 0;
-  transition: background 0.15s, border-color 0.15s;
-}
-
-html[data-appearance="win95"] .checklist-text-input:focus {
-background: var(--color-bg-base);
-  border-color: var(--color-border);
-}
-
-html[data-appearance="win95"] .checklist-item.completed .checklist-text-input {
-text-decoration: line-through;
-  color: var(--color-text-muted);
-}
-
-html[data-appearance="win95"] .checklist-text {
-flex: 1;
-  font-size: 14px;
-  padding: 6px 0;
-  color: var(--color-text-base);
-}
-
-html[data-appearance="win95"] .checklist-text.completed {
-text-decoration: line-through;
-  color: var(--color-text-muted);
-}
-
-html[data-appearance="win95"] .checklist-delete-btn {
-padding: 4px;
-  opacity: 0;
-  transition: opacity 0.15s;
-}
-
-html[data-appearance="win95"] .checklist-item:hover .checklist-delete-btn {
-opacity: 1;
-}
-
-html[data-appearance="win95"] .meta-card {
-background: none;
-  border: none;
-  padding: 0;
-}
-
-html[data-appearance="win95"] .meta-title {
-font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--color-text-muted);
-  margin-bottom: 6px;
-  font-family: var(--font-mono);
-  font-weight: 600;
-}
-
-html[data-appearance="win95"] .task-select, html[data-appearance="win95"] .task-date {
-width: 100%;
-  background: var(--color-bg-surface-high);
-  border: none;
-  padding: 8px 10px;
-  border-radius: 0;
-  color: var(--color-text-base);
-  font-size: 13px;
-  outline: none;
-  font-family: var(--font-body);
-  cursor: pointer;
-  box-sizing: border-box;
-}
-
-html[data-appearance="win95"] .task-select:hover, html[data-appearance="win95"] .task-date:hover {
-background: var(--color-bg-surface-highest);
-}
-
-html[data-appearance="win95"] .task-select:focus, html[data-appearance="win95"] .task-date:focus {
-outline: 2px solid var(--color-primary);
-  outline-offset: -2px;
-}
-
-html[data-appearance="win95"] .meta-value {
-font-size: 13px;
-  font-weight: 500;
-  color: var(--color-text-base);
-}
-
-html[data-appearance="win95"] .priority-low {
-color: var(--color-success);
-}
-
-html[data-appearance="win95"] .priority-medium {
-color: var(--color-warning);
-}
-
-html[data-appearance="win95"] .priority-high {
-color: var(--color-error);
-}
-
-html[data-appearance="win95"] .priority-urgent {
-color: var(--color-error); font-weight: 700; text-transform: uppercase;
-}
-
-html[data-appearance="win95"] .actions-card {
-margin-top: auto;
-}
-
-html[data-appearance="win95"] .w-full {
-width: 100%;
-}
-
-html[data-appearance="win95"] .custom-scrollbar::-webkit-scrollbar {
-width: 6px;
-}
-
-html[data-appearance="win95"] .custom-scrollbar::-webkit-scrollbar-track {
-background: transparent;
-}
-
-html[data-appearance="win95"] .custom-scrollbar::-webkit-scrollbar-thumb {
-background: var(--color-border); border-radius: 3px;
-}
+.task-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.6); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 16px; }
+.task-modal-box { background: var(--color-bg-surface, #fff); width: 880px; max-width: 96vw; max-height: 92vh; display: flex; flex-direction: column; border-radius: 8px; overflow: hidden; }
+.task-cover { position: relative; min-height: 64px; display: flex; } .task-cover img { width: 100%; max-height: 180px; object-fit: cover; }
+.cover-close { position: absolute; top: 8px; right: 8px; }
+.task-modal-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--color-border, #eee); font-weight: 700; }
+.task-modal-body { display: grid; grid-template-columns: 1fr 220px; gap: 16px; padding: 16px; overflow: auto; }
+.task-main { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.task-side { display: flex; flex-direction: column; gap: 8px; }
+.section h4 { margin: 0 0 8px; font-size: 12px; text-transform: uppercase; letter-spacing: .05em; opacity: .7; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.task-title-input { font-size: 20px; font-weight: 700; border: none; border-bottom: 1px solid transparent; width: 100%; background: transparent; color: inherit; } .task-title-input:focus { outline: none; border-color: var(--color-primary, #5B4EFF); }
+.input, .popover-input, textarea { width: 100%; box-sizing: border-box; padding: 8px 10px; border: 1px solid var(--color-border, #ddd); border-radius: 6px; background: var(--color-bg-base, #fff); color: inherit; }
+.labels-row { display: flex; flex-wrap: wrap; gap: 6px; } .label-chip { border: 1px solid; border-radius: 20px; padding: 2px 8px; font-size: 12px; display: inline-flex; gap: 6px; align-items: center; } .label-chip button { border: none; background: none; cursor: pointer; }
+.add-btn { border: 1px dashed #aaa; background: none; border-radius: 6px; padding: 4px 10px; cursor: pointer; font-size: 12px; }
+.popover { border: 1px solid #ddd; border-radius: 8px; padding: 10px; margin-top: 8px; display: flex; flex-direction: column; gap: 8px; }
+.color-row { display: flex; gap: 6px; flex-wrap: wrap; } .swatch { width: 24px; height: 24px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; } .swatch.active { border-color: #000; }
+.btn-primary { background: #5B4EFF; color: #fff; border: none; border-radius: 6px; padding: 8px 12px; cursor: pointer; } .btn-block { width: 100%; }
+.side-btn { border: 1px solid #ddd; background: #f7f7f8; border-radius: 6px; padding: 8px; cursor: pointer; text-align: left; } .side-group { border-top: 1px solid #eee; padding-top: 8px; }
+.row-between { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.progress { height: 6px; background: #eee; border-radius: 4px; overflow: hidden; } .fill { height: 100%; background: #5B4EFF; }
+.check-item { display: flex; gap: 8px; align-items: center; margin: 6px 0; }
+.icon-btn { border: none; background: none; font-size: 18px; cursor: pointer; }
+.mini-btn { font-size: 12px; border: 1px solid #ddd; background: #fff; border-radius: 6px; padding: 2px 8px; cursor: pointer; } .mini-btn.danger { color: #c00; }
+.attach-row { display: flex; gap: 10px; align-items: center; border: 1px solid #eee; border-radius: 8px; padding: 8px; margin: 6px 0; }
+.attach-thumb { width: 44px; height: 44px; object-fit: cover; border-radius: 6px; background: #f0f0f0; display: flex; align-items: center; justify-content: center; }
+.attach-meta { flex: 1; min-width: 0; display: flex; flex-direction: column; } .attach-meta a { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.comment-box textarea { width: 100%; } .comment { border-top: 1px solid #f0f0f0; padding: 8px 0; } .comment-head { display: flex; gap: 8px; align-items: baseline; } .comment-head small { opacity: .6; } .comment-text { white-space: pre-wrap; margin: 4px 0; } .comment-actions { display: flex; gap: 6px; }
+.activity { display: flex; gap: 8px; align-items: center; font-size: 13px; padding: 4px 0; } .activity .dot { width: 8px; height: 8px; border-radius: 50%; background: #5B4EFF; } .activity small { margin-left: auto; opacity: .6; }
+.muted { opacity: .6; font-size: 13px; } .file-label { cursor: pointer; } .watch-row { display: flex; gap: 8px; align-items: center; margin-top: 8px; font-size: 13px; }
+@media (max-width: 760px) { .task-modal-body { grid-template-columns: 1fr; } }
 </style>

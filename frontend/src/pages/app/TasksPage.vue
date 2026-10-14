@@ -24,6 +24,11 @@
         Nueva columna
       </button>
 
+      <div v-if="activeProjectId" class="board-filters">
+        <input v-model="boardSearch" class="board-search" placeholder="Filtrar tarjetas..." @input="onBoardSearch" />
+        <label class="archived-toggle"><input type="checkbox" v-model="showArchived" @change="reloadBoard" /> Archivadas</label>
+      </div>
+
       <div v-if="activeProjectId" class="board-view-toggle" role="group" aria-label="Vista del tablero">
         <button
           :class="['view-btn', { 'view-btn--active': boardView === 'kanban' }]"
@@ -213,9 +218,13 @@
                 >
                   <!-- Cover strip (color del primer label) -->
                   <div
-                    v-if="task.labels && task.labels.length > 0"
+                    v-if="coverImage(task)"
+                    class="card-cover-img"
+                  ><img :src="coverImage(task)" alt="" /></div>
+                  <div
+                    v-else-if="task.coverColor || (task.labels && task.labels.length > 0)"
                     class="card-cover-strip"
-                    :style="{ background: task.labels[0].color }"
+                    :style="{ background: task.coverColor || task.labels[0].color }"
                   ></div>
 
                   <!-- Labels -->
@@ -242,6 +251,12 @@
                   <div v-if="cardMenuTask?._id === task._id" class="card-menu-dropdown" @click.stop>
                     <button class="dropdown-item" @click="openEditTask(task, column._id); cardMenuTask = null">
                       <win-icon name="paint" :size="16" /> Editar
+                    </button>
+                    <button class="dropdown-item" @click="duplicateTask(task); cardMenuTask = null">
+                      <win-icon name="notepad-file" :size="16" /> Duplicar
+                    </button>
+                    <button class="dropdown-item" @click="archiveTask(task, true); cardMenuTask = null">
+                      <win-icon name="folder" :size="16" /> Archivar
                     </button>
                     <button
                       v-if="activeProjectHasRepo"
@@ -290,6 +305,9 @@
                       <span v-if="task.description" class="card-desc-icon" title="Tiene descripción">
                         <win-icon name="file-lines" :size="16" />
                       </span>
+                      <span v-if="task.commentsCount" class="card-badge" title="Comentarios">💬 {{ task.commentsCount }}</span>
+                      <span v-if="task.attachments && task.attachments.length" class="card-badge" title="Adjuntos">📎 {{ task.attachments.length }}</span>
+                      <span v-if="(task.memberIds && task.memberIds.length) || task.assigneeId" class="card-badge" title="Miembros">👥 {{ (task.memberIds?.length || 0) + (task.assigneeId ? 1 : 0) }}</span>
                       <span v-if="task.dueDate" class="card-due" :class="getDueDateClass(task)">
                         <win-icon name="clock" :size="16" />
                         {{ formatCalendarDate(task.dueDate) }}
@@ -505,6 +523,7 @@
       :task="editingTask"
       :loading="savingTask"
       @save="saveTaskFromModal"
+      @task-updated="onTaskUpdatedFromModal"
     />
     <w-confirm-modal
       :is-open="!!deleteColumnTarget"
@@ -546,6 +565,8 @@ import { formatCalendarDate } from '@/utils/date'
 import { useProjectsStore } from '@/stores/projects.store'
 import { useGithubStore } from '@/stores/github.store'
 import { projectsApi } from '@/api/projects/projects.api'
+import { useBoardSocket } from '@/composables/useBoardSocket'
+import { baseURL } from '@/api/axios.config'
 
 const PROJECT_PAGE_SIZE = 20
 
@@ -567,6 +588,9 @@ export default defineComponent({
     const activeProjectId = ref('')
     const activeProjectName = ref('')
     const columnsData = ref<Record<string, Task[]>>({})
+    const boardSearch = ref('')
+    const showArchived = ref(false)
+    const { joinProject, onBoardEvent } = useBoardSocket()
     const boardView = ref<'kanban' | 'list'>(
       (localStorage.getItem('tasks_board_view') as 'kanban' | 'list' | null) || 'kanban',
     )
@@ -660,7 +684,10 @@ export default defineComponent({
 
     const loadBoard = async (projectId: string) => {
       await columnsStore.fetchAll(projectId)
-      const { data } = await tasksApi.getAll({ projectId, limit: 500 })
+      const params: any = { projectId, limit: 500 }
+      if (boardSearch.value.trim()) params.search = boardSearch.value.trim()
+      if (showArchived.value) params.archived = true
+      const { data } = await tasksApi.getAll(params)
       const allTasks = data.data
 
       const groups: Record<string, Task[]> = {}
@@ -670,6 +697,70 @@ export default defineComponent({
           .sort((a, b) => a.order - b.order)
       })
       columnsData.value = groups
+      try { joinProject(projectId) } catch { /* realtime best-effort */ }
+    }
+
+    const reloadBoard = async () => {
+      if (activeProjectId.value) await loadBoard(activeProjectId.value)
+    }
+
+    let searchDebounce: ReturnType<typeof setTimeout> | null = null
+    const onBoardSearch = () => {
+      if (searchDebounce) clearTimeout(searchDebounce)
+      searchDebounce = setTimeout(() => { void reloadBoard() }, 300)
+    }
+
+    const upsertTask = (task: Task) => {
+      // Quitar de todas las columnas y reinsertar en la correcta
+      Object.keys(columnsData.value).forEach(colId => {
+        columnsData.value[colId] = columnsData.value[colId].filter(t => t._id !== task._id)
+      })
+      const colId = task.columnId || ''
+      if (colId && columnsData.value[colId]) {
+        const arr = columnsData.value[colId]
+        const idx = Math.min(task.order ?? arr.length, arr.length)
+        arr.splice(idx, 0, task)
+        arr.forEach((t, i) => { t.order = i })
+      } else if (!showArchived.value && (task as any).archived) {
+        // Archivada y filtro oculta: no mostrar
+      }
+      if (editingTask.value && editingTask.value._id === task._id) editingTask.value = task
+    }
+
+    const removeTaskFromBoard = (taskId: string) => {
+      Object.keys(columnsData.value).forEach(colId => {
+        columnsData.value[colId] = columnsData.value[colId].filter(t => t._id !== taskId)
+      })
+    }
+
+    const coverImage = (task: Task) => {
+      const att = (task.attachments || []).find(a => a.id === (task as any).coverAttachmentId)
+      if (!att) return null
+      if (!att.type?.startsWith('image/')) return null
+      return `${baseURL}${att.url}`
+    }
+
+    const duplicateTask = async (task: Task) => {
+      try {
+        const { data } = await tasksApi.duplicate(task._id)
+        upsertTask(data)
+        toast.success('Tarjeta duplicada')
+      } catch { toast.error('Error al duplicar') }
+    }
+
+    const archiveTask = async (task: Task, archived: boolean) => {
+      try {
+        const { data } = await tasksApi.update(task._id, { archived } as any)
+        if (archived && !showArchived.value) removeTaskFromBoard(task._id)
+        else upsertTask(data)
+        toast.success(archived ? 'Tarjeta archivada' : 'Tarjeta desarchivada')
+      } catch { toast.error('Error al archivar') }
+    }
+
+    const onTaskUpdatedFromModal = (task: Task) => {
+      if (!task) { void reloadBoard(); return }
+      if ((task as any).archived && !showArchived.value) removeTaskFromBoard(task._id)
+      else upsertTask(task)
     }
 
     const onProjectChange = async (projectId: string, projectName = '') => {
@@ -842,6 +933,27 @@ export default defineComponent({
     onMounted(() => {
       document.addEventListener('click', closeAllMenus)
       void fetchProjectPickerOptions(true)
+      onBoardEvent((event, payload: any) => {
+        if (!activeProjectId.value) return
+        if (event === 'task:created' && payload?.task) {
+          if (payload.task.projectId !== activeProjectId.value) return
+          upsertTask(payload.task)
+        } else if ((event === 'task:updated' || event === 'task:moved') && payload?.task) {
+          if (payload.task.projectId !== activeProjectId.value) {
+            removeTaskFromBoard(payload.task._id)
+            return
+          }
+          upsertTask(payload.task)
+        } else if (event === 'task:deleted' && payload?.taskId) {
+          removeTaskFromBoard(payload.taskId)
+        } else if (event === 'comment:created' && payload?.taskId) {
+          const colId = Object.keys(columnsData.value).find(c => columnsData.value[c].some(t => t._id === payload.taskId))
+          if (colId) {
+            const t = columnsData.value[colId].find(x => x._id === payload.taskId)
+            if (t) t.commentsCount = (t.commentsCount || 0) + 1
+          }
+        }
+      })
     })
     onUnmounted(() => document.removeEventListener('click', closeAllMenus))
 
@@ -933,8 +1045,14 @@ export default defineComponent({
         description: modalForm.description,
         priority: modalForm.priority,
         dueDate: modalForm.dueDate || null,
+        startDate: modalForm.startDate || null,
         assigneeId: modalForm.assigneeId || null,
-        checklist: modalForm.checklist.filter((item: any) => item.text.trim() !== ''),
+        memberIds: modalForm.memberIds || [],
+        watcherIds: modalForm.watcherIds || [],
+        coverColor: modalForm.coverColor ?? null,
+        coverAttachmentId: modalForm.coverAttachmentId ?? null,
+        archived: !!modalForm.archived,
+        checklist: (modalForm.checklist || []).filter((item: any) => item.text.trim() !== ''),
         labels: modalForm.labels,
         attachments: modalForm.attachments
       }
@@ -1141,8 +1259,16 @@ export default defineComponent({
       openAddTask,
       openEditTask,
       saveTaskFromModal,
+      onTaskUpdatedFromModal,
       getChecklistProgress,
       confirmDeleteTask,
+      duplicateTask,
+      archiveTask,
+      coverImage,
+      boardSearch,
+      showArchived,
+      onBoardSearch,
+      reloadBoard,
       doDeleteTask,
       deleteTaskTarget,
       doDeleteColumn,
@@ -1920,6 +2046,11 @@ export default defineComponent({
 .card-due.due-soon     { background: var(--color-warning-bg); color: var(--color-due-soon-text); }
 .card-due.due-overdue  { background: var(--color-error-bg);   color: var(--color-due-overdue-text); }
 .card-due .material-symbols-outlined { font-size: 11px; }
+.card-badge { display: inline-flex; align-items: center; gap: 3px; font-size: 11px; padding: 2px 6px; background: var(--color-bg-surface-highest); border-radius: 4px; color: var(--color-text-muted); }
+.card-cover-img img { width: 100%; max-height: 120px; object-fit: cover; display: block; }
+.board-filters { display: flex; align-items: center; gap: 10px; }
+.board-search { padding: 6px 10px; border: 1px solid var(--color-border); border-radius: 6px; font-size: 13px; min-width: 200px; }
+.archived-toggle { display: flex; align-items: center; gap: 6px; font-size: 12px; }
 
 /* Done card state */
 .kanban-card.is-done { opacity: 0.72; }

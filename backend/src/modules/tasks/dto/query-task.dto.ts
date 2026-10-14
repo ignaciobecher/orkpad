@@ -33,6 +33,15 @@ export class QueryTaskDto {
   @IsOptional()
   columnId?: string;
 
+  @ApiPropertyOptional({ description: 'Filter by member user ID' })
+  @IsString()
+  @IsOptional()
+  memberId?: string;
+
+  @ApiPropertyOptional({ description: 'Include archived (default false)' })
+  @IsOptional()
+  archived?: boolean | string;
+
   @ApiPropertyOptional({ default: 1 })
   @Type(() => Number)
   @IsInt()

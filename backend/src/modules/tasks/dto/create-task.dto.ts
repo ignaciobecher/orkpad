@@ -7,6 +7,7 @@ import {
   IsInt,
   Min,
   IsArray,
+  IsBoolean,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
@@ -87,4 +88,36 @@ export class CreateTaskDto {
     size: number;
     uploadedAt: Date;
   }[];
+
+  @ApiPropertyOptional({ description: 'Member user IDs (multi-assignee)' })
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  memberIds?: string[];
+
+  @ApiPropertyOptional({ description: 'Watcher user IDs' })
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  watcherIds?: string[];
+
+  @ApiPropertyOptional({ example: '2025-06-01' })
+  @IsDateString()
+  @IsOptional()
+  startDate?: string;
+
+  @ApiPropertyOptional({ example: '#5B4EFF' })
+  @IsString()
+  @IsOptional()
+  coverColor?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  coverAttachmentId?: string;
+
+  @ApiPropertyOptional({ default: false })
+  @IsBoolean()
+  @IsOptional()
+  archived?: boolean;
 }
