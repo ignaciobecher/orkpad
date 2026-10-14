@@ -211,30 +211,42 @@
       </div>
     </div>
 
-    <div v-if="openFolderModal" class="modal-overlay" @click.self="openFolderModal = false">
-      <div class="modal-box">
-        <h3 class="modal-title">Nueva carpeta</h3>
+    <div v-if="openFolderModal" class="modal-overlay w95-dialog-overlay" @click.self="openFolderModal = false">
+      <div class="modal-box w95-window">
+        <div class="w95-titlebar">
+          <win-icon material="folder" :size="16" alt="" />
+          <span class="title-text">Nueva carpeta — Orkpad</span>
+          <div class="w95-titlebar-buttons">
+            <button class="w95-title-btn" @click="openFolderModal = false" title="Cerrar"><span class="tbtn-close" aria-hidden="true">×</span></button>
+          </div>
+        </div>
         <div class="modal-form">
           <label>Nombre</label>
           <input v-model="newFolderName" type="text" placeholder="Ej: Contratos, Finanzas, IA" @keydown.enter.prevent="createFolder" />
         </div>
         <div class="modal-footer">
-          <button class="btn-secondary" @click="openFolderModal = false">Cancelar</button>
-          <button class="btn-primary" :disabled="loading" @click="createFolder">Crear carpeta</button>
+          <button class="w95-btn" @click="openFolderModal = false">Cancelar</button>
+          <button class="w95-btn w95-btn--default" :disabled="loading" @click="createFolder">Crear carpeta</button>
         </div>
       </div>
     </div>
 
-    <div v-if="renameTarget" class="modal-overlay" @click.self="renameTarget = null">
-      <div class="modal-box">
-        <h3 class="modal-title">Renombrar {{ renameTarget.isFolder ? 'carpeta' : 'archivo' }}</h3>
+    <div v-if="renameTarget" class="modal-overlay w95-dialog-overlay" @click.self="renameTarget = null">
+      <div class="modal-box w95-window">
+        <div class="w95-titlebar">
+          <win-icon material="edit" :size="16" alt="" />
+          <span class="title-text">Renombrar {{ renameTarget.isFolder ? 'carpeta' : 'archivo' }} — Orkpad</span>
+          <div class="w95-titlebar-buttons">
+            <button class="w95-title-btn" @click="renameTarget = null" title="Cerrar"><span class="tbtn-close" aria-hidden="true">×</span></button>
+          </div>
+        </div>
         <div class="modal-form">
           <label>Nuevo nombre</label>
           <input v-model="renameName" type="text" @keydown.enter.prevent="confirmRename" />
         </div>
         <div class="modal-footer">
-          <button class="btn-secondary" @click="renameTarget = null">Cancelar</button>
-          <button class="btn-primary" :disabled="loading || !renameName.trim()" @click="confirmRename">Renombrar</button>
+          <button class="w95-btn" @click="renameTarget = null">Cancelar</button>
+          <button class="w95-btn w95-btn--default" :disabled="loading || !renameName.trim()" @click="confirmRename">Renombrar</button>
         </div>
       </div>
     </div>
@@ -1377,7 +1389,7 @@ position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-ite
 }
 
 html[data-appearance="win95"] .modal-box {
-width: 100%; max-width: 480px; padding: 24px; background: var(--color-bg-surface); border: 1px solid var(--color-border);
+width: 100%; max-width: 480px; padding: 2px;
 }
 
 html[data-appearance="win95"] .modal-box--large {
@@ -1385,23 +1397,23 @@ max-width: 860px;
 }
 
 html[data-appearance="win95"] .modal-title {
-margin: 0 0 12px; font-family: var(--font-body); font-size: 18px; color: var(--color-text-base);
+margin: 0 0 12px; font-family: Tahoma, Verdana, sans-serif; font-size: 12px; font-weight: bold; color: #000;
 }
 
 html[data-appearance="win95"] .modal-form {
-display: flex; flex-direction: column; gap: 8px;
+display: flex; flex-direction: column; gap: 8px; padding: 8px 8px 0 8px;
 }
 
 html[data-appearance="win95"] .modal-form label {
-font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; color: var(--color-text-muted);
+font-family: Tahoma, Verdana, sans-serif; font-size: 11px; color: #000;
 }
 
 html[data-appearance="win95"] .modal-form input {
-background: var(--color-bg-surface-highest); border: 1px solid var(--color-border); padding: 10px 12px; color: var(--color-text-base); outline: none;
+background: #fff; border: 2px solid; border-color: var(--w95-shadow) var(--w95-highlight) var(--w95-highlight) var(--w95-shadow); box-shadow: inset 1px 1px 0 var(--w95-darkshadow); padding: 4px 6px; color: #000; outline: none; font-family: Tahoma, Verdana, sans-serif; font-size: 12px;
 }
 
 html[data-appearance="win95"] .modal-footer {
-display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;
+display: flex; justify-content: flex-end; gap: 8px; padding: 8px; margin: 8px 0 0 0; border-top: 1px solid var(--w95-shadow);
 }
 
 html[data-appearance="win95"] .btn-primary, html[data-appearance="win95"] .btn-secondary {
