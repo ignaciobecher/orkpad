@@ -117,3 +117,40 @@ export interface ProjectOverview {
   documents: DocumentSummary[]
 }
 
+export interface SharePermissions {
+  canCreate?: boolean
+  canEdit?: boolean
+  canComment?: boolean
+  canUpload?: boolean
+}
+
+export interface ProjectShare {
+  _id: string
+  projectId: string
+  label: string
+  username: string
+  token: string
+  permissions: SharePermissions
+  isActive: boolean
+  expiresAt?: string | null
+  lastAccessAt?: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+export interface CreateShareDto {
+  label: string
+  username: string
+  password: string
+  permissions?: SharePermissions
+  expiresAt?: string
+}
+
+export interface UpdateShareDto {
+  label?: string
+  password?: string
+  permissions?: SharePermissions
+  isActive?: boolean
+  expiresAt?: string | null
+}
+

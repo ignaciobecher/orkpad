@@ -31,6 +31,7 @@ const GoalsPage = () => import('@/pages/app/GoalsPage.vue')
 
 const HelpPage = () => import('@/pages/HelpPage.vue')
 const PrivacyPolicyPage = () => import('@/pages/PrivacyPolicyPage.vue')
+const PortalPage = () => import('@/pages/PortalPage.vue')
 
 const router = createRouter({
   history: createWebHistory(),
@@ -116,6 +117,11 @@ const router = createRouter({
         { path: 'planner',        name: 'planner',        component: () => import('@/pages/app/PlannerPage.vue') },
         { path: '',               redirect: { name: 'dashboard' } }
       ]
+    },
+    {
+      path: '/p/:token',
+      name: 'portal',
+      component: PortalPage,
     },
     {
       path: '/:pathMatch(.*)*',

@@ -243,6 +243,15 @@
         </section>
       </div>
 
+      <!-- TAB: ACCESO CLIENTE -->
+      <div v-if="activeTab === 'acceso'" class="detail-grid">
+        <section class="detail-section full-width">
+          <w-card>
+            <client-access-section :project-id="projectId" />
+          </w-card>
+        </section>
+      </div>
+
       <!-- TAB: GITHUB -->
       <div v-if="activeTab === 'github'">
         <section class="github-section">
@@ -346,12 +355,13 @@ import WKpiCard from '@/components/ui/WKpiCard.vue'
 import WDrawer from '@/components/ui/WDrawer.vue'
 import WConfirmModal from '@/components/ui/WConfirmModal.vue'
 import ProjectFinanceGrid from '@/components/projects/ProjectFinanceGrid.vue'
+import ClientAccessSection from '@/components/projects/ClientAccessSection.vue'
 import WinIcon from '@/components/win95/WinIcon.vue'
 import type { GithubRepo } from '@/api/github/github.api'
 
 export default defineComponent({
   name: 'ProjectDetailPage',
-  components: { WButton, WCard, WTable, WBadge, WKpiCard, WDrawer, ProjectFinanceGrid, WConfirmModal, WinIcon },
+  components: { WButton, WCard, WTable, WBadge, WKpiCard, WDrawer, ProjectFinanceGrid, WConfirmModal, WinIcon, ClientAccessSection },
   data() {
     return {
       repoDrawerOpen: false,
@@ -377,6 +387,7 @@ export default defineComponent({
         { id: 'finanzas', label: this.$t('projects.detail.tabs.finance'), icon: 'payments', count: stats?.total ?? null },
         { id: 'archivos', label: this.$t('projects.detail.tabs.files'), icon: 'description', count: this.overview?.documents.length ?? null },
         { id: 'github', label: 'GitHub', icon: 'commit', count: this.connectedRepos.length || null },
+        { id: 'acceso', label: 'Acceso cliente', icon: 'group', count: null },
       ]
     },
     isInstallments(): boolean {

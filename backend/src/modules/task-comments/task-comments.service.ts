@@ -56,11 +56,13 @@ export class TaskCommentsService {
     taskId: string,
     authorId: string,
     dto: CreateTaskCommentDto,
+    authorName?: string,
   ) {
     const task = await this.tasksService.findOne(workspaceId, taskId);
     const author = await this.usersService
       .findWorkspaceMemberById(workspaceId, authorId)
       .catch(() => null);
+    const displayName = authorName ?? (author as any)?.name ?? 'Miembro';
 
     const autoMentions = extractMentions(dto.text);
     const mentions = [...new Set([...(dto.mentions ?? []), ...autoMentions])];
@@ -69,7 +71,7 @@ export class TaskCommentsService {
       taskId,
       projectId: (task as any).projectId,
       authorId,
-      authorName: (author as any)?.name ?? 'Miembro',
+      authorName: displayName,
       text: dto.text,
       mentions,
     });
@@ -90,7 +92,7 @@ export class TaskCommentsService {
       taskId,
       projectId: (task as any).projectId,
       actorId: authorId,
-      actorName: (author as any)?.name,
+      actorName: displayName,
       type: 'commented',
       payload: { commentId: (comment as any)._id?.toString() },
     });

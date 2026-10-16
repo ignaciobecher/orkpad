@@ -15,6 +15,7 @@ import { Server, Socket } from 'socket.io';
 interface BoardSocketData {
   userId?: string;
   workspaceId?: string;
+  portalProjectId?: string;
 }
 
 @WebSocketGateway({
@@ -50,6 +51,17 @@ export class BoardsGateway
         secret: this.configService.getOrThrow<string>('JWT_SECRET'),
       });
       const data = client.data as BoardSocketData;
+      if ((payload as any).type === 'portal' && (payload as any).projectId) {
+        data.userId = `portal:${(payload as any).shareId}`;
+        data.workspaceId = payload.workspaceId;
+        data.portalProjectId = (payload as any).projectId;
+        if (!data.workspaceId) {
+          client.disconnect();
+          return;
+        }
+        client.join(`project:${data.portalProjectId}`);
+        return;
+      }
       data.userId = payload.sub ?? payload.userId;
       data.workspaceId = payload.workspaceId;
       if (!data.userId || !data.workspaceId) {
@@ -71,6 +83,9 @@ export class BoardsGateway
   ) {
     const data = client.data as BoardSocketData;
     if (!body?.projectId || !data.workspaceId) return { ok: false };
+    // Las sesiones del portal solo pueden suscribirse a su proyecto
+    if (data.portalProjectId && body.projectId !== data.portalProjectId)
+      return { ok: false };
     client.join(`project:${body.projectId}`);
     return { ok: true, projectId: body.projectId };
   }

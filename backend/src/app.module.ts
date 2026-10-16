@@ -34,6 +34,8 @@ import { GoalsModule } from './modules/goals/goals.module';
 import { OnboardingModule } from './modules/onboarding/onboarding.module';
 import { TaskCommentsModule } from './modules/task-comments/task-comments.module';
 import { TaskActivitiesModule } from './modules/task-activities/task-activities.module';
+import { ProjectSharesModule } from './modules/project-shares/project-shares.module';
+import { PortalModule } from './modules/portal/portal.module';
 
 @Module({
   imports: [
@@ -109,6 +111,8 @@ import { TaskActivitiesModule } from './modules/task-activities/task-activities.
     GoalsModule,
     TaskCommentsModule,
     TaskActivitiesModule,
+    ProjectSharesModule,
+    PortalModule,
   ],
   controllers: [AppController],
   providers: [AppService],
